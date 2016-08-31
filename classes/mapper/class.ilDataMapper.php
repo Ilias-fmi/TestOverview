@@ -14,6 +14,7 @@ abstract class ilDataMapper
 	 */
 	protected $db;
 
+
 	/**
 	 *	@var string
 	 */
@@ -66,11 +67,19 @@ abstract class ilDataMapper
 	 */
 	abstract protected function getWherePart(array $filters);
 
+
+
+public function dbZurückgeben(){
+	return $this->db;
+}
+
+
 	/**
 	 *	Retrieve the relation name
 	 *
 	 *	@return string
 	 */
+
 	public function getTableName()
 	{
 		return $this->tableName;

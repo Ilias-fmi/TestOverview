@@ -11,6 +11,7 @@ require_once 'Services/Repository/classes/class.ilObjectPluginGUI.php';
 require_once 'Services/Form/classes/class.ilPropertyFormGUI.php';
 require_once 'Services/PersonalDesktop/interfaces/interface.ilDesktopItemHandling.php';
 
+
 /**
  * @ilCtrl_isCalledBy ilObjTestOverviewGUI: ilRepositoryGUI, ilAdministrationGUI, ilObjPluginDispatchGUI
  * @ilCtrl_Calls      ilObjTestOverviewGUI: ilPermissionGUI, ilInfoScreenGUI, ilObjectCopyGUI, ilRepositorySearchGUI, ilPublicUserProfileGUI, ilCommonActionDispatcherGUI
@@ -87,7 +88,7 @@ class ilObjTestOverviewGUI
 				$gui = ilCommonActionDispatcherGUI::getInstanceFromAjaxCall();
 				$this->ctrl->forwardCommand($gui);
 				break;
-				
+
 			default:
 				switch($cmd)
 				{
@@ -103,7 +104,7 @@ class ilObjTestOverviewGUI
 						$this->checkPermission('write');
 						$this->$cmd();
 						break;
-		
+
 					case 'showContent':
 					case 'applyOverviewFilter':
 					case 'applyTestsFilter':
@@ -155,7 +156,104 @@ class ilObjTestOverviewGUI
 		if ($ilAccess->checkAccess('write', '', $this->object->getRefId())) {
 			$ilTabs->addTab('properties', $this->txt('properties'), $ilCtrl->getLinkTarget($this, 'editSettings'));
 			$ilTabs->addTarget('meta_data', $this->ctrl->getLinkTargetByClass('ilmdeditorgui', ''), '', 'ilmdeditorgui');
+			//$ilTabs->addTab('Hello_World_Jan', $this->txt('Hello_World'), $ilCtrl->getLinkTarget($this,'helloWorld'));
+                       // $tabs_gui->addTarget("cont_mob_files",$this->ctrl->getLinkTarget($this, "editFiles"), "editFiles",get_class($this));
+
 		}
+		{
+			$test = $overview->getTest($obj_id);
+			$activeId  = $test->getActiveIdOfUser($row['member_id']);
+
+			$result = $progress = null;
+						
+			if( $this->accessIndex[$obj_id] )
+			{
+				$result    = $test->getTestResult($activeId);
+
+				$lpStatus = new ilLPStatus( $test->getId() );
+				$progress = $lpStatus->_lookupStatus($test->getId(), $row['member_id']);
+
+				if ((bool) $progress)
+				{
+					$result		= sprintf("%.2f %%", (float) $result['pass']['percent'] * 100);
+					
+					$results[]  = $result;
+				}
+				else
+				{
+					$result = $this->lng->txt("rep_robj_xtov_overview_test_not_passed");
+					
+					$results[]  = 0;
+				}
+				
+				if( $activeId > 0 )
+				{
+					$resultLink = $this->buildMemberResultLinkTarget($this->accessIndex[$obj_id], $activeId);
+
+					$this->populateLinkedCell($resultLink, $result, $this->getCSSByProgress($progress));
+				}
+				else
+				{
+					$this->populateNoLinkCell(
+						$result, $this->getCSSByProgress($progress)
+					);
+				}
+			}
+			else
+			{
+				$this->populateNoLinkCell(
+		{
+			$test = $overview->getTest($obj_id);
+			$activeId  = $test->getActiveIdOfUser($row['member_id']);
+
+			$result = $progress = null;
+						
+			if( $this->accessIndex[$obj_id] )
+			{
+				$result    = $test->getTestResult($activeId);
+
+				$lpStatus = new ilLPStatus( $test->getId() );
+				$progress = $lpStatus->_lookupStatus($test->getId(), $row['member_id']);
+
+				if ((bool) $progress)
+				{
+					$result		= sprintf("%.2f %%", (float) $result['pass']['percent'] * 100);
+					
+					$results[]  = $result;
+				}
+				else
+				{
+					$result = $this->lng->txt("rep_robj_xtov_overview_test_not_passed");
+					
+					$results[]  = 0;
+				}
+				
+				if( $activeId > 0 )
+				{
+					$resultLink = $this->buildMemberResultLinkTarget($this->accessIndex[$obj_id], $activeId);
+
+					$this->populateLinkedCell($resultLink, $result, $this->getCSSByProgress($progress));
+				}
+				else
+				{
+					$this->populateNoLinkCell(
+						$result, $this->getCSSByProgress($progress)
+					);
+				}
+			}
+			else
+			{
+				$this->populateNoLinkCell(
+					$this->lng->txt("rep_robj_xtov_overview_test_no_permission"), $this->getCSSByProgress($progress)
+				);
+			}
+			
+			$this->tpl->setCurrentBlock('cell');
+					$this->lng->txt("rep_robj_xtov_overview_test_no_permission"), $this->getCSSByProgress($progress)
+				);
+			}
+			
+			$this->tpl->setCurrentBlock('cell');
 
 		$this->addPermissionTab();
 	}
@@ -177,9 +275,10 @@ class ilObjTestOverviewGUI
 
 		$this->includePluginClasses(array(
 			"ilTestOverviewTableGUI",
-			"ilOverviewMapper"));
+			"ilOverviewMapper"
+		   ));
 
-		$ilTabs->activateTab("content");
+		$ilTabs->activateTab("Settings");
 
 		/* Configure content UI */
 		$table = new ilTestOverviewTableGUI( $this, 'showContent' );
@@ -202,7 +301,12 @@ class ilObjTestOverviewGUI
 	 */
 	protected function renderSettings()
 	{
+
+
 		return $this->form->getHTML()
+			/*."Hallo Hier bin ich"
+			. getcwd()
+			//.$this-> includeExMapper() */
 			 . "<hr />"
 			 . $this->getTestList()->getHTML()
 			 . "<hr />"
@@ -231,8 +335,18 @@ class ilObjTestOverviewGUI
 
 		/* Populate template */
 		$tpl->setContent( $this->renderSettings() );
-	}
 
+	}
+  /*protected function helloWorld()
+	{
+		global $tpl, $ilTabs;
+		$ilDB->query('INSERT INTO rep_robj_xtov_overview  (obj_id)VALUE (301)');
+
+		$ilTabs->activateTab('Hello_World_Jan');
+		$ilTabs->addSubTab("sub", "subtab", "", $a_frame = "fafaf");
+
+
+	}*/
 	/**
  	 *	Command for saving the updated Test Overview settings.
 	 *
@@ -281,7 +395,7 @@ class ilObjTestOverviewGUI
 		// empty session on init
 		$_SESSION['select_tovr_expanded'] = array();
 
-		// copy opend nodes from repository explorer		
+		// copy opend nodes from repository explorer
 		$_SESSION['select_tovr_expanded'] = is_array($_SESSION['repexpand']) ? $_SESSION['repexpand'] : array();
 
 		// open current position
@@ -336,7 +450,7 @@ class ilObjTestOverviewGUI
 		$tpl->setVariable('CMD_SUBMIT', 'performAddTests');
 		$tpl->setVariable('TXT_SUBMIT', $lng->txt('select'));
 	}
-	
+
 	public function performAddTests()
 	{
 		/**
@@ -345,7 +459,7 @@ class ilObjTestOverviewGUI
 		 * @var $ilAccess ilAccessHandler
 		 */
 		global $lng, $ilCtrl, $ilAccess;
-		
+
 		if(!isset($_POST['nodes']) || !is_array($_POST['nodes']) || !$_POST['nodes'])
 		{
 			ilUtil::sendFailure($lng->txt('select_one'));
@@ -372,7 +486,7 @@ class ilObjTestOverviewGUI
 
 		ilUtil::sendSuccess($this->txt('tests_updated_success'), true);
 		$ilCtrl->redirect($this, 'editSettings');
-		
+
 		$this->editSettings();
 		return;
 	}
@@ -525,7 +639,7 @@ class ilObjTestOverviewGUI
 			ilUtil::sendSuccess($lng->txt('rep_robj_xtov_memberships_updated_success'), true);
 			$ilCtrl->redirect($this, 'editSettings');
 		}
-		
+
 		ilUtil::sendFailure($lng->txt('rep_robj_xtov_min_one_check_membership'));
 		$tpl->setContent( $this->renderSettings() );
 	}
@@ -849,6 +963,7 @@ class ilObjTestOverviewGUI
 		$this->showContent();
 	}
 
+
 	/**
 	 * @see ilDesktopItemHandling::removeFromDesk()
 	 */
@@ -867,4 +982,20 @@ class ilObjTestOverviewGUI
 		ilUtil::sendSuccess($lng->txt('removed_from_desktop'));
 		$this->showContent();
 	}
+
+
+
+    public function includeExMapper() {
+				// Include Funktioniert noch nicht
+    /*  if (file_exists('Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview/classes/mapper/class.ilDataMapperEx.php')){
+				include'Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview/classes/mapper/class.ilDataMapperEx.php';
+			return "file da ";
+			}else{
+				require_once 'Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview/classes/mapper/class.ilDataMapperEx.php';
+				$DBtest = new ilDB();
+				$DBtest-> doQuery();
+				return "includet";
+			}*/
+    }
+
 }
