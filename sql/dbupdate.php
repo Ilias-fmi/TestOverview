@@ -151,7 +151,7 @@ else
 /* Participants to ExOverview relationship table,
    contains groups or courses IDs. */
 $fields_participants = array(
-	'obj_id_overview' => array(
+	'obj_id_exview' => array(
 		'type'    => 'integer',
 		'length'  => 4,
 		'notnull' => true,
@@ -164,10 +164,11 @@ $fields_participants = array(
 		'default' => 0
 	),
 );
-
-$ilDB->createTable('rep_robj_xtov_p2o', $fields_participants);
-$ilDB->addPrimaryKey('rep_robj_xtov_p2o', array('obj_id_overview', 'obj_id_grpcrs'));
-
+if(!$ilDB->tableExists('rep_robj_xtov_e2o'))
+{
+    $ilDB->createTable('rep_robj_xtov_p2e', $fields_participants);
+    $ilDB->addPrimaryKey('rep_robj_xtov_p2e', array('obj_id_exview', 'obj_id_grpcrs'));
+}
 ?>
 <#6>
 <?php
