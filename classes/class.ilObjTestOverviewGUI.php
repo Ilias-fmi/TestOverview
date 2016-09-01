@@ -77,7 +77,7 @@ class ilObjTestOverviewGUI
 				$gui = ilCommonActionDispatcherGUI::getInstanceFromAjaxCall();
 				$this->ctrl->forwardCommand($gui);
 				break;
-				
+
 			default:
 				switch($cmd)
 				{
@@ -89,15 +89,18 @@ class ilObjTestOverviewGUI
 					case 'removeTests':
 					case 'addMemberships':
 					case 'removeMemberships':
-                                        case 'HelloWorld':    
+          case 'TestOverview':
+					case 'ExerciseOverview':
 					case 'editSettings':
 						$this->checkPermission('write');
 						$this->$cmd();
 						break;
-		
+
 					case 'showContent':
 					case 'applyOverviewFilter':
 					case 'applyTestsFilter':
+					case 'subTabTO':
+					case 'subTabTO2':
 					case 'applyGroupsFilter':
 					case 'resetOverviewFilter':
 					case 'resetTestsFilter':
@@ -136,12 +139,16 @@ class ilObjTestOverviewGUI
 		/* Check for read access (showContent available) */
 		if ($ilAccess->checkAccess('read', '', $this->object->getRefId())) {
 			$ilTabs->addTab('content', $this->txt('content'), $ilCtrl->getLinkTarget($this, 'showContent'));
-                        $ilTabs->addTab('HelloWorld',$this->txt('HelloWorld'), $ilCtrl->getLinkTarget($this, 'HelloWorld'));
+      $ilTabs->addTab('TestOverview',$this->txt('TestOverview'), $ilCtrl->getLinkTarget($this, 'TestOverview'));
+			$ilTabs->addTab('ExerciseOverview',$this->txt('ExerciseOverview'), $ilCtrl->getLinkTarget($this, 'ExerciseOverview'));
+			$ilTabs->addSubTab('subTabTO', "SUBTab1", $ilCtrl->getLinkTarget($this, 'subTabTo'));
+			$ilTabs->addSubTab('subTabTO2', "SUBTab2", $ilCtrl->getLinkTarget($this, 'subTabTo2'));
+
 		}
 		/* Check for write access (editSettings available) */
 		if ($ilAccess->checkAccess('write', '', $this->object->getRefId())) {
 			$ilTabs->addTab('properties', $this->txt('properties'), $ilCtrl->getLinkTarget($this, 'editSettings'));
-                     
+
 			$ilTabs->addTarget('meta_data', $this->ctrl->getLinkTargetByClass('ilmdeditorgui', ''), '', 'ilmdeditorgui');
 		}
 		$this->addPermissionTab();
@@ -209,13 +216,43 @@ class ilObjTestOverviewGUI
 		/* Populate template */
 		$tpl->setContent( $this->renderSettings() );
 	}
-        
-        protected function HelloWorld(){
-          
+
+   protected function TestOverview(){
+
 		global $tpl, $ilTabs;
+
 		$ilTabs->activateTab('HelloWorld');
                 $tpl->setContent("<p> Hello World </p>");
-        }
+
+
+
+    }
+
+		protected function subTabTO(){
+
+		 global $tpl, $ilTabs;
+		 $ilTabs->activateSubTab('subTabTO');
+
+
+
+		 }
+
+		 protected function subTabTO2(){
+
+	 	 global $tpl, $ilTabs;
+	 	 $ilTabs->activateSubTab('subTabTO');
+
+
+
+	 	 }
+
+
+	  protected function ExerciseOverview(){
+			global $tpl, $ilTabs;
+			$ilTabs->activateTab('ExerciseOverview');
+									$tpl->setContent("<p> Hello World </p>");
+		}
+
 
         /**
  	 *	Command for saving the updated Test Overview settings.
@@ -256,7 +293,7 @@ class ilObjTestOverviewGUI
 		global $tree;
 		// empty session on init
 		$_SESSION['select_tovr_expanded'] = array();
-		// copy opend nodes from repository explorer		
+		// copy opend nodes from repository explorer
 		$_SESSION['select_tovr_expanded'] = is_array($_SESSION['repexpand']) ? $_SESSION['repexpand'] : array();
 		// open current position
 		$path = $tree->getPathId((int)$_GET['ref_id']);
@@ -303,7 +340,7 @@ class ilObjTestOverviewGUI
 		$tpl->setVariable('CMD_SUBMIT', 'performAddTests');
 		$tpl->setVariable('TXT_SUBMIT', $lng->txt('select'));
 	}
-	
+
 	public function performAddTests()
 	{
 		/**
@@ -312,7 +349,7 @@ class ilObjTestOverviewGUI
 		 * @var $ilAccess ilAccessHandler
 		 */
 		global $lng, $ilCtrl, $ilAccess;
-		
+
 		if(!isset($_POST['nodes']) || !is_array($_POST['nodes']) || !$_POST['nodes'])
 		{
 			ilUtil::sendFailure($lng->txt('select_one'));
@@ -336,7 +373,7 @@ class ilObjTestOverviewGUI
 		}
 		ilUtil::sendSuccess($this->txt('tests_updated_success'), true);
 		$ilCtrl->redirect($this, 'editSettings');
-		
+
 		$this->editSettings();
 		return;
 	}
@@ -461,7 +498,7 @@ class ilObjTestOverviewGUI
 			ilUtil::sendSuccess($lng->txt('rep_robj_xtov_memberships_updated_success'), true);
 			$ilCtrl->redirect($this, 'editSettings');
 		}
-		
+
 		ilUtil::sendFailure($lng->txt('rep_robj_xtov_min_one_check_membership'));
 		$tpl->setContent( $this->renderSettings() );
 	}
