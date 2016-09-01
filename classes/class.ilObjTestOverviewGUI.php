@@ -216,6 +216,8 @@ class ilObjTestOverviewGUI
 					global $tpl, $ilTabs;
 					$ilTabs->activateTab('HelloWorld');
   				$tpl->setContent("<p> Hello World </p>");
+
+
 					/*Zum testen des Datanebank mappers
 					$this->includePluginClasses(array("ilDataMapperEx"));
 					$Obj= new ilMembershipMapperEx();

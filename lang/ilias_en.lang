@@ -21,12 +21,13 @@ edit_properties#:#Edit Settings
 title#:#Title
 description#:#Description
 save#:#Save
+HelloWorld#:#HelloWorld
 cancel#:#Cancel
 edit#:#Edit
 config_test_overview#:#Configure Test Overview
 test_overview_table_title#:#Test Overview '%s'
 test_list_table_title#:#Tests to accumulate in overview '%s'
-test_list_description#:#Please select the tests you want to add to this overview. 
+test_list_description#:#Please select the tests you want to add to this overview.
 test_list_hdr_test_title#:#Title
 test_list_hdr_test_info#:#Path to Test
 add_to_overview#:#Add to Overview
