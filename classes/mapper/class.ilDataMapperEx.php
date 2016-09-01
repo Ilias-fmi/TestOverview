@@ -1,28 +1,43 @@
 <?php
+/*
+*Mapps the Members to the Exercises
+*
+*/
 
-//require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
-	//			->getDirectory() . '/classes/mapper/class.ilDataMapper.php';
+/*Includes the DB Mapper*/
+require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
+				->getDirectory() . '/classes/mapper/class.ilDataMapper.php';
 
-include 'class.ilDataMapper.php';
-class ilDB
-	extends ilDataMapper
+class ilMembershipMapperEx extends ilDataMapper
 {
+	protected $tableName = "exc_members";
 
-	public function getSelectPart(){}
-	public function getFromPart(){}
-	public function getWherePart(array $filters){}
-	public function doQuery(){
-		echo "funktion aufgerufen";
-		$result = $ilDB->query("SELECT * FROM usr_data");
-		echo "j";
-		$this->db->query("SELECT * FROM usr_data");
+
+	public function getSelectPart()
+	{
+			$field = "DISTINCT exc_members.usr_id ";
+			return $field;
+
 	}
+
+	public function getFromPart()
+	{
+			$join = "JOIN rep_robj_xtov_exview ON exc_members.usr_id";
+	return $this->tableName . " ". $join		;
+
+	}
+
+	public function getWherePart(array $filters)
+	{
+		global $ilUser;
+		$condition = $this->tableName . ".obj_id = ". $this->db->quote($filters['overview_id'], 'integer');
+    return $condition;
+
+
+	}
+
 }
-echo "Anfang";
-$mapper = new ilDB();
-echo "Klasse erstellt";
-$DB = $mapper->dbZurückgeben();
-echo "Datenbank in Variable";
-$mapper-> doQuery();
-echo "Query ausgeführt";
+
+
+
 ?>

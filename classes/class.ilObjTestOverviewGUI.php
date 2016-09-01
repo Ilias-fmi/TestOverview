@@ -77,7 +77,7 @@ class ilObjTestOverviewGUI
 				$gui = ilCommonActionDispatcherGUI::getInstanceFromAjaxCall();
 				$this->ctrl->forwardCommand($gui);
 				break;
-				
+
 			default:
 				switch($cmd)
 				{
@@ -89,12 +89,12 @@ class ilObjTestOverviewGUI
 					case 'removeTests':
 					case 'addMemberships':
 					case 'removeMemberships':
-                                        case 'HelloWorld':    
+                                        case 'HelloWorld':
 					case 'editSettings':
 						$this->checkPermission('write');
 						$this->$cmd();
 						break;
-		
+
 					case 'showContent':
 					case 'applyOverviewFilter':
 					case 'applyTestsFilter':
@@ -141,7 +141,7 @@ class ilObjTestOverviewGUI
 		/* Check for write access (editSettings available) */
 		if ($ilAccess->checkAccess('write', '', $this->object->getRefId())) {
 			$ilTabs->addTab('properties', $this->txt('properties'), $ilCtrl->getLinkTarget($this, 'editSettings'));
-                     
+
 			$ilTabs->addTarget('meta_data', $this->ctrl->getLinkTargetByClass('ilmdeditorgui', ''), '', 'ilmdeditorgui');
 		}
 		$this->addPermissionTab();
@@ -209,13 +209,25 @@ class ilObjTestOverviewGUI
 		/* Populate template */
 		$tpl->setContent( $this->renderSettings() );
 	}
-        
-        protected function HelloWorld(){
-          
-		global $tpl, $ilTabs;
-		$ilTabs->activateTab('HelloWorld');
-                $tpl->setContent("<p> Hello World </p>");
-        }
+
+        protected function HelloWorld()
+				{
+
+					global $tpl, $ilTabs;
+					$ilTabs->activateTab('HelloWorld');
+  				$tpl->setContent("<p> Hello World </p>");
+					/*Zum testen des Datanebank mappers
+					$this->includePluginClasses(array("ilDataMapperEx"));
+					$Obj= new ilMembershipMapperEx();
+					$array = array("");
+					$data = $Obj->getList($array,$array);
+					$toPrint = "";
+					foreach($data as $point){
+						$toPrint = $toPrint . $point;
+					}
+					$tpl->setContent("<p> " . $toPrint ."</p>");
+					*/
+				}
 
         /**
  	 *	Command for saving the updated Test Overview settings.
@@ -256,7 +268,7 @@ class ilObjTestOverviewGUI
 		global $tree;
 		// empty session on init
 		$_SESSION['select_tovr_expanded'] = array();
-		// copy opend nodes from repository explorer		
+		// copy opend nodes from repository explorer
 		$_SESSION['select_tovr_expanded'] = is_array($_SESSION['repexpand']) ? $_SESSION['repexpand'] : array();
 		// open current position
 		$path = $tree->getPathId((int)$_GET['ref_id']);
@@ -303,7 +315,7 @@ class ilObjTestOverviewGUI
 		$tpl->setVariable('CMD_SUBMIT', 'performAddTests');
 		$tpl->setVariable('TXT_SUBMIT', $lng->txt('select'));
 	}
-	
+
 	public function performAddTests()
 	{
 		/**
@@ -312,7 +324,7 @@ class ilObjTestOverviewGUI
 		 * @var $ilAccess ilAccessHandler
 		 */
 		global $lng, $ilCtrl, $ilAccess;
-		
+
 		if(!isset($_POST['nodes']) || !is_array($_POST['nodes']) || !$_POST['nodes'])
 		{
 			ilUtil::sendFailure($lng->txt('select_one'));
@@ -336,7 +348,7 @@ class ilObjTestOverviewGUI
 		}
 		ilUtil::sendSuccess($this->txt('tests_updated_success'), true);
 		$ilCtrl->redirect($this, 'editSettings');
-		
+
 		$this->editSettings();
 		return;
 	}
@@ -461,7 +473,7 @@ class ilObjTestOverviewGUI
 			ilUtil::sendSuccess($lng->txt('rep_robj_xtov_memberships_updated_success'), true);
 			$ilCtrl->redirect($this, 'editSettings');
 		}
-		
+
 		ilUtil::sendFailure($lng->txt('rep_robj_xtov_min_one_check_membership'));
 		$tpl->setContent( $this->renderSettings() );
 	}
