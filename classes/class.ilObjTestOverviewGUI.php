@@ -213,22 +213,18 @@ class ilObjTestOverviewGUI
         protected function HelloWorld()
 				{
 
-					global $tpl, $ilTabs;
+					global $tpl, $ilTabs, $ilDB;
 					$ilTabs->activateTab('HelloWorld');
   				$tpl->setContent("<p> Hello World </p>");
 
 
-					/*Zum testen des Datanebank mappers
-					$this->includePluginClasses(array("ilDataMapperEx"));
+					//Zum testen des Datanebank mappers
+					$this->includePluginClasses(array("ilMembershipMapperEx"));
+					$num = 300;
 					$Obj= new ilMembershipMapperEx();
 					$array = array("");
 					$data = $Obj->getList($array,$array);
-					$toPrint = "";
-					foreach($data as $point){
-						$toPrint = $toPrint . $point;
-					}
-					$tpl->setContent("<p> " . $toPrint ."</p>");
-					*/
+
 				}
 
         /**

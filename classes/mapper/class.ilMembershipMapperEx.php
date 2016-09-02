@@ -1,7 +1,6 @@
 <?php
 /*
-*Mapps the Members to the Exercises
-*
+*Mapps the given ExerciseOverview id to the members
 */
 
 /*Includes the DB Mapper*/
@@ -11,26 +10,31 @@ require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'T
 class ilMembershipMapperEx extends ilDataMapper
 {
 	protected $tableName = "exc_members";
+	//protected $ExObjId = -1;
 
-
+	/*Gets the ID of the ExersiceOverview Object*/
+	//public function __construct()
+//{
+	// $ExObjId = $session_key;
+//}
 	public function getSelectPart()
 	{
-			$field = "DISTINCT exc_members.usr_id ";
+			$field = " DISTINCT exc_members.usr_id ";
 			return $field;
 
 	}
 
 	public function getFromPart()
 	{
-			$join = "JOIN rep_robj_xtov_exview ON exc_members.usr_id";
-	return $this->tableName . " ". $join		;
+			$join = " exc_members ,rep_robj_xtov_e2o ";
+	return $join;
 
 	}
 
 	public function getWherePart(array $filters)
 	{
 		global $ilUser;
-		$condition = $this->tableName . ".obj_id = ". $this->db->quote($filters['overview_id'], 'integer');
+		$condition = " obj_id_overview = 300 ";//. $ExObjId;
     return $condition;
 
 
