@@ -219,12 +219,11 @@ class ilObjTestOverviewGUI
 
 
 					//Zum testen des Datanebank mappers
-					$this->includePluginClasses(array("ilMembershipMapperEx"));
-					$num = 300;
-					$Obj= new ilMembershipMapperEx();
+					/*$this->includePluginClasses(array("ilMembershipMapperEx"));
+					$Obj= new ilMembershipMapperEx(300);
 					$array = array("");
 					$data = $Obj->getList($array,$array);
-
+					*/
 				}
 
         /**

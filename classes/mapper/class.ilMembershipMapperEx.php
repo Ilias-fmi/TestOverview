@@ -10,13 +10,24 @@ require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'T
 class ilMembershipMapperEx extends ilDataMapper
 {
 	protected $tableName = "exc_members";
-	//protected $ExObjId = -1;
+	protected $Id;
 
-	/*Gets the ID of the ExersiceOverview Object*/
-	//public function __construct()
-//{
-	// $ExObjId = $session_key;
-//}
+  /*Is required for all type of Querys */
+
+
+	public function __construct($ExObjId)
+	{
+		/**
+		 * @var $ilDB ilDB
+		 */
+		global $ilDB;
+
+		$this->db = $ilDB;
+
+		$this->Id = $ExObjId ;
+	}
+
+
 	public function getSelectPart()
 	{
 			$field = " DISTINCT exc_members.usr_id ";
@@ -34,7 +45,7 @@ class ilMembershipMapperEx extends ilDataMapper
 	public function getWherePart(array $filters)
 	{
 		global $ilUser;
-		$condition = " obj_id_overview = 300 ";//. $ExObjId;
+		$condition = " obj_id_overview = " .$this->Id ;
     return $condition;
 
 
