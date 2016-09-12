@@ -11,7 +11,7 @@ require_once 'Services/Repository/classes/class.ilObjectPlugin.php';
 require_once 'Modules/Test/classes/class.ilObjTest.php';
 require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
 				->getDirectory() . '/classes/mapper/class.ilOverviewMapper.php';
-				
+
 
 
 class ilObjTestOverview extends ilObjectPlugin
@@ -111,10 +111,12 @@ class ilObjTestOverview extends ilObjectPlugin
  		 * @var $ilDB ilDB
 		 */
 		global $ilDB;
-
+		
 		$ilDB->manipulate('
 			DELETE FROM rep_robj_xtov_overview
 			WHERE obj_id = ' . $ilDB->quote($this->getId(), 'integer'));
+
+
 	}
 
 	/**
