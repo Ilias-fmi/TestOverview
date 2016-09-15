@@ -8,6 +8,7 @@
 require_once 'Services/Repository/classes/class.ilObjectPluginGUI.php';
 require_once 'Services/Form/classes/class.ilPropertyFormGUI.php';
 require_once 'Services/PersonalDesktop/interfaces/interface.ilDesktopItemHandling.php';
+require_once 'Services/Chart/classes/class.ilChartPie.php';
 /**
  * @ilCtrl_isCalledBy ilObjTestOverviewGUI: ilRepositoryGUI, ilAdministrationGUI, ilObjPluginDispatchGUI
  * @ilCtrl_Calls      ilObjTestOverviewGUI: ilPermissionGUI, ilInfoScreenGUI, ilObjectCopyGUI, ilRepositorySearchGUI, ilPublicUserProfileGUI, ilCommonActionDispatcherGUI
@@ -215,9 +216,15 @@ class ilObjTestOverviewGUI
 
 					global $tpl, $ilTabs, $ilDB;
 					$ilTabs->activateTab('HelloWorld');
-  				$tpl->setContent("<p> Hello World </p>");
-
-
+                                        $a = new ReflectionClass('ilChartPie');
+                                        $b = new ReflectionMethod('ilChartPie', 'getDataInstance');
+                                        $c = $b->invoke($a, '');
+                                        //$b = $a-> getDataInstance('DATA_BARS');
+                                       
+                                    
+                                       // 
+                                        //
+                                        //
 					//Zum testen des Datanebank mappers
 					/*$this->includePluginClasses(array("ilMembershipMapperEx"));
 					$Obj= new ilMembershipMapperEx(300);
