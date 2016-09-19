@@ -11,7 +11,7 @@ require_once 'Services/PersonalDesktop/interfaces/interface.ilDesktopItemHandlin
 require_once 'Services/Chart/classes/class.ilChartGrid.php';
 require_once 'Services/Chart/classes/class.ilChartLegend.php';
 require_once 'Services/Chart/classes/class.ilChartSpider.php';
-include_once("./Services/jQuery/classes/class.iljQueryUtil.php");
+include_once 'Services/jQuery/classes/class.iljQueryUtil.php';
 
 /**
  * @ilCtrl_isCalledBy ilObjTestOverviewGUI: ilRepositoryGUI, ilAdministrationGUI, ilObjPluginDispatchGUI
@@ -240,14 +240,17 @@ class ilObjTestOverviewGUI
 		{
 			global $tpl, $ilTabs,	$ilCtrl;
 			$ilTabs->activateSubTab('subTabTO');
-                        $initjQuery = iljQueryUtil::initjQuery();
-                        $Script ='<script src="http://code.jquery.com/jquery-latest.js"></script>
-<script>
-$(document).ready(function(){
-    /* Hier der jQuery-Code */
-    alert("Hallo Welt");
-});
-</script>';
+                        /*$jQ = iljQueryUtil::initjQuery();
+                        $jQm= iljQueryUtil::initjQueryUI();
+                        $jQm->append ('<p> hier ist content </p>');*/
+                        $Script = ''
+                                .'<script language="javascript" type="text/javascript" src="http://www.flotcharts.org/jquery.js"></script>'
+                                .'<script language="javascript" type="text/javascript" src="http://www.flotcharts.org/excanvas.min.js"></script>'
+                                .'<script language="javascript" type="text/javascript" src="http://www.flotcharts.org/jquery.flot.js"></script>'
+                                //.'<link href="http://www.flotcharts.org/examples/examples.css" rel="stylesheet" type="text/css">'
+                                .'<script type="text/javascript"> $(document).ready(function() {$.plot("#placeholder", [ [[0, 3], [4, 8], [8, 5], [9, 13]]]);});); </script>'
+                                .'<div id="placeholder" style="width:600px;height:300px"></div>'
+                                .'<p> hier ist content </p>';
                     $tpl->setContent($Script);
                         
 
@@ -258,7 +261,16 @@ $(document).ready(function(){
 		 {
 			 global $tpl, $ilTabs;
 			 $ilTabs->activateSubTab('subTabTO2');
-									 $tpl->setContent("<p> ToSubtabContent </p>");
+                         /*$chart = ilChartGrid::getDataInstance('1');
+                         $chart-> setLineWidth(2);
+                         $chartHtml = ilChartGrid::getHTML();
+                         $chart-> getHTML();*/
+                         
+                         $chart = ilChart::getInstanceByType('TYPE_GRID',1 );
+                         $chartData = ilChartGrid::getDataInstance(2);
+                         $chartData-> 
+//$chart ->getHTML();
+        $tpl->setContent("<p> ToSubtabContent </p>");
 
 	 	 }
 
