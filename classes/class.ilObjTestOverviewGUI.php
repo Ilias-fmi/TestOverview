@@ -187,8 +187,9 @@ global $tpl,$ilTabs;
 		$this->includePluginClasses(array(
 			"ilTestOverviewTableGUI",
 			"ilOverviewMapper"));
- // Button um alle lokalen Tests in die Übersicht hinzuzufuegen
-	//	$ilToolbar->addButton($this->lng->txt('cancel'), $ilCtrl->getLinkTarget($this,'allLocalTests'));
+ // Button um Graphiken der Übersicht zu erstellen
+		$ilToolbar->addButton("Graphik erstellen", $ilCtrl->getLinkTarget($this,'uebersicht'));
+			$ilToolbar->addButton("Graphik erstellen2", $ilCtrl->getLinkTarget($this,'uebersicht'));
   	$ilTabs->activateSubTab('showContent');
 
 		/* Configure content UI */
@@ -210,11 +211,11 @@ global $tpl,$ilTabs;
 	 */
 	protected function renderSettings()
 	{
-		return $this->form->getHTML()
-			 . "<hr />"
-			 . $this->getTestList()->getHTML()
-			 . "<hr />"
-			 . $this->getMembershipList()->getHTML();
+		return $this->form->getHTML();
+		//	 . "<hr />"
+		//	 . $this->getTestList()->getHTML();
+		//	 . "<hr />"
+		//	 . $this->getMembershipList()->getHTML();
 	}
 	/**
 	 *	Command for editing the settings of a Test Overview.
@@ -261,8 +262,10 @@ protected function subTabTO()
 		 global $tpl, $ilTabs,$ilCtrl;
 
 		 $ilTabs->activateSubTab('subTabTO2');
-								 $tpl->setContent($ilCtrl->getLinkTarget($this,  'subTabTO2'));
-
+								 $tpl->setContent("<p> Ranking: 500. von 500 Mitgliedern</p>"
+                   . "<hr />"
+									 ."In Blatt 1 erreichten Sie 0 von 10 möglichen Punkten"
+							 );
 	 }
 
 	protected function subTabTO2()
@@ -270,7 +273,10 @@ protected function subTabTO()
 			 global $tpl, $ilTabs,$ilCtrl;
 
 			 $ilTabs->activateSubTab('subTabTO2');
-									 $tpl->setContent($ilCtrl->getLinkTarget($this,  'subTabTO2'));
+									 $tpl->setContent(
+								 		 $this->getTestList()->getHTML()
+
+								 			 . $this->getMembershipList()->getHTML());
 
 	 	 }
 
