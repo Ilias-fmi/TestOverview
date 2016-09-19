@@ -8,6 +8,11 @@
 require_once 'Services/Repository/classes/class.ilObjectPluginGUI.php';
 require_once 'Services/Form/classes/class.ilPropertyFormGUI.php';
 require_once 'Services/PersonalDesktop/interfaces/interface.ilDesktopItemHandling.php';
+require_once 'Services/Chart/classes/class.ilChartGrid.php';
+require_once 'Services/Chart/classes/class.ilChartLegend.php';
+require_once 'Services/Chart/classes/class.ilChartSpider.php';
+include_once("./Services/jQuery/classes/class.iljQueryUtil.php");
+
 /**
  * @ilCtrl_isCalledBy ilObjTestOverviewGUI: ilRepositoryGUI, ilAdministrationGUI, ilObjPluginDispatchGUI
  * @ilCtrl_Calls      ilObjTestOverviewGUI: ilPermissionGUI, ilInfoScreenGUI, ilObjectCopyGUI, ilRepositorySearchGUI, ilPublicUserProfileGUI, ilCommonActionDispatcherGUI
@@ -235,8 +240,18 @@ class ilObjTestOverviewGUI
 		{
 			global $tpl, $ilTabs,	$ilCtrl;
 			$ilTabs->activateSubTab('subTabTO');
+                        $initjQuery = iljQueryUtil::initjQuery();
+                        $Script ='<script src="http://code.jquery.com/jquery-latest.js"></script>
+<script>
+$(document).ready(function(){
+    /* Hier der jQuery-Code */
+    alert("Hallo Welt");
+});
+</script>';
+                    $tpl->setContent($Script);
+                        
 
-									$tpl->setContent("<p> ToSubtabContent </p>");
+                                                                       
 		 }
 
 	protected function subTabTO2()
