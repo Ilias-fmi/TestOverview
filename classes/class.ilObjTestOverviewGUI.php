@@ -97,17 +97,19 @@ class ilObjTestOverviewGUI
 					case 'showContent':
 					case 'applyOverviewFilter':
 					case 'applyTestsFilter':
+					case 'uebersicht':
 					case 'subTabTO':
 					case 'subTabTO2':
 					case 'subTabEO':
+					case 'subTabEO1':
 					case 'subTabEO2':
 					case 'applyGroupsFilter':
 					case 'resetOverviewFilter':
 					case 'resetTestsFilter':
 					case 'resetGroupsFilter':
 					case 'addToDesk':
-					case 'allLocalTests':
 					case 'removeFromDesk':
+					case 'Export':
 						if(in_array($cmd, array('addToDesk', 'removeFromDesk')))
 						{
 							$cmd .= 'Object';
@@ -138,19 +140,35 @@ class ilObjTestOverviewGUI
 		global $ilTabs, $ilCtrl, $ilAccess;
 		$this->addInfoTab();
 		/* Check for read access (showContent available) */
-		if ($ilAccess->checkAccess('read', '', $this->object->getRefId())) {
 
-      $ilTabs->addTab('TestOverview',$this->txt('TestOverview'), $ilCtrl->getLinkTarget($this, 'TestOverview'));
-			$ilTabs->addTab('ExerciseOverview',$this->txt('ExerciseOverview'), $ilCtrl->getLinkTarget($this, 'ExerciseOverview'));
-
-		}
 		/* Check for write access (editSettings available) */
 		if ($ilAccess->checkAccess('write', '', $this->object->getRefId())) {
 			$ilTabs->addTab('properties', $this->txt('properties'), $ilCtrl->getLinkTarget($this, 'editSettings'));
+		}
+
+		if ($ilAccess->checkAccess('read', '', $this->object->getRefId())) {
+			$ilTabs->addTab('TestOverview',$this->txt('TestOverview'), $this->ctrl->getLinkTarget($this, 'TestOverview'));
+ 			$ilTabs->addTab('ExerciseOverview',$this->txt('ExerciseOverview'), $this->ctrl->getLinkTarget($this, 'ExerciseOverview'));
+
+		/* Check for write access (editSettings available) */
+		if ($ilAccess->checkAccess('write', '', $this->object->getRefId())) {
+
 			$ilTabs->addTarget('meta_data', $this->ctrl->getLinkTargetByClass('ilmdeditorgui', ''), '', 'ilmdeditorgui');
 		}
+		$ilTabs->addTab('Export',"Export",$this->ctrl->getLinkTarget($this,'Export'));
 		$this->addPermissionTab();
 	}
+}
+
+
+protected function Export()
+{
+global $tpl,$ilTabs;
+	$ilTabs->activateTab('Export');
+	$tpl->setContent("<p> Hello Export </p>");
+}
+
+
 	/**
 	 *	Command for rendering a Test Overview.
 	 *
@@ -158,10 +176,6 @@ class ilObjTestOverviewGUI
 	 *	and its data. This method is called by
 	 *	@see self::performCommand().
 	 */
- protected function allLocalTests()
-{
-
-}
 
 	protected function showContent()
 	{
@@ -169,13 +183,14 @@ class ilObjTestOverviewGUI
 		 * @var $tpl ilTemplate
 		 * @var $ilTabs ilTabsGUI
 		 */
-		global $tpl,$lng, $ilTabs,$ilToolbar;
+		global $tpl,$lng, $ilTabs,$ilToolbar,$ilCtrl;
 		$this->includePluginClasses(array(
 			"ilTestOverviewTableGUI",
 			"ilOverviewMapper"));
  // Button um alle lokalen Tests in die Übersicht hinzuzufuegen
 	//	$ilToolbar->addButton($this->lng->txt('cancel'), $ilCtrl->getLinkTarget($this,'allLocalTests'));
-		$ilTabs->activateSubTab("content");
+  	$ilTabs->activateSubTab('showContent');
+
 		/* Configure content UI */
 		$table = new ilTestOverviewTableGUI( $this, 'showContent' );
 		$table->setMapper(new ilOverviewMapper)
@@ -221,33 +236,51 @@ class ilObjTestOverviewGUI
 		/* Populate template */
 		$tpl->setContent( $this->renderSettings() );
 	}
+
    protected function TestOverview()
 	 {
 		global $tpl, $ilTabs,$ilCtrl;
+		$ilTabs->activateTab('TestOverview');
+    $tpl->setContent("<p> Hello World </p>");
+		$ilTabs->addSubTab('subTabTO',"Eigene Leistungen", $this->ctrl->getLinkTarget($this,'subTabTO'));
+	  $ilTabs->addSubTab('content',"Test Übersicht", $this->ctrl->getLinkTarget($this,  'showContent'));
+		$ilTabs->addSubTab( 'subTabTO2',"Test Verwaltung",$this->ctrl->getLinkTarget($this,  'subTabTO2'));
 
-		$ilTabs->activateTab('HelloWorld');
-                $tpl->setContent("<p> Hello World </p>");
-								$ilTabs->addSubTab('content', $this->txt('content'), $ilCtrl->getLinkTarget($this, 'showContent'));
-								$ilTabs->addSubTab('subTabTO', "SUBTab1", $ilCtrl->getLinkTarget($this,  'subTabTO'));
-								$ilTabs->addSubTab('subTabTO2', "SUBTab2",$ilCtrl->getLinkTarget($this,  'subTabTO2'));
    }
-	protected function subTabTO()
-		{
-			global $tpl, $ilTabs,	$ilCtrl;
-			$ilTabs->activateSubTab('subTabTO');
+//	protected function uebersicht()
+//		{
+//			global $tpl, $ilTabs,	$ilCtrl;
 
-									$tpl->setContent("<p> ToSubtabContent </p>");
-		 }
+//
+//									$tpl->setContent("<p> ToSubtabContent </p>");
+//		 }
+
+
+protected function subTabTO()
+	 {
+		 global $tpl, $ilTabs,$ilCtrl;
+
+		 $ilTabs->activateSubTab('subTabTO2');
+								 $tpl->setContent($ilCtrl->getLinkTarget($this,  'subTabTO2'));
+
+	 }
 
 	protected function subTabTO2()
 		 {
-			 global $tpl, $ilTabs;
+			 global $tpl, $ilTabs,$ilCtrl;
+
 			 $ilTabs->activateSubTab('subTabTO2');
-									 $tpl->setContent("<p> ToSubtabContent </p>");
+									 $tpl->setContent($ilCtrl->getLinkTarget($this,  'subTabTO2'));
 
 	 	 }
 
+protected function subTabEO1()
+		 {
+		 	global $tpl, $ilTabs,	$ilCtrl;
+		 	$ilTabs->activateSubTab('subTabEO');
 
+		 							$tpl->setContent("<p> ToSubtabContent </p>");
+		  }
 
 	protected function subTabEO()
 	{
@@ -270,9 +303,9 @@ class ilObjTestOverviewGUI
 			global $tpl, $ilTabs,$ilCtrl;
 			$ilTabs->activateTab('ExerciseOverview');
 									$tpl->setContent("<p> Hello World </p>");
-
-									$ilTabs->addSubTab('subTabEO', "subTabEO1",  $ilCtrl->getLinkTarget($this,  'subTabEO'));
-									$ilTabs->addSubTab('subTabEO2', "subTabEO2", $ilCtrl->getLinkTarget($this,  'subTabEO2'));
+                  $ilTabs->addSubTab('subTabEo1',"Eigene Leistungen",$ilCtrl->getLinkTarget($this,'ExerciseOverview'));
+									$ilTabs->addSubTab('subTabEO', "Übungs Übersicht",  $ilCtrl->getLinkTarget($this,  'ExerciseOverview'));
+									$ilTabs->addSubTab('subTabEO2', "Übungs Verwaltung", $ilCtrl->getLinkTarget($this,  'ExerciseOverview'));
 
 		}
         /**
