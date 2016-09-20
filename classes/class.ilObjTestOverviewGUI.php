@@ -103,6 +103,7 @@ class ilObjTestOverviewGUI
 					case 'subTabEO':
 					case 'subTabEO1':
 					case 'subTabEO2':
+					case 'rights':
 					case 'applyGroupsFilter':
 					case 'resetOverviewFilter':
 					case 'resetTestsFilter':
@@ -139,6 +140,7 @@ class ilObjTestOverviewGUI
 		 */
 		global $ilTabs, $ilCtrl, $ilAccess;
 		$this->addInfoTab();
+
 		/* Check for read access (showContent available) */
 
 		/* Check for write access (editSettings available) */
@@ -268,15 +270,29 @@ protected function subTabTO()
 							 );
 	 }
 
+protected function rights(){
+
+}
+
 	protected function subTabTO2()
 		 {
-			 global $tpl, $ilTabs,$ilCtrl;
+			 global $tpl, $ilTabs,$ilCtrl,$ilToolbar;
 
 			 $ilTabs->activateSubTab('subTabTO2');
-									 $tpl->setContent(
-								 		 $this->getTestList()->getHTML()
 
-								 			 . $this->getMembershipList()->getHTML());
+    //$ilSplitButtonGUI= new ilSplitButtonGUI();
+		//$ilToolbar.addItem($ilSplitButtonGUI);
+
+    //  $form = new ilFormGUI();
+    //  $a=new ilRadioGroupInputGUI("Semester", 'uebersicht');
+		//	$option = new ilRadioOption("option", 'rights');
+		//	$a.addOption($option);
+		//	$form ->addItem($a);
+    //    $checkBoxList = new ilCheckboxListOverlayGUI("checkBoxID");
+						 $tpl->setContent(
+             //$form->getHTML()
+				 		 $this->getTestList()->getHTML()
+   		 			 . $this->getMembershipList()->getHTML());
 
 	 	 }
 
