@@ -261,16 +261,16 @@ class ilObjTestOverviewGUI
 		 {
 			 global $tpl, $ilTabs;
 			 $ilTabs->activateSubTab('subTabTO2');
-                         /*$chart = ilChartGrid::getDataInstance('1');
-                         $chart-> setLineWidth(2);
-                         $chartHtml = ilChartGrid::getHTML();
-                         $chart-> getHTML();*/
-                         
-                         $chart = ilChart::getInstanceByType('TYPE_GRID',1 );
-                         $chartData = ilChartGrid::getDataInstance(2);
-                         $chartData-> 
+		$chart = ilChart::getInstanceByType(ilChart::TYPE_GRID, $a_id);
+		$chart->setsize(700, 400);
+                $data = $chart->getDataInstance(ilChartGrid::DATA_BARS);
+		$data->setLabel($this->lng->txt("category_nr_selected"));
+		$data->setBarOptions(0.5, "center");
+                $data->addPoint(2,3);
+                $data->addPoint(4,5);
+                $chart->addData($data);
 //$chart ->getHTML();
-        $tpl->setContent("<p> ToSubtabContent </p>");
+        $tpl->setContent("<div style=\"margin:10px\">".$chart->getHTML()."</div>");
 
 	 	 }
 
