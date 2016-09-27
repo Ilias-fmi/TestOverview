@@ -243,7 +243,7 @@ class ilTestOverviewTableGUI
 	 * @throws OutOfRangeException
 	 * @return array
 	 */
-	protected function formatData( array $data )
+	protected function formatData ( array $data )
 	{
 		/* For each group object we fetched, we need
 		   to retrieve the members in order to have

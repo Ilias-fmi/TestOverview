@@ -170,17 +170,15 @@ class ilObjTestOverviewGUI
 
 	protected function showContent()
 	{
-		/**
+				/**
 		 * @var $tpl ilTemplate
 		 * @var $ilTabs ilTabsGUI
 		 */
-		global $tpl,$lng, $ilTabs,$ilToolbar;
+		global $tpl, $ilTabs;
 		$this->includePluginClasses(array(
 			"ilTestOverviewTableGUI",
 			"ilOverviewMapper"));
- // Button um alle lokalen Tests in die Übersicht hinzuzufuegen
-	//	$ilToolbar->addButton($this->lng->txt('cancel'), $ilCtrl->getLinkTarget($this,'allLocalTests'));
-		$ilTabs->activateSubTab("content");
+		$ilTabs->activateTab("content");
 		/* Configure content UI */
 		$table = new ilTestOverviewTableGUI( $this, 'showContent' );
 		$table->setMapper(new ilOverviewMapper)
@@ -259,23 +257,33 @@ class ilObjTestOverviewGUI
 
 	protected function subTabTO2()
 		 {
-			 global $tpl, $ilTabs;
+			 	global $tpl,$lng, $ilTabs,$ilToolbar;
 			 $ilTabs->activateSubTab('subTabTO2');
-		$chart = ilChart::getInstanceByType(ilChart::TYPE_GRID, $a_id);
+		/*$chart = ilChart::getInstanceByType(ilChart::TYPE_GRID, $a_id);
 		$chart->setsize(700, 400);
                 $data = $chart->getDataInstance(ilChartGrid::DATA_BARS);
 		$data->setLabel($this->lng->txt("category_nr_selected"));
 		$data->setBarOptions(0.5, "center");
                 $data->addPoint(2,3);
                 $data->addPoint(4,5);
-                $chart->addData($data);
+                $chart->addData($data);*/
 //$chart ->getHTML();
-        $tpl->setContent("<div style=\"margin:10px\">".$chart->getHTML()."</div>");
+      //  $tpl->setContent("<div style=\"margin:10px\">".$chart->getHTML()."</div>");
+   
+		$this->includePluginClasses(array(
+			"ilTestOverviewTableGUI",
+			"ilOverviewMapper"));
+                
+                $table = new ilTestOverviewTableGUI( $this, 'showContent' );
+		$table->setMapper(new ilOverviewMapper)
+			  ->populate();
+                $arrays = $table->getData();
+                $array = $arrays[1];
+                $tpl->setContent();
+                
 
-	 	 }
 
-
-
+                 }
 	protected function subTabEO()
 	{
 		global $tpl, $ilTabs,	$ilCtrl;
