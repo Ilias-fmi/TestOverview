@@ -286,11 +286,18 @@ class ilObjTestOverviewGUI
                 */
                require_once 'Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview/classes/mapper/class.ilBinDiagrammMapper.php'; 
                $Obj = new BinDiagrammMapper ($this,'showContent');
-               $tpl-> setContent($Obj-> data());
+               $array = $Obj-> data();
+               
+               
+               $tpl-> setContent($array);
+            
                          
 
 
                  }
+                 
+                 
+ 
 	protected function subTabEO()
 	{
 		global $tpl, $ilTabs,	$ilCtrl;
