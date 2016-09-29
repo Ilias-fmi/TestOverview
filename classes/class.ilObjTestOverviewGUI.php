@@ -185,6 +185,7 @@ class ilObjTestOverviewGUI
 			  ->populate();
 		/* Populate template */
 		$tpl->setDescription($this->object->getDescription());
+                $data = array_slice($table-> getData(), $table->getOffset(), $table->getLimit());
 		$tpl->setContent( $table->getHTML() );
 	}
 	/**
@@ -266,7 +267,7 @@ class ilObjTestOverviewGUI
 		$data->setBarOptions(0.5, "center");
                 $data->addPoint(2,3);
                 $data->addPoint(4,5);
-                $chart->addData($data);*/
+                $chart->addData($data);
 //$chart ->getHTML();
       //  $tpl->setContent("<div style=\"margin:10px\">".$chart->getHTML()."</div>");
    
@@ -279,8 +280,14 @@ class ilObjTestOverviewGUI
 			  ->populate();
                 $arrays = $table->getData();
                 $array = $arrays[1];
-                $tpl->setContent();
-                
+                $content = $table ->getHTML();
+                $tpl->setContent($data[1]);
+                 $data = array_slice($table-> getData(), $table->getOffset(), $table->getLimit());
+                */
+               require_once 'Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview/classes/mapper/class.ilBinDiagrammMapper.php'; 
+               $Obj = new BinDiagrammMapper ($this,'showContent');
+               $tpl-> setContent($Obj-> data());
+                         
 
 
                  }
