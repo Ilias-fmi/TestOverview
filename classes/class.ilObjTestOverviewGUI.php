@@ -286,10 +286,9 @@ class ilObjTestOverviewGUI
                 */
                require_once 'Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview/classes/mapper/class.ilBinDiagrammMapper.php'; 
                $Obj = new BinDiagrammMapper ($this,'showContent');
-               $array = $Obj-> data();
-               
-               
-               $tpl-> setContent($array);
+               //$array = $Obj-> data();
+               $array = $Obj-> testStudent();
+               $tpl-> setContent(implode('|', $array));
             
                          
 
