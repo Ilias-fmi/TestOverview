@@ -18,6 +18,9 @@ class BinDiagrammMapper
     //Name+Results+Sum of Results for every Student as a String
     private $result = null;
     
+    public $students = array();
+    
+    
     /*function __construct() {
       $this-> result= $this-> data();  
       if (result == null){
@@ -60,14 +63,39 @@ class BinDiagrammMapper
         return $result;
         
     }
-    private function serperate(){
+    /**
+     * Splits the String by the | so that seperate can Create an Obj. of every Student
+     * @param type $string
+     */
+    private function splitStudent($string){
+        
+        
+    }
+    
+    /*
+     * Splits the Sting into Name/Results/Average
+     * @return Students Object with Name/Results/Average set
+     */
+    private function seperate($string){
+        $string = str_replace("%","",$string);
+        $temp = explode('#', $string);
+        $name = $temp[0];
+        $temp = explode('§',$temp[1]);
+        $average = $temp[1];
+        $results = $temp[0];
+        $student = new Student ();
+        $student-> setName($name);
+        $student-> setResults($results);
+        $student-> setAverage($average);
+        $this->students[] = $student; 
+       //return $student;
+            
         
     }
     /* Test Methode für die Klasse Student*/
     public function testStudent(){
-      $Obj = new Student ();
-      $Obj->setResults("100.00 100.00 99.99");
-      return $Obj-> getResults();
+     $jo = $this-> seperate("jo # 100.00% 66.66% § 22.22%");
+     return $jo ;
     }
     
 
@@ -79,9 +107,10 @@ class BinDiagrammMapper
  */
 class Student{
     
-    public $name = "";
+    private $name = "";
     private $results= array();
-    private $average = 0;
+    private $average = 0.0;
+
     /* Getter und Setter für Results und Average des Studenten*/
     public function getResults(){
         return $this-> results;
@@ -99,11 +128,57 @@ class Student{
     }
     
     public function getAverage (){
-        return $average;
+        return $this-> average;
     }
     
+    public function setAverage ($average){
+        $this-> average = (float)$average;
+    }
+    
+    public function getName (){
+        return $this-> name;
+    }
+   public function setName ($name){
+       $this-> name = $name;
+       
+   }
     
     
+    
+    
+}
+
+class AverageDiagramm{
+    
+    public $diagrammObject;
+    
+    public $diaPoints = array();
+    
+    function __construct($Obj) {
+        $this-> diagrammObject = $Obj;
+    }
+    
+    function initDia(){
+        $chart = ilChart::getInstanceByType(ilChart::TYPE_GRID, $a_id);
+	$chart->setsize(700, 400);
+        $data = $chart->getDataInstance(ilChartGrid::DATA_BARS);
+	$data->setLabel($this->lng->txt("Average"));
+	$data->setBarOptions(0.5, "center");
+        $data = $this-> addPoints($data);
+        $chart->addData($data);
+        return $chart ->getHTML();
+    }
+    
+    function addPoints($data){
+        
+        $i= 0;
+        
+        foreach ($points as $point){
+        $data-> addPoint(0,$point);
+        $i++;
+        }
+        return $data;
+    }
     
 }
 

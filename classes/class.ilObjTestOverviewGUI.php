@@ -288,7 +288,7 @@ class ilObjTestOverviewGUI
                $Obj = new BinDiagrammMapper ($this,'showContent');
                //$array = $Obj-> data();
                $array = $Obj-> testStudent();
-               $tpl-> setContent(implode('|', $array));
+              $tpl-> setContent($array);
             
                          
 
