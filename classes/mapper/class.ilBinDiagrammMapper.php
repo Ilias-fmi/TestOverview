@@ -17,26 +17,19 @@ class BinDiagrammMapper
     extends ilTestOverviewTableGUI{
     //Name+Results+Sum of Results for every Student as a String
     private $result = null;
-    private $rawData = array();
+    
     public $students = array();
+    private $rawData = array();
     
     
-    /*function __construct() {
-      $this-> result= $this-> data();  
-      if (result == null){
-          /*Expetion Handling
-           * TO DO
-           */
-      //}
-    //}
-    
-    public function buildDiagramm(){
-        return $this->data();
-       // $this-> splitStudent($this-> data());
-        //foreach($this->rawData as $student){
-          //  $this-> seperate($student);
+    public function createDia(){
+        $this-> data();
+        foreach ($this-> rawData as $student){
+            $this-> seperate($student);
         }
-        
+       // return sizeof($this-> students);
+        $averageObj = new AverageDiagramm($this-> students);
+        return $averageObj-> initDia();
     }
     
     /*
@@ -44,19 +37,18 @@ class BinDiagrammMapper
      * 
      */
     public function data(){
+        
+        
+        global $lng, $ilCtrl, $ilUser;
+        /*Initalise the Mapper*/
         $this-> setMapper(new ilOverviewMapper)
 			  ->populate();
-        global $lng, $ilCtrl, $ilUser;
 					
 		$data = $this->getData();
 		
-		// fill rows
-		
-
-			$this->tpl->addBlockFile("TBL_CONTENT", "tbl_content", 'tpl.test_overview_rows.html',
+		$this->tpl->addBlockFile("TBL_CONTENT", "tbl_content", 'tpl.test_overview_rows.html',
 				$this->row_template_dir);
 	
-             
 			foreach($data as $set)
 			{
 				$this->fillRow($set);
@@ -64,17 +56,11 @@ class BinDiagrammMapper
 				$this->tpl->parseCurrentBlock();
 			}
                
-		//return $this->render();
-                        return $this->render();
+                      //return $this->tpl->get();
+                        $this-> splitStudent ($this->tpl-> get());
+                      
     }
-
     
-	function render()
-	{
-		global $lng, $ilCtrl;
-
-		return $this->tpl->get();
-	}
     public function getResult(){
        
         return $result;
@@ -85,7 +71,7 @@ class BinDiagrammMapper
      * @param type $string
      */
     private function splitStudent($string){
-        $this-> rawData =  explode("|",$string);
+      $this-> rawData =  explode("|",$string);  
         
     }
     
@@ -167,37 +153,91 @@ class Student{
 
 class AverageDiagramm{
     
-    public $diagrammObject;
+    private $studentObject;
     
     public $diaPoints = array();
     
+    private $buckets = array(0,0,0,4,0,3,6,0,0,0,0,0);
+    
     function __construct($Obj) {
-        $this-> diagrammObject = $Obj;
+        $this-> studentObject = $Obj;
+        $this-> getAverage();
     }
     
     function initDia(){
+        require_once 'Services/Chart/classes/class.ilChartGrid.php';
+        require_once 'Services/Chart/classes/class.ilChartLegend.php';
+        require_once 'Services/Chart/classes/class.ilChartSpider.php';
+        include_once 'Services/jQuery/classes/class.iljQueryUtil.php';
         $chart = ilChart::getInstanceByType(ilChart::TYPE_GRID, $a_id);
 	$chart->setsize(700, 400);
         $data = $chart->getDataInstance(ilChartGrid::DATA_BARS);
-	$data->setLabel($this->lng->txt("Average"));
+	//$data->setLabel($this->lng->txt("category_nr_selected"));
 	$data->setBarOptions(0.5, "center");
-        $data = $this-> addPoints($data);
+        $data->addPoint(1,$this-> buckets[0]);
+        $data->addPoint(2,$this-> buckets[1]);
+        $data->addPoint(3,$this-> buckets[2]);
+        $data->addPoint(4,$this-> buckets[3]);
+        $data->addPoint(5,$this-> buckets[4]);
+        $data->addPoint(6,$this-> buckets[5]);
+        $data->addPoint(7,$this-> buckets[6]);
+        $data->addPoint(8,$this-> buckets[7]);
+        $data->addPoint(9,$this-> buckets[8]);
+        $data->addPoint(10,$this-> buckets[9]);
         $chart->addData($data);
         return $chart ->getHTML();
+        
     }
     
     function addPoints($data){
+        $data->addData(1,$this-> buckets[0]);
+        $data->addData(2,$this-> buckets[1]);
+        $data->addData(3,$this-> buckets[2]);
+        $data->addData(4,$this-> buckets[3]);
+        $data->addData(5,$this-> buckets[4]);
+        $data->addData(6,$this-> buckets[5]);
+        $data->addData(7,$this-> buckets[6]);
+        $data->addData(8,$this-> buckets[7]);
+        $data->addData(9,$this-> buckets[8]);
+        $data->addData(10,$this-> buckets[9]);
         
-        $i= 0;
-        
-        foreach ($points as $point){
-        $data-> addPoint(0,$point);
-        $i++;
-        }
         return $data;
     }
-    function 
     
+    function getAverage(){
+        foreach ($this->studentObject  as $student){
+            $this-> fillBuckets($student-> getAverage ());
+        }
+    }
+    
+    function fillBuckets($average){
+        if ($average > 0.0 && $average <= 10.00  ){
+            $this-> buckets[0] ++;
+        }else if ($average > 10.00 && $average <= 20.00 ){
+            $this-> buckets[1] ++;
+        }else if ($average > 20.00 && $average <= 30.00 ){
+            $this-> buckets[2] ++;
+        }else if ($average > 30.00 && $average <= 40.00){
+            $this-> buckets[3] ++;
+        }else if ($average > 40.00 && $average <= 50.00){
+            $this-> buckets[4] ++;
+        }else if ($average > 50.00 && $average <= 60.00){
+            $this-> buckets[5] ++;
+        }else if ($average > 60.00 && $average <= 70.00){
+            $this-> buckets[6] ++;
+        }else if ($average > 70.00 && $average <= 80.00){
+            $this-> buckets[7] ++;
+        }else if ($average > 80.00 && $average <= 90.00){
+            $this-> buckets[8] ++;
+        }else if ($average > 90.00 && $average <= 100.00){
+            $this-> buckets[9] ++;
+        }else {
+            //last index checks vor errors 
+            $this-> buckets[10] ++;
+            
+        }
+        
+    }
 }
 
 ?>
