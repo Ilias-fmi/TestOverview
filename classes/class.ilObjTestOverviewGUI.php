@@ -239,18 +239,10 @@ class ilObjTestOverviewGUI
 		{
 			global $tpl, $ilTabs,	$ilCtrl;
 			$ilTabs->activateSubTab('subTabTO');
-                        /*$jQ = iljQueryUtil::initjQuery();
-                        $jQm= iljQueryUtil::initjQueryUI();
-                        $jQm->append ('<p> hier ist content </p>');*/
-                        $Script = ''
-                                .'<script language="javascript" type="text/javascript" src="http://www.flotcharts.org/jquery.js"></script>'
-                                .'<script language="javascript" type="text/javascript" src="http://www.flotcharts.org/excanvas.min.js"></script>'
-                                .'<script language="javascript" type="text/javascript" src="http://www.flotcharts.org/jquery.flot.js"></script>'
-                                //.'<link href="http://www.flotcharts.org/examples/examples.css" rel="stylesheet" type="text/css">'
-                                .'<script type="text/javascript"> $(document).ready(function() {$.plot("#placeholder", [ [[0, 3], [4, 8], [8, 5], [9, 13]]]);});); </script>'
-                                .'<div id="placeholder" style="width:600px;height:300px"></div>'
-                                .'<p> hier ist content </p>';
-                    $tpl->setContent($Script);
+                        require_once 'Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview/Test/test.php';
+                       $Obj = new test();
+                      //  $a = $Obj-> data();
+                    
                         
 
                                                                        
@@ -287,8 +279,8 @@ class ilObjTestOverviewGUI
                require_once 'Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview/classes/mapper/class.ilBinDiagrammMapper.php'; 
                $Obj = new BinDiagrammMapper ($this,'showContent');
                //$array = $Obj-> data();
-               $array = $Obj-> testStudent();
-              $tpl-> setContent($array);
+               $array = $Obj-> data();
+            //  $tpl-> setContent($array);
             
                          
 

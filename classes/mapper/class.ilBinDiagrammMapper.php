@@ -17,7 +17,7 @@ class BinDiagrammMapper
     extends ilTestOverviewTableGUI{
     //Name+Results+Sum of Results for every Student as a String
     private $result = null;
-    
+    private $rawData = array();
     public $students = array();
     
     
@@ -30,23 +30,33 @@ class BinDiagrammMapper
       //}
     //}
     
+    public function buildDiagramm(){
+        return $this->data();
+       // $this-> splitStudent($this-> data());
+        //foreach($this->rawData as $student){
+          //  $this-> seperate($student);
+        }
+        
+    }
+    
     /*
      * Gets the Data from every Student and there Testresults in a String saperated by "|"
      * 
      */
     public function data(){
-        
-        
-        global $lng, $ilCtrl, $ilUser;
-        /*Initalise the Mapper*/
         $this-> setMapper(new ilOverviewMapper)
 			  ->populate();
+        global $lng, $ilCtrl, $ilUser;
 					
 		$data = $this->getData();
 		
-		$this->tpl->addBlockFile("TBL_CONTENT", "tbl_content", 'tpl.test_overview_rows.html',
+		// fill rows
+		
+
+			$this->tpl->addBlockFile("TBL_CONTENT", "tbl_content", 'tpl.test_overview_rows.html',
 				$this->row_template_dir);
 	
+             
 			foreach($data as $set)
 			{
 				$this->fillRow($set);
@@ -54,10 +64,17 @@ class BinDiagrammMapper
 				$this->tpl->parseCurrentBlock();
 			}
                
-                      return $this->tpl->get();
-                      
+		//return $this->render();
+                        return $this->render();
     }
+
     
+	function render()
+	{
+		global $lng, $ilCtrl;
+
+		return $this->tpl->get();
+	}
     public function getResult(){
        
         return $result;
@@ -68,7 +85,7 @@ class BinDiagrammMapper
      * @param type $string
      */
     private function splitStudent($string){
-        
+        $this-> rawData =  explode("|",$string);
         
     }
     
@@ -179,6 +196,7 @@ class AverageDiagramm{
         }
         return $data;
     }
+    function 
     
 }
 
