@@ -250,37 +250,13 @@ class ilObjTestOverviewGUI
 
 	protected function subTabTO2()
 		 {
-			 	global $tpl,$lng, $ilTabs,$ilToolbar;
-			 $ilTabs->activateSubTab('subTabTO2');
-		/*$chart = ilChart::getInstanceByType(ilChart::TYPE_GRID, $a_id);
-		$chart->setsize(700, 400);
-                $data = $chart->getDataInstance(ilChartGrid::DATA_BARS);
-		$data->setLabel($this->lng->txt("category_nr_selected"));
-		$data->setBarOptions(0.5, "center");
-                $data->addPoint(2,3);
-                $data->addPoint(4,5);
-                $chart->addData($data);
-//$chart ->getHTML();
-      //  $tpl->setContent("<div style=\"margin:10px\">".$chart->getHTML()."</div>");
-   
-		$this->includePluginClasses(array(
-			"ilTestOverviewTableGUI",
-			"ilOverviewMapper"));
-                
-                $table = new ilTestOverviewTableGUI( $this, 'showContent' );
-		$table->setMapper(new ilOverviewMapper)
-			  ->populate();
-                $arrays = $table->getData();
-                $array = $arrays[1];
-                $content = $table ->getHTML();
-                $tpl->setContent($data[1]);
-                 $data = array_slice($table-> getData(), $table->getOffset(), $table->getLimit());
-                */
-               require_once 'Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview/classes/mapper/class.ilBinDiagrammMapper.php'; 
-               $Obj = new BinDiagrammMapper ($this,'showContent');
-               //$array = $Obj-> data();
-               $array = $Obj-> createDia();
-            $tpl-> setContent($array);
+                    global $tpl,$lng, $ilTabs,$ilToolbar;
+                    $ilTabs->activateSubTab('subTabTO2');
+                    require_once 'Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview/classes/mapper/class.ilBinDiagrammMapper.php'; 
+                    $Obj = new BinDiagrammMapper ($this,'showContent');
+                    $raw = $Obj -> getRaw();
+                    $tpl-> setContent ($raw);
+                    $tpl-> setContent($Obj->createDia());
             
                          
 

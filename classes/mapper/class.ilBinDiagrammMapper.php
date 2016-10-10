@@ -22,12 +22,22 @@ class BinDiagrammMapper
     private $rawData = array();
     
     
+    /*Nur zu Testzwecken*/
+    public function getRaw(){
+        $this-> data();
+        return $this-> seperate($this-> rawData[1]);
+        return $this-> students;
+        
+    }
+    
+    
     public function createDia(){
         $this-> data();
+        
         foreach ($this-> rawData as $student){
             $this-> seperate($student);
         }
-       // return sizeof($this-> students);
+        
         $averageObj = new AverageDiagramm($this-> students);
         return $averageObj-> initDia();
     }
@@ -57,7 +67,7 @@ class BinDiagrammMapper
 			}
                
                       //return $this->tpl->get();
-                        $this-> splitStudent ($this->tpl-> get());
+                        $this-> splitStudent($this->tpl-> get());
                       
     }
     
@@ -80,26 +90,24 @@ class BinDiagrammMapper
      * @return Students Object with Name/Results/Average set
      */
     private function seperate($string){
+        $string = str_replace("Nicht teilgenommen","00.00",$string);
+        $string = str_replace("|","",$string);
         $string = str_replace("%","",$string);
-        $temp = explode('#', $string);
+        $temp = explode("#",$string); 
         $name = $temp[0];
-        $temp = explode('§',$temp[1]);
-        $average = $temp[1];
-        $results = $temp[0];
+        $ende = explode(" ",end($temp)); 
+        $average = $ende[1];
+        array_splice($temp, 0,1);
+        array_splice ($temp,count($temp)- 1);
+        array_push ($temp , $ende[0]);
         $student = new Student ();
         $student-> setName($name);
-        $student-> setResults($results);
+        $student-> setResults($temp);
         $student-> setAverage($average);
-        $this->students[] = $student; 
-       //return $student;
-            
+        array_push($this->students, $student);       
         
     }
-    /* Test Methode für die Klasse Student*/
-    public function testStudent(){
-     $jo = $this-> seperate("jo # 100.00% 66.66% § 22.22%");
-     return $jo ;
-    }
+
     
 
 }
@@ -120,10 +128,8 @@ class Student{
     }
     
     public function setResults($result){
-        
-        $array = explode(' ', $result);
-         $temp = array();
-        foreach ($array as $part){
+        $temp = array ();
+        foreach ($result as $part){
         array_push($temp,(float)$part);
         }
        $this-> results=  $temp;
@@ -157,7 +163,7 @@ class AverageDiagramm{
     
     public $diaPoints = array();
     
-    private $buckets = array(0,0,0,4,0,3,6,0,0,0,0,0);
+    private $buckets = array(0,0,0,0,0,0,0,0,0,0,0,0);
     
     function __construct($Obj) {
         $this-> studentObject = $Obj;
