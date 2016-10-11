@@ -254,13 +254,7 @@ class ilObjTestOverviewGUI
                     $ilTabs->activateSubTab('subTabTO2');
                     require_once 'Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview/classes/mapper/class.ilBinDiagrammMapper.php'; 
                     $Obj = new BinDiagrammMapper ($this,'showContent');
-                    $raw = $Obj -> getRaw();
-                    $tpl-> setContent ($raw);
-                    $tpl-> setContent($Obj->createDia());
-            
-                         
-
-
+                    $tpl-> setContent($Obj->createAverageDia());
                  }
                  
                  

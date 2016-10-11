@@ -31,7 +31,7 @@ class BinDiagrammMapper
     }
     
     
-    public function createDia(){
+    public function createAverageDia(){
         $this-> data();
         
         foreach ($this-> rawData as $student){
@@ -195,20 +195,7 @@ class AverageDiagramm{
         
     }
     
-    function addPoints($data){
-        $data->addData(1,$this-> buckets[0]);
-        $data->addData(2,$this-> buckets[1]);
-        $data->addData(3,$this-> buckets[2]);
-        $data->addData(4,$this-> buckets[3]);
-        $data->addData(5,$this-> buckets[4]);
-        $data->addData(6,$this-> buckets[5]);
-        $data->addData(7,$this-> buckets[6]);
-        $data->addData(8,$this-> buckets[7]);
-        $data->addData(9,$this-> buckets[8]);
-        $data->addData(10,$this-> buckets[9]);
-        
-        return $data;
-    }
+    
     
     function getAverage(){
         foreach ($this->studentObject  as $student){
