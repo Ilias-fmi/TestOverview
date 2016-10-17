@@ -18,6 +18,8 @@ cat_create_xtov#:#Create Test Overview
 content#:#Content
 properties#:#Settings
 edit_properties#:#Edit Settings
+TestOverview#:#TestOverview
+ExerciseOverview#:#ExerciseOverview
 title#:#Title
 description#:#Description
 save#:#Save

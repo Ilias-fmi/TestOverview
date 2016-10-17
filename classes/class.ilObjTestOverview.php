@@ -1,4 +1,4 @@
-<?php
+u<?php
 /* Copyright (c) 1998-2012 ILIAS open source, Extended GPL, see docs/LICENSE */
 
 /**

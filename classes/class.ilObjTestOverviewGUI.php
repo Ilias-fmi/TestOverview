@@ -8,7 +8,14 @@
 require_once 'Services/Repository/classes/class.ilObjectPluginGUI.php';
 require_once 'Services/Form/classes/class.ilPropertyFormGUI.php';
 require_once 'Services/PersonalDesktop/interfaces/interface.ilDesktopItemHandling.php';
+
 require_once 'Services/Chart/classes/class.ilChartPie.php';
+require_once 'Services/Chart/classes/class.ilChartGrid.php';
+require_once 'Services/Chart/classes/class.ilChartLegend.php';
+require_once 'Services/Chart/classes/class.ilChartSpider.php';
+include_once 'Services/jQuery/classes/class.iljQueryUtil.php';
+
+
 /**
  * @ilCtrl_isCalledBy ilObjTestOverviewGUI: ilRepositoryGUI, ilAdministrationGUI, ilObjPluginDispatchGUI
  * @ilCtrl_Calls      ilObjTestOverviewGUI: ilPermissionGUI, ilInfoScreenGUI, ilObjectCopyGUI, ilRepositorySearchGUI, ilPublicUserProfileGUI, ilCommonActionDispatcherGUI
@@ -90,20 +97,26 @@ class ilObjTestOverviewGUI
 					case 'removeTests':
 					case 'addMemberships':
 					case 'removeMemberships':
-                                        case 'HelloWorld':
+          case 'HelloWorld':
+          case 'TestOverview':
+					case 'ExerciseOverview':
 					case 'editSettings':
 						$this->checkPermission('write');
 						$this->$cmd();
 						break;
-
 					case 'showContent':
 					case 'applyOverviewFilter':
 					case 'applyTestsFilter':
+					case 'subTabTO':
+					case 'subTabTO2':
+					case 'subTabEO':
+					case 'subTabEO2':
 					case 'applyGroupsFilter':
 					case 'resetOverviewFilter':
 					case 'resetTestsFilter':
 					case 'resetGroupsFilter':
 					case 'addToDesk':
+					case 'allLocalTests':
 					case 'removeFromDesk':
 						if(in_array($cmd, array('addToDesk', 'removeFromDesk')))
 						{
@@ -136,13 +149,14 @@ class ilObjTestOverviewGUI
 		$this->addInfoTab();
 		/* Check for read access (showContent available) */
 		if ($ilAccess->checkAccess('read', '', $this->object->getRefId())) {
-			$ilTabs->addTab('content', $this->txt('content'), $ilCtrl->getLinkTarget($this, 'showContent'));
-                        $ilTabs->addTab('HelloWorld',$this->txt('HelloWorld'), $ilCtrl->getLinkTarget($this, 'HelloWorld'));
+
+      $ilTabs->addTab('TestOverview',$this->txt('TestOverview'), $ilCtrl->getLinkTarget($this, 'TestOverview'));
+			$ilTabs->addTab('ExerciseOverview',$this->txt('ExerciseOverview'), $ilCtrl->getLinkTarget($this, 'ExerciseOverview'));
+
 		}
 		/* Check for write access (editSettings available) */
 		if ($ilAccess->checkAccess('write', '', $this->object->getRefId())) {
 			$ilTabs->addTab('properties', $this->txt('properties'), $ilCtrl->getLinkTarget($this, 'editSettings'));
-
 			$ilTabs->addTarget('meta_data', $this->ctrl->getLinkTargetByClass('ilmdeditorgui', ''), '', 'ilmdeditorgui');
 		}
 		$this->addPermissionTab();
@@ -154,9 +168,14 @@ class ilObjTestOverviewGUI
 	 *	and its data. This method is called by
 	 *	@see self::performCommand().
 	 */
+ protected function allLocalTests()
+{
+
+}
+
 	protected function showContent()
 	{
-		/**
+				/**
 		 * @var $tpl ilTemplate
 		 * @var $ilTabs ilTabsGUI
 		 */
@@ -171,6 +190,7 @@ class ilObjTestOverviewGUI
 			  ->populate();
 		/* Populate template */
 		$tpl->setDescription($this->object->getDescription());
+                $data = array_slice($table-> getData(), $table->getOffset(), $table->getLimit());
 		$tpl->setContent( $table->getHTML() );
 	}
 	/**
@@ -211,6 +231,7 @@ class ilObjTestOverviewGUI
 		$tpl->setContent( $this->renderSettings() );
 	}
 
+
         protected function HelloWorld()
 				{
 
@@ -220,9 +241,9 @@ class ilObjTestOverviewGUI
                                         $b = new ReflectionMethod('ilChartPie', 'getDataInstance');
                                         $c = $b->invoke($a, '');
                                         //$b = $a-> getDataInstance('DATA_BARS');
-                                       
-                                    
-                                       // 
+
+
+                                       //
                                         //
                                         //
 					//Zum testen des Datanebank mappers
@@ -233,6 +254,51 @@ class ilObjTestOverviewGUI
 					*/
 				}
 
+   protected function TestOverview()
+	 {
+		global $tpl, $ilTabs,$ilCtrl;
+
+		$ilTabs->activateTab('HelloWorld');
+                $tpl->setContent("<p> Hello World </p>");
+								$ilTabs->addSubTab('content', $this->txt('content'), $ilCtrl->getLinkTarget($this, 'showContent'));
+								$ilTabs->addSubTab('subTabTO', "SUBTab1", $ilCtrl->getLinkTarget($this,  'subTabTO'));
+								$ilTabs->addSubTab('subTabTO2', "SUBTab2",$ilCtrl->getLinkTarget($this,  'subTabTO2'));
+   }
+	protected function subTabTO()
+		{
+			global $tpl, $ilTabs,	$ilCtrl;
+			$ilTabs->activateSubTab('subTabTO');
+
+
+		 }
+
+	protected function subTabTO2()
+		 {
+                    global $tpl,$lng, $ilTabs,$ilToolbar;
+                    $ilTabs->activateSubTab('subTabTO2');
+                    require_once 'Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview/classes/mapper/class.ilBinDiagrammMapper.php';
+                    try{
+                        $Obj = new BinDiagrammMapper ($this,'showContent');
+                        $tpl-> setContent($Obj->createAverageDia());
+                    } catch (Exception $ex) {
+                       $tpl-> setContent ("Error 300 This is Sparta!");
+                    }
+
+                 }
+
+
+
+
+	  protected function ExerciseOverview()
+		{
+			global $tpl, $ilTabs,$ilCtrl;
+			$ilTabs->activateTab('ExerciseOverview');
+									$tpl->setContent("<p> Hello World </p>");
+
+									$ilTabs->addSubTab('subTabEO', "subTabEO1",  $ilCtrl->getLinkTarget($this,  'subTabEO'));
+									$ilTabs->addSubTab('subTabEO2', "subTabEO2", $ilCtrl->getLinkTarget($this,  'subTabEO2'));
+
+		}
         /**
  	 *	Command for saving the updated Test Overview settings.
 	 *
@@ -352,7 +418,6 @@ class ilObjTestOverviewGUI
 		}
 		ilUtil::sendSuccess($this->txt('tests_updated_success'), true);
 		$ilCtrl->redirect($this, 'editSettings');
-
 		$this->editSettings();
 		return;
 	}

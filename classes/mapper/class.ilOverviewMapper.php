@@ -120,4 +120,7 @@ class ilOverviewMapper
 
 		return $data;
 	}
+        function getVirtuellTableName(){
+            return "rep_robj_xtov_overview_virtual";
+        }
 }

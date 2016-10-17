@@ -46,6 +46,6 @@ class ilObjTestOverviewListGUI
 	 */
 	public function initType()
 	{
-		$this->setType('xtov');
+    $this->setType('xtov');
 	}
 }
