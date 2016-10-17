@@ -253,8 +253,13 @@ class ilObjTestOverviewGUI
                     global $tpl,$lng, $ilTabs,$ilToolbar;
                     $ilTabs->activateSubTab('subTabTO2');
                     require_once 'Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview/classes/mapper/class.ilBinDiagrammMapper.php'; 
-                    $Obj = new BinDiagrammMapper ($this,'showContent');
-                    $tpl-> setContent($Obj->createAverageDia());
+                    try{
+                        $Obj = new BinDiagrammMapper ($this,'showContent');
+                        $tpl-> setContent($Obj->createAverageDia());
+                    } catch (Exception $ex) {
+                       $tpl-> setContent ("Error 300 This is Sparta!"); 
+                    }
+                    
                  }
                  
                  

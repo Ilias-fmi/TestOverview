@@ -1,4 +1,4 @@
-<?php
+u<?php
 /* Copyright (c) 1998-2012 ILIAS open source, Extended GPL, see docs/LICENSE */
 
 /**
@@ -11,6 +11,8 @@ require_once 'Services/Repository/classes/class.ilObjectPlugin.php';
 require_once 'Modules/Test/classes/class.ilObjTest.php';
 require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
 				->getDirectory() . '/classes/mapper/class.ilOverviewMapper.php';
+
+
 
 class ilObjTestOverview extends ilObjectPlugin
 {
@@ -71,7 +73,7 @@ class ilObjTestOverview extends ilObjectPlugin
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	public function doUpdate()
 	{
@@ -109,10 +111,12 @@ class ilObjTestOverview extends ilObjectPlugin
  		 * @var $ilDB ilDB
 		 */
 		global $ilDB;
-
+		
 		$ilDB->manipulate('
 			DELETE FROM rep_robj_xtov_overview
 			WHERE obj_id = ' . $ilDB->quote($this->getId(), 'integer'));
+
+
 	}
 
 	/**
@@ -193,7 +197,7 @@ class ilObjTestOverview extends ilObjectPlugin
 		if ( $test instanceof ilObjTest ) {
 			$tesRefId = $test->getRefId();
 		}
-		
+
 		/* Insert t2o entry (test 2 overview) */
 		$ilDB->replace(
 			'rep_robj_xtov_t2o',
@@ -351,7 +355,7 @@ class ilObjTestOverview extends ilObjectPlugin
 			$this->test_ref_ids_by_obj_id[$row['obj_id']][] = $row['ref_id'];
 		}
 	}
-	
+
 	private function isTestDataLoaded()
 	{
 		return !is_null($this->test_obj_id_by_ref_id) && !is_null($this->test_ref_ids_by_obj_id);
@@ -399,14 +403,14 @@ class ilObjTestOverview extends ilObjectPlugin
 
 		return $this->test_obj_id_by_ref_id;
 	}
-	
+
 	public function getTest($obj_id)
 	{
 		if( !isset($this->test_objects[$obj_id]) )
 		{
 			$this->test_objects[$obj_id] = ilObjectFactory::getInstanceByObjId($obj_id);
 		}
-		
+
 		return $this->test_objects[$obj_id];
 	}
 

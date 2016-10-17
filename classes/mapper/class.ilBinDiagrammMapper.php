@@ -13,6 +13,10 @@
 require_once 'Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview/classes/GUI/class.ilTestOverviewTableGUI.php';
 require_once 'Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview/classes/mapper/class.ilOverviewMapper.php';
 
+/* Required Exeptions */
+require_once 'Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview/Exceptions/class.ilDiagrammExeption.php';
+
+
 class BinDiagrammMapper 
     extends ilTestOverviewTableGUI{
     //Name+Results+Sum of Results for every Student as a String
@@ -66,8 +70,11 @@ class BinDiagrammMapper
 				$this->tpl->parseCurrentBlock();
 			}
                
-                      //return $this->tpl->get();
+                      try{
                         $this-> splitStudent($this->tpl-> get());
+                      }catch (ilDiagrammExeption $e) {
+                          throw new ilDiagrammException('Cannot split String');
+                      }
                       
     }
     
@@ -174,12 +181,23 @@ class AverageDiagramm{
         require_once 'Services/Chart/classes/class.ilChartGrid.php';
         require_once 'Services/Chart/classes/class.ilChartLegend.php';
         require_once 'Services/Chart/classes/class.ilChartSpider.php';
-        include_once 'Services/jQuery/classes/class.iljQueryUtil.php';
+        require_once 'Services/Chart/classes/class.ilChartLegend.php' ;
         $chart = ilChart::getInstanceByType(ilChart::TYPE_GRID, $a_id);
-	$chart->setsize(700, 400);
+	$chart->setsize(900, 400);
         $data = $chart->getDataInstance(ilChartGrid::DATA_BARS);
-	//$data->setLabel($this->lng->txt("category_nr_selected"));
+
+
+
+        
+        /*Creation of the Legend*/
+        $legend = new ilChartLegend();
+        $legend -> setOpacity(50);
+        $chart->setLegend($legend);	
+        $chart->setYAxisToInteger(true);
+        $legend = $this-> legend();
+        /*Width of the colums*/
 	$data->setBarOptions(0.5, "center");
+        
         $data->addPoint(1,$this-> buckets[0]);
         $data->addPoint(2,$this-> buckets[1]);
         $data->addPoint(3,$this-> buckets[2]);
@@ -191,11 +209,28 @@ class AverageDiagramm{
         $data->addPoint(9,$this-> buckets[8]);
         $data->addPoint(10,$this-> buckets[9]);
         $chart->addData($data);
-        return $chart ->getHTML();
+        return "<div style=\"margin:10px\"><table><tr valign=\"bottom\"><td>". $chart ->getHTML(). "</td><td class=\"small\" style=\"padding-left:15px\">".$legend."</td></tr></table></div>";
         
     }
     
-    
+    function legend(){
+        $legend = "<div style ='background-color: #EDC240;opacity: 0.8;margin-top: 6px;'>"; 
+        $legend .= "<table>";
+        $legend .= "<tr valign=\"top\"><td>Nummer</td><td>|Punkte</td></tr>";
+        $legend .= "<tr valign=\"top\"><td>1</td><td>| 0%-10%</td></tr>";
+        $legend .= "<tr valign=\"top\"><td>2</td><td>| 10%-20%</td></tr>";
+        $legend .= "<tr valign=\"top\"><td>3</td><td>| 20%-30%</td></tr>";
+        $legend .= "<tr valign=\"top\"><td>4</td><td>| 30%-40%</td></tr>";
+        $legend .= "<tr valign=\"top\"><td>5</td><td>| 40%-50%</td></tr>";
+        $legend .= "<tr valign=\"top\"><td>6</td><td>| 50%-60%</td></tr>";
+        $legend .= "<tr valign=\"top\"><td>7</td><td>| 60%-70%</td></tr>";
+        $legend .= "<tr valign=\"top\"><td>8</td><td>| 70%-80%</td></tr>";
+        $legend .= "<tr valign=\"top\"><td>9</td><td>| 80%-90%</td></tr>";
+        $legend .= "<tr valign=\"top\"><td>10</td><td>| 90%-100%</td></tr>";
+        $legend .= "</table>";
+        $legend .= "</div>";
+        return $legend;
+    }
     
     function getAverage(){
         foreach ($this->studentObject  as $student){
