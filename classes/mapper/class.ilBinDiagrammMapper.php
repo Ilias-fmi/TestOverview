@@ -35,15 +35,21 @@ class BinDiagrammMapper
     }
     
     
-    public function createAverageDia(){
+    public function createAverageDia($type){
         $this-> data();
         
         foreach ($this-> rawData as $student){
             $this-> seperate($student);
         }
+        switch($type){
+         case "BARS":
+             $averageObj = new AverageDiagramm($this-> students);
+             return $averageObj-> initDia();
+         case "PIE":    
+             $averageObj = new PieAverageDiagramm($this-> students);
+             return $averageObj-> initDia();
+        }
         
-        $averageObj = new AverageDiagramm($this-> students);
-        return $averageObj-> initDia();
     }
     
     /*
@@ -268,4 +274,107 @@ class AverageDiagramm{
     }
 }
 
+class PieAverageDiagramm
+    extends AverageDiagramm {
+    private $studentObject;
+    
+    public $diaPoints = array();
+    
+    private $buckets = array(0,0,0,0,0,0,0,0,0,0,0,0);
+    
+    function __construct($Obj) {
+        $this-> studentObject = $Obj;
+        $this-> getAverage();
+    }
+    
+    function initDia(){
+        require_once 'Services/Chart/classes/class.ilChartGrid.php';
+        require_once 'Services/Chart/classes/class.ilChartLegend.php';
+        require_once 'Services/Chart/classes/class.ilChartSpider.php';
+        require_once 'Services/Chart/classes/class.ilChartLegend.php' ;
+        require_once 'Services/Chart/classes/class.ilChartDataPie.php';
+        $chart = ilChart::getInstanceByType(ilChart::TYPE_PIE, $a_id);
+	$chart->setsize(900, 400);
+        $data = $chart->getDataInstance();
+
+
+
+        
+        /*Creation of the Legend*/
+        $legend = new ilChartLegend();
+        $legend -> setOpacity(50);
+        $chart->setLegend($legend);	
+        $legend = $this-> legend();
+        /*Width of the colums*/
+	
+        if ($this->buckets[0] > 0){
+        $data->addPoint(10,$this-> buckets[0]);
+        }
+        if ($this->buckets[1] > 0){
+        $data->addPoint(20,$this-> buckets[1]);
+        }
+        if ($this->buckets[2] > 0){ 
+        $data->addPoint(30,$this-> buckets[2]);
+        }
+        if ($this->buckets[3] > 0){
+        $data->addPoint(40,$this-> buckets[3]);
+        }
+        if ($this->buckets[4] > 0){
+        $data->addPoint(50,$this-> buckets[4]);
+        }
+        if ($this->buckets[5] > 0){
+        $data->addPoint(60,$this-> buckets[5]);
+        }
+        if ($this->buckets[6] > 0){
+        $data->addPoint(70,$this-> buckets[6]);
+        }
+        if ($this->buckets[7] > 0){
+        $data->addPoint(80,$this-> buckets[7]);
+        }
+        if ($this->buckets[8] > 0){
+        $data->addPoint(90,$this-> buckets[8]);
+        }
+        if ($this->buckets[9] > 0){
+        $data->addPoint(100,$this-> buckets[9]);
+        }
+        $chart->addData($data);
+        return  $chart ->getHTML();
+        
+    
+    
+    }
+        function fillBuckets($average){
+        if ($average > 0.0 && $average <= 10.00  ){
+            $this-> buckets[0] ++;
+        }else if ($average > 10.00 && $average <= 20.00 ){
+            $this-> buckets[1] ++;
+        }else if ($average > 20.00 && $average <= 30.00 ){
+            $this-> buckets[2] ++;
+        }else if ($average > 30.00 && $average <= 40.00){
+            $this-> buckets[3] ++;
+        }else if ($average > 40.00 && $average <= 50.00){
+            $this-> buckets[4] ++;
+        }else if ($average > 50.00 && $average <= 60.00){
+            $this-> buckets[5] ++;
+        }else if ($average > 60.00 && $average <= 70.00){
+            $this-> buckets[6] ++;
+        }else if ($average > 70.00 && $average <= 80.00){
+            $this-> buckets[7] ++;
+        }else if ($average > 80.00 && $average <= 90.00){
+            $this-> buckets[8] ++;
+        }else if ($average > 90.00 && $average <= 100.00){
+            $this-> buckets[9] ++;
+        }else {
+            //last index checks vor errors 
+            $this-> buckets[10] ++;
+            
+        }
+        
+    }
+    function getAverage(){
+        foreach ($this->studentObject  as $student){
+            $this-> fillBuckets($student-> getAverage ());
+        }
+    }
+}
 ?>

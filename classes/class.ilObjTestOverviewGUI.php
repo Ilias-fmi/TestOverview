@@ -97,8 +97,8 @@ class ilObjTestOverviewGUI
 					case 'removeTests':
 					case 'addMemberships':
 					case 'removeMemberships':
-          case 'HelloWorld':
-          case 'TestOverview':
+                                        case 'HelloWorld':
+                                        case 'TestOverview':
 					case 'ExerciseOverview':
 					case 'editSettings':
 						$this->checkPermission('write');
@@ -243,15 +243,7 @@ class ilObjTestOverviewGUI
                                         //$b = $a-> getDataInstance('DATA_BARS');
 
 
-                                       //
-                                        //
-                                        //
-					//Zum testen des Datanebank mappers
-					/*$this->includePluginClasses(array("ilMembershipMapperEx"));
-					$Obj= new ilMembershipMapperEx(300);
-					$array = array("");
-					$data = $Obj->getList($array,$array);
-					*/
+                                      
 				}
 
    protected function TestOverview()
@@ -279,7 +271,8 @@ class ilObjTestOverviewGUI
                     require_once 'Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview/classes/mapper/class.ilBinDiagrammMapper.php';
                     try{
                         $Obj = new BinDiagrammMapper ($this,'showContent');
-                        $tpl-> setContent($Obj->createAverageDia());
+                        /**/
+                        $tpl-> setContent($Obj->createAverageDia("BARS"));
                     } catch (Exception $ex) {
                        $tpl-> setContent ("Error 300 This is Sparta!");
                     }
