@@ -98,6 +98,10 @@ class ilObjTestOverviewGUI
 					case 'addMemberships':
 					case 'removeMemberships':
                                         case 'HelloWorld':
+                                        case 'UserResults':
+                                            $this-> checkPermission('read');
+                                            $this-> UserResults();
+                                            break;
                                         case 'TestOverview':
 					case 'ExerciseOverview':
 					case 'editSettings':
@@ -150,8 +154,8 @@ class ilObjTestOverviewGUI
 		/* Check for read access (showContent available) */
 		if ($ilAccess->checkAccess('read', '', $this->object->getRefId())) {
 
-      $ilTabs->addTab('TestOverview',$this->txt('TestOverview'), $ilCtrl->getLinkTarget($this, 'TestOverview'));
-			$ilTabs->addTab('ExerciseOverview',$this->txt('ExerciseOverview'), $ilCtrl->getLinkTarget($this, 'ExerciseOverview'));
+                $ilTabs->addTab('TestOverview',$this->txt('Ergebnisse'), $ilCtrl->getLinkTarget($this, 'UserResults'));
+                
 
 		}
 		/* Check for write access (editSettings available) */
@@ -230,21 +234,32 @@ class ilObjTestOverviewGUI
 		/* Populate template */
 		$tpl->setContent( $this->renderSettings() );
 	}
-
+        
+        protected function UserResults()
+        {
+            require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
+				->getDirectory() . '/classes/mapper/class.ilOverviewStudent.php';
+            
+            global $tpl, $ilTabs, $ilDB, $ilUser;
+            $ilTabs->activateTab('HelloWorld');
+           // $id = $ilUser->getId();
+            
+            $object = ilObjectFactory::getInstanceByObjId($ilUser->getId(), false);
+            $dataMapper = new studentMapper ();
+            $tpl-> setContent ($dataMapper-> getResults(6,284));
+            //$tpl-> setContent($dataMapper-> getHTML("root user"));
+            
+        }
 
         protected function HelloWorld()
-				{
+		{
 
-					global $tpl, $ilTabs, $ilDB;
-					$ilTabs->activateTab('HelloWorld');
-                                        $a = new ReflectionClass('ilChartPie');
-                                        $b = new ReflectionMethod('ilChartPie', 'getDataInstance');
-                                        $c = $b->invoke($a, '');
-                                        //$b = $a-> getDataInstance('DATA_BARS');
-
-
-                                      
-				}
+		global $tpl, $ilTabs, $ilDB;
+		$ilTabs->activateTab('HelloWorld');
+                $a = new ReflectionClass('ilChartPie');
+                $b = new ReflectionMethod('ilChartPie', 'getDataInstance');
+                $c = $b->invoke($a, '');
+                 }
 
    protected function TestOverview()
 	 {
@@ -271,7 +286,6 @@ class ilObjTestOverviewGUI
                     require_once 'Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview/classes/mapper/class.ilBinDiagrammMapper.php';
                     try{
                         $Obj = new BinDiagrammMapper ($this,'showContent');
-                        /**/
                         $tpl-> setContent($Obj->createAverageDia("BARS"));
                     } catch (Exception $ex) {
                        $tpl-> setContent ("Error 300 This is Sparta!");

@@ -1,0 +1,32 @@
+use ilias ;
+Select * From rep_robj_xtov_t2o Join object_reference Join tst_tests Join tst_active on 
+(rep_robj_xtov_t2o.ref_id_test = object_reference.ref_id AND object_reference.obj_id = tst_tests.obj_fi AND tst_active.test_fi = tst_tests.test_id) 
+where obj_id_overview = '284' AND test_active.user_fi = '6'
+
+v2.0:
+use ilias ;
+Select * From rep_robj_xtov_t2o Join object_reference Join tst_tests Join tst_active on 
+(rep_robj_xtov_t2o.ref_id_test = object_reference.ref_id AND object_reference.obj_id = tst_tests.obj_fi AND tst_active.test_fi = tst_tests.test_id) 
+where obj_id_overview = '284' AND tst_active.user_fi = '6'
+
+v3.0:
+use ilias ;
+Select points, maxpoints From rep_robj_xtov_t2o Join object_reference Join tst_tests Join tst_active Join tst_pass_result ON
+(rep_robj_xtov_t2o.ref_id_test = object_reference.ref_id AND object_reference.obj_id = tst_tests.obj_fi AND tst_active.test_fi = tst_tests.test_id
+AND tst_active.active_id = tst_pass_result.active_fi) 
+where obj_id_overview = '284' AND tst_active.user_fi = '6'
+
+v4.0:
+use ilias ;
+Select DISTINCT obj_id, points, maxpoints  From rep_robj_xtov_t2o Join object_reference Join tst_tests Join tst_active Join tst_pass_result ON
+(rep_robj_xtov_t2o.ref_id_test = object_reference.ref_id AND object_reference.obj_id = tst_tests.obj_fi AND tst_active.test_fi = tst_tests.test_id
+AND tst_active.active_id = tst_pass_result.active_fi) 
+where obj_id_overview = '284' AND tst_active.user_fi = '6'
+
+v5.0:
+use ilias ;
+Select DISTINCT title, points, maxpoints  From rep_robj_xtov_t2o Join object_reference Join tst_tests Join tst_active Join tst_pass_result 
+Join object_data ON
+(rep_robj_xtov_t2o.ref_id_test = object_reference.ref_id AND object_reference.obj_id = tst_tests.obj_fi AND tst_active.test_fi = tst_tests.test_id
+AND tst_active.active_id = tst_pass_result.active_fi AND object_reference.obj_id = object_data.obj_id) 
+where obj_id_overview = '284' AND tst_active.user_fi = '6'

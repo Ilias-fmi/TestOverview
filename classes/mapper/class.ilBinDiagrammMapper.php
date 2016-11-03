@@ -26,13 +26,6 @@ class BinDiagrammMapper
     private $rawData = array();
     
     
-    /*Nur zu Testzwecken*/
-    public function getRaw(){
-        $this-> data();
-        return $this-> seperate($this-> rawData[1]);
-        return $this-> students;
-        
-    }
     
     
     public function createAverageDia($type){
@@ -89,6 +82,17 @@ class BinDiagrammMapper
         return $result;
         
     }
+    /**
+     * PHPUnit Method to test the String Splitting
+     * @param type $string
+     */
+    public function testSplit($string){
+        $this-> splitStudent ($string);
+        return $this-> rawData;
+        
+    }
+
+
     /**
      * Splits the String by the | so that seperate can Create an Obj. of every Student
      * @param type $string
@@ -164,6 +168,7 @@ class Student{
        $this-> name = $name;
        
    }
+   
     
     
     
