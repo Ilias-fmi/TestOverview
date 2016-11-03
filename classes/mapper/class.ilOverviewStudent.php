@@ -1,18 +1,24 @@
 <?php 
 
-
-
-
-
+/**
+ * DB Mapper for the Student View (User with only read Permissons)
+ */
 class studentMapper
     {
-    
+    /**
+     * Gives back the Results for the given Student and TestOverview ID 
+     * @global type $ilDB
+     * @param type $studId
+     * @param type $overviewId
+     * @return string
+     */
     public function getResults ($studId, $overviewId){
         global $ilDB;
+        //Style für die Tabelle
         $html = "<style> table, td, th { border: 1px solid black; } </style>";
         $html.= "<div> <table>";
 
-        $html .= "";
+        $html .= "<tr> <td> Test Name </td> <td> Erreichte Punkte</td> <td> Maximal Punkte </td> ";
 
         
         $query = "Select DISTINCT title, points, maxpoints  From rep_robj_xtov_t2o Join object_reference Join tst_tests Join tst_active Join tst_pass_result Join object_data ON
@@ -22,7 +28,7 @@ class studentMapper
         $result = $ilDB->query($query);
         
         
-        
+        //Baut aus den Einzelnen Zeilen Objekte
         while ($testObj = $ilDB->fetchObject($result)){
             $html .= "<tr>";
             $html .= "<td>";

@@ -242,12 +242,10 @@ class ilObjTestOverviewGUI
             
             global $tpl, $ilTabs, $ilDB, $ilUser;
             $ilTabs->activateTab('HelloWorld');
-           // $id = $ilUser->getId();
-            
-            $object = ilObjectFactory::getInstanceByObjId($ilUser->getId(), false);
             $dataMapper = new studentMapper ();
-            $tpl-> setContent ($dataMapper-> getResults(6,284));
-            //$tpl-> setContent($dataMapper-> getHTML("root user"));
+            $tpl-> setContent ($dataMapper-> getResults($ilUser->getId(),$this-> object-> getId()));
+           
+       
             
         }
 
