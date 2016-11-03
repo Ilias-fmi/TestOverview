@@ -160,6 +160,7 @@ class ilObjTestOverviewGUI
 		}
 		/* Check for write access (editSettings available) */
 		if ($ilAccess->checkAccess('write', '', $this->object->getRefId())) {
+                      $ilTabs->addTab('content', $this->txt('content'), $ilCtrl->getLinkTarget($this, 'TestOverview'));
 			$ilTabs->addTab('properties', $this->txt('properties'), $ilCtrl->getLinkTarget($this, 'editSettings'));
 			$ilTabs->addTarget('meta_data', $this->ctrl->getLinkTargetByClass('ilmdeditorgui', ''), '', 'ilmdeditorgui');
 		}
