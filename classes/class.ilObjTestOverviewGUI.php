@@ -98,10 +98,7 @@ class ilObjTestOverviewGUI
 					case 'addMemberships':
 					case 'removeMemberships':
                                         case 'HelloWorld':
-                                        case 'UserResults':
-                                            $this-> checkPermission('read');
-                                            $this-> UserResults();
-                                            break;
+                                        
                                         case 'TestOverview':
 					case 'ExerciseOverview':
 					case 'editSettings':
@@ -121,7 +118,12 @@ class ilObjTestOverviewGUI
 					case 'resetGroupsFilter':
 					case 'addToDesk':
 					case 'allLocalTests':
+                                            case 'UserResults':
+                                            $this-> checkPermission('read');
+                                            $this-> UserResults();
+                                            break;
 					case 'removeFromDesk':
+                                                
 						if(in_array($cmd, array('addToDesk', 'removeFromDesk')))
 						{
 							$cmd .= 'Object';
@@ -154,13 +156,13 @@ class ilObjTestOverviewGUI
 		/* Check for read access (showContent available) */
 		if ($ilAccess->checkAccess('read', '', $this->object->getRefId())) {
 
-                $ilTabs->addTab('TestOverview',$this->txt('Ergebnisse'), $ilCtrl->getLinkTarget($this, 'UserResults'));
+                    $ilTabs->addTab('TestOverview',$this->txt('Ergebnisse'), $ilCtrl->getLinkTarget($this, 'UserResults'));
                 
 
 		}
 		/* Check for write access (editSettings available) */
 		if ($ilAccess->checkAccess('write', '', $this->object->getRefId())) {
-                      $ilTabs->addTab('content', $this->txt('content'), $ilCtrl->getLinkTarget($this, 'TestOverview'));
+                        $ilTabs->addTab('content', $this->txt('content'), $ilCtrl->getLinkTarget($this, 'TestOverview'));
 			$ilTabs->addTab('properties', $this->txt('properties'), $ilCtrl->getLinkTarget($this, 'editSettings'));
 			$ilTabs->addTarget('meta_data', $this->ctrl->getLinkTargetByClass('ilmdeditorgui', ''), '', 'ilmdeditorgui');
 		}

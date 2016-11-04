@@ -3,6 +3,7 @@
 /**
  * DB Mapper for the Student View (User with only read Permissons)
  */
+
 class studentMapper
     {
     /**
@@ -14,11 +15,12 @@ class studentMapper
      */
     public function getResults ($studId, $overviewId){
         global $ilDB;
+        $average = array();
         //Style für die Tabelle
         $html = "<style> table, td, th { border: 1px solid black; } </style>";
-        $html.= "<div> <table>";
+        $html.= "<div class='student-view'>  <div class='col-1'> <table>";
 
-        $html .= "<tr> <td> Test Name </td> <td> Erreichte Punkte</td> <td> Maximal Punkte </td> ";
+        $html .= "<tr> <td> Test Name </td> <td> Erreichte Punkte</td>  ";
 
         
         $query = "Select DISTINCT title, points, maxpoints  From rep_robj_xtov_t2o Join object_reference Join tst_tests Join tst_active Join tst_pass_result Join object_data ON
@@ -35,18 +37,41 @@ class studentMapper
             $html .= $testObj->title;
             $html .= "</td>";
             $html .= "<td>";
-            $html .= $testObj->points;
-            $html .= "</td>";
-            $html .= "<td>";
-            $html .= $testObj->maxpoints;
+            $points = (int)$testObj->points;
+            $maxPoints = (int)$testObj->maxpoints;
+            $res = (intval($points) / intval($maxPoints)) * 100;
+            array_push($average, $res);
+            $res = round($res,2);
+            $res .= " %";
+            $html .= $res ;
             $html .= "</td";
             $html .= "</tr>";
             
             
         }
-        $html .="</table> </div>";
+        $html .="</table> </div> <div class='col-2'> ". $this-> calcAverage($average) ."</div> </div>";
+        
+        
         
         return $html;
+    }
+    
+    private function calcAverage($average){
+        $length = count ($average);
+        $totalPoints;
+        foreach ($average as $points){
+            $totalPoints += $points;
+        }
+        /*Catches the Exception if the array is null */
+        try{
+        $result = $totalPoints/$length;
+        }catch (Exception $e){
+            return "0 %";
+        }
+        $result = round($result ,2 );
+        $result .= " %";
+        return $result ;
+        
     }
         
     
