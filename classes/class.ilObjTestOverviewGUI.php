@@ -118,10 +118,9 @@ class ilObjTestOverviewGUI
 					case 'resetGroupsFilter':
 					case 'addToDesk':
 					case 'allLocalTests':
-                                            case 'UserResults':
-                                            $this-> checkPermission('read');
+                                        case 'UserResults':
+                                            $this-> checkPermission('read') ;
                                             $this-> UserResults();
-                                            break;
 					case 'removeFromDesk':
                                                 
 						if(in_array($cmd, array('addToDesk', 'removeFromDesk')))
@@ -131,7 +130,11 @@ class ilObjTestOverviewGUI
 						$this->checkPermission('read');
 						$this->$cmd();
 						break;
-				}
+				
+                                                
+                                                }
+                                        
+                                        
 				break;
 		}
 		$this->addHeaderAction();
