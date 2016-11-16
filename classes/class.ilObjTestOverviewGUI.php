@@ -272,28 +272,38 @@ class ilObjTestOverviewGUI
 		$ilTabs->activateTab('HelloWorld');
                 $tpl->setContent("<p> Hello World </p>");
 								$ilTabs->addSubTab('content', $this->txt('content'), $ilCtrl->getLinkTarget($this, 'showContent'));
-								$ilTabs->addSubTab('subTabTO', "SUBTab1", $ilCtrl->getLinkTarget($this,  'subTabTO'));
+								$ilTabs->addSubTab('subTabTO', "SUBTab1", $ilCtrl->getLinkTarget($this,  'subTabTO '));
 								$ilTabs->addSubTab('subTabTO2', "SUBTab2",$ilCtrl->getLinkTarget($this,  'subTabTO2'));
    }
 	protected function subTabTO()
 		{
-			global $tpl, $ilTabs,	$ilCtrl;
+			global $tpl, $ilTabs,	$ilCtrl, $ilDB;
 			$ilTabs->activateSubTab('subTabTO');
-
-
+                        $result = $ilDB-> query ("Select * From  participants");
+                              $txt = "";
+                        while ($record = $ilDB->fetchAssoc($result)){
+                            $txt .= $record ;
+                        }
+                        return "<p>" . txt . "</p>";
 		 }
 
 	protected function subTabTO2()
 		 {
-                    global $tpl,$lng, $ilTabs,$ilToolbar;
+                    global $tpl,$lng, $ilTabs,$ilToolbar, $ilDB;
                     $ilTabs->activateSubTab('subTabTO2');
-                    require_once 'Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview/classes/mapper/class.ilBinDiagrammMapper.php';
+                    /*require_once 'Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview/classes/mapper/class.ilBinDiagrammMapper.php';
                     try{
                         $Obj = new BinDiagrammMapper ($this,'showContent');
                         $tpl-> setContent($Obj->createAverageDia("BARS"));
                     } catch (Exception $ex) {
                        $tpl-> setContent ("Error 300 This is Sparta!");
-                    }
+                    }*/
+                    $result = $ilDB-> query ("Select * From participants");
+                              $txt = "";
+                        while ($record = $ilDB->fetchAssoc($result)){
+                            $txt .= $record ;
+                        }
+                        return "<p>" . txt . "</p>";
 
                  }
 

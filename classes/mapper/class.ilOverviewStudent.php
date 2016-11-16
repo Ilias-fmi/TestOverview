@@ -18,7 +18,8 @@ class studentMapper
         $average = array();
         //Style für die Tabelle
         $html = "<style> table, td, th { border: 1px solid black; } </style>";
-        $html.= "<div class='student-view'>  <div class='col-1'> <table>";
+        //$html = "<style>" . $this-> getCSS()  . "</style>";
+        $html .= "<div ID='student-view'>  <div ID='col-1'> <table>";
 
         $html .= "<tr> <td> Test Name </td> <td> Erreichte Punkte</td>  ";
 
@@ -49,13 +50,22 @@ class studentMapper
             
             
         }
-        $html .="</table> </div> <div class='col-2'> ". $this-> calcAverage($average) ."</div> </div>";
+        $html .="</table> </div> <div ID='col-2'> ". $this-> calcAverage($average) ."</div> </div>";
         
         
         
         return $html;
     }
     
+    private function getCSS(){
+        $css = file_get_contents("Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview/templates/css/testoverview.css");
+        if (empty($css)){
+        $css .= "table, td, th { border: 1px solid black; }" ;
+        }
+        return $css;
+    }
+
+
     private function calcAverage($average){
         $length = count ($average);
         $totalPoints;
@@ -72,6 +82,15 @@ class studentMapper
         $result .= " %";
         return $result ;
         
+    }
+    
+    private function getNumTests($overviewId){
+        
+        $query = "Select Count('ref_id_test') as num From rep_robj_xtov_t2o where obj_id_overview = '". $overviewId ."'";
+        $result = $ilDB->query($query);
+        $rowNum = $ilDB->fetchObject($result);
+        return $rowNum-> num;
+                
     }
         
     
