@@ -23,13 +23,16 @@ class ilObjExerciseOverviewListGUI
         // Nur als Platzhalter 
         $tpl = new ilTemplate("tpl.test_exerciseview_row.html", true, true, "Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview");
         
-       foreach($data as $set){
+      foreach($data as $set){
         $tpl->setCurrentBlock("my_block");
-        $tpl->setVariable("TEXT", "der");
-        $tpl->setVariable("VALUE", "text") ;
+        $tpl->setVariable("TEXT", $set -> user_id );
+        $tpl->setVariable("VALUE",$set -> mark) ;
         $tpl->parseCurrentBlock();
         }
-        $tpl->show();
+        
+        
+        
+   
         return $tpl-> get();
         
     }

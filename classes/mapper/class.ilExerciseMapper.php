@@ -38,7 +38,7 @@ class ilExerciseMapper
                 .$this-> getWherePart(array());
                 
                 $result = $ilDB->query($query);
-                while ($record = $ilDB->fetchAssoc($result)){
+                while ($record = $ilDB->fetchObject($result)){
                     array_push($DbObject,$record);
                 }
                
