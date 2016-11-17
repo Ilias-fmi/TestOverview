@@ -110,7 +110,7 @@ class ilObjTestOverviewGUI
 					case 'resetGroupsFilter':
 					case 'addToDesk':
 					case 'removeFromDesk':
-					case 'Export':
+					
 						if(in_array($cmd, array('addToDesk', 'removeFromDesk')))
 						{
 							$cmd .= 'Object';
