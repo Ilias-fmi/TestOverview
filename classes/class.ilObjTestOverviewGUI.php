@@ -298,16 +298,16 @@ class ilObjTestOverviewGUI
                     } catch (Exception $ex) {
                        $tpl-> setContent ("Error 300 This is Sparta!");
                     }*/
-                    $result = $ilDB-> query ("Select * From participants");
-                              $txt = "";
-                        while ($record = $ilDB->fetchAssoc($result)){
-                            $txt .= $record ;
-                        }
-                        return "<p>" . txt . "</p>";
-
+                  
+		$this->includePluginClasses(array(
+			"ilObjExerciseOverviewGUI",
+			));
+                
+                $table = new ilObjExerciseOverviewListGUI();
+               
+                
+               $tpl->setContent( $table-> data() );
                  }
-
-
 
 
 	  protected function ExerciseOverview()
