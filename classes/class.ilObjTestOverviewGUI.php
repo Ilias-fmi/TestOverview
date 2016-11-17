@@ -97,8 +97,6 @@ class ilObjTestOverviewGUI
 					case 'removeTests':
 					case 'addMemberships':
 					case 'removeMemberships':
-                                        case 'HelloWorld':
-                                        
                                         case 'TestOverview':
 					case 'ExerciseOverview':
 					case 'editSettings':
@@ -108,15 +106,19 @@ class ilObjTestOverviewGUI
 					case 'showContent':
 					case 'applyOverviewFilter':
 					case 'applyTestsFilter':
+					case 'uebersicht':
 					case 'subTabTO':
 					case 'subTabTO2':
 					case 'subTabEO':
+					case 'subTabEO1':
 					case 'subTabEO2':
+					case 'rights':
 					case 'applyGroupsFilter':
 					case 'resetOverviewFilter':
 					case 'resetTestsFilter':
 					case 'resetGroupsFilter':
 					case 'addToDesk':
+
 					case 'allLocalTests':
                                         case 'UserResults':
                                             $this-> checkPermission('read') ;
@@ -156,21 +158,42 @@ class ilObjTestOverviewGUI
 		 */
 		global $ilTabs, $ilCtrl, $ilAccess;
 		$this->addInfoTab();
+
+    
+
 		/* Check for read access (showContent available) */
-		if ($ilAccess->checkAccess('read', '', $this->object->getRefId())) {
 
-                    $ilTabs->addTab('TestOverview',$this->txt('Ergebnisse'), $ilCtrl->getLinkTarget($this, 'UserResults'));
-                
 
-		}
 		/* Check for write access (editSettings available) */
 		if ($ilAccess->checkAccess('write', '', $this->object->getRefId())) {
-                        $ilTabs->addTab('content', $this->txt('content'), $ilCtrl->getLinkTarget($this, 'TestOverview'));
+                       // $ilTabs->addTab('content', $this->txt('content'), $ilCtrl->getLinkTarget($this, 'TestOverview'));
 			$ilTabs->addTab('properties', $this->txt('properties'), $ilCtrl->getLinkTarget($this, 'editSettings'));
+		}
+
+		if ($ilAccess->checkAccess('read', '', $this->object->getRefId())) {
+                        $ilTabs->addTab('TestOverview',"Ergebnisse", $ilCtrl->getLinkTarget($this, 'UserResults'));
+			$ilTabs->addTab('TestOverview',$this->txt('TestOverview'), $this->ctrl->getLinkTarget($this, 'TestOverview'));
+ 			$ilTabs->addTab('ExerciseOverview',$this->txt('ExerciseOverview'), $this->ctrl->getLinkTarget($this, 'ExerciseOverview'));
+
+		/* Check for write access (editSettings available) */
+		if ($ilAccess->checkAccess('write', '', $this->object->getRefId())) {
+
 			$ilTabs->addTarget('meta_data', $this->ctrl->getLinkTargetByClass('ilmdeditorgui', ''), '', 'ilmdeditorgui');
 		}
+		$ilTabs->addTab('Export',"Export",$this->ctrl->getLinkTarget($this,'Export'));
 		$this->addPermissionTab();
 	}
+}
+
+
+protected function Export()
+{
+global $tpl,$ilTabs;
+	$ilTabs->activateTab('Export');
+	$tpl->setContent("<p> Hello Export </p>");
+}
+
+
 	/**
 	 *	Command for rendering a Test Overview.
 	 *
@@ -178,22 +201,38 @@ class ilObjTestOverviewGUI
 	 *	and its data. This method is called by
 	 *	@see self::performCommand().
 	 */
- protected function allLocalTests()
-{
 
-}
-
-	protected function showContent()
+protected function showContent()
 	{
 				/**
 		 * @var $tpl ilTemplate
 		 * @var $ilTabs ilTabsGUI
 		 */
+
 		global $tpl, $ilTabs;
 		$this->includePluginClasses(array(
 			"ilTestOverviewTableGUI",
 			"ilOverviewMapper"));
-		$ilTabs->activateTab("content");
+		//$ilTabs->activateTab("content");
+
+		global $tpl,$lng, $ilTabs,$ilToolbar,$ilCtrl;
+                
+                $ilTabs->addSubTab('content',"Test Übersicht", $this->ctrl->getLinkTarget($this,  'showContent'));
+                $ilTabs->addSubTab('subTabTO',"Diagramme", $this->ctrl->getLinkTarget($this,'subTabTO'));
+		$ilTabs->addSubTab( 'subTabTO2',"Test Verwaltung",$this->ctrl->getLinkTarget($this,  'subTabTO2'));
+                $ilTabs->activateSubTab('content');
+                $ilTabs->activateTab('TestOverview');
+              
+                
+                
+		$this->includePluginClasses(array(
+			"ilTestOverviewTableGUI",
+			"ilOverviewMapper"));
+                 // Button um Graphiken der Übersicht zu erstellen
+		
+                $ilTabs->activateSubTab('showContent');
+
+
 		/* Configure content UI */
 		$table = new ilTestOverviewTableGUI( $this, 'showContent' );
 		$table->setMapper(new ilOverviewMapper)
@@ -201,7 +240,7 @@ class ilObjTestOverviewGUI
 		/* Populate template */
 		$tpl->setDescription($this->object->getDescription());
                 $data = array_slice($table-> getData(), $table->getOffset(), $table->getLimit());
-		$tpl->setContent( $table->getHTML() );
+		$tpl->setContent( $table->getHTML());
 	}
 	/**
 	 *	Render the settings page.
@@ -214,11 +253,11 @@ class ilObjTestOverviewGUI
 	 */
 	protected function renderSettings()
 	{
-		return $this->form->getHTML()
-			 . "<hr />"
-			 . $this->getTestList()->getHTML()
-			 . "<hr />"
-			 . $this->getMembershipList()->getHTML();
+		return $this->form->getHTML();
+		//	 . "<hr />"
+		//	 . $this->getTestList()->getHTML();
+		//	 . "<hr />"
+		//	 . $this->getMembershipList()->getHTML();
 	}
 	/**
 	 *	Command for editing the settings of a Test Overview.
@@ -240,6 +279,7 @@ class ilObjTestOverviewGUI
 		/* Populate template */
 		$tpl->setContent( $this->renderSettings() );
 	}
+
         
         protected function UserResults()
         {
@@ -255,60 +295,134 @@ class ilObjTestOverviewGUI
             
         }
 
-        protected function HelloWorld()
-		{
 
-		global $tpl, $ilTabs, $ilDB;
-		$ilTabs->activateTab('HelloWorld');
-                $a = new ReflectionClass('ilChartPie');
-                $b = new ReflectionMethod('ilChartPie', 'getDataInstance');
-                $c = $b->invoke($a, '');
-                 }
 
    protected function TestOverview()
 	 {
 		global $tpl, $ilTabs,$ilCtrl;
-
-		$ilTabs->activateTab('HelloWorld');
-                $tpl->setContent("<p> Hello World </p>");
-								$ilTabs->addSubTab('content', $this->txt('content'), $ilCtrl->getLinkTarget($this, 'showContent'));
-								$ilTabs->addSubTab('subTabTO', "SUBTab1", $ilCtrl->getLinkTarget($this,  'subTabTO'));
-								$ilTabs->addSubTab('subTabTO2', "SUBTab2",$ilCtrl->getLinkTarget($this,  'subTabTO2'));
+		
+                  
+                
+                $this->showContent();
+                 
    }
-	protected function subTabTO()
-		{
-			global $tpl, $ilTabs,	$ilCtrl;
-			$ilTabs->activateSubTab('subTabTO');
+//	protected function uebersicht()
+//		{
+//			global $tpl, $ilTabs,	$ilCtrl;
+//
+//	$tpl->setContent("<p> ToSubtabContent </p>");
+//		 }
 
 
-		 }
 
-	protected function subTabTO2()
-		 {
-                    global $tpl,$lng, $ilTabs,$ilToolbar;
-                    $ilTabs->activateSubTab('subTabTO2');
-                    require_once 'Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview/classes/mapper/class.ilBinDiagrammMapper.php';
+		 
+
+	
+
+
+
+
+protected function subTabTO()
+	 {
+		 global $tpl, $ilTabs,$ilCtrl;
+
+                
+                $ilTabs->addSubTab('content',"Test Übersicht", $this->ctrl->getLinkTarget($this,  'showContent')); 
+                $ilTabs->addSubTab('subTabTO',"Diagramme", $this->ctrl->getLinkTarget($this,'subTabTO'));
+		$ilTabs->addSubTab( 'subTabTO2',"Test Verwaltung",$this->ctrl->getLinkTarget($this,  'subTabTO2'));
+                $ilTabs->activateTab('TestOverview');
+                $ilTabs->activateSubTab('subTabTO');   
+		 
+                  require_once 'Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview/classes/mapper/class.ilBinDiagrammMapper.php';
                     try{
                         $Obj = new BinDiagrammMapper ($this,'showContent');
                         $tpl-> setContent($Obj->createAverageDia("BARS"));
                     } catch (Exception $ex) {
                        $tpl-> setContent ("Error 300 This is Sparta!");
                     }
+	 }
 
-                 }
+protected function rights(){
 
+}
 
+	protected function subTabTO2()
+		 {
+            
+             global $tpl, $ilTabs,$ilCtrl,$ilToolbar;
+                
+                $ilTabs->addSubTab('content',"Test Übersicht", $this->ctrl->getLinkTarget($this,  'showContent'));
+                $ilTabs->addSubTab('subTabTO',"Diagramme", $this->ctrl->getLinkTarget($this,'subTabTO'));
+		$ilTabs->addSubTab( 'subTabTO2',"Test Verwaltung",$this->ctrl->getLinkTarget($this,  'subTabTO2'));
+                $ilTabs->activateTab('TestOverview');
+                $ilTabs->activateSubTab('subTabTO2');   
+            
+                //$ilSplitButtonGUI= new ilSplitButtonGUI();
+                //$ilToolbar.addItem($ilSplitButtonGUI);
+
+                //  $form = new ilFormGUI();
+                //  $a=new ilRadioGroupInputGUI("Semester", 'uebersicht');
+		//	$option = new ilRadioOption("option", 'rights');
+		//	$a.addOption($option);
+		//	$form ->addItem($a);
+                //    $checkBoxList = new ilCheckboxListOverlayGUI("checkBoxID");
+						 $tpl->setContent(
+                //$form->getHTML()
+				 		 $this->getTestList()->getHTML()
+   		 			 . $this->getMembershipList()->getHTML());
+
+	 	 }
+
+protected function subTabEO1()
+		 {
+		 	global $tpl, $ilTabs,$ilCtrl,$ilToolbar;
+                        
+                        $ilTabs->addSubTab('subTabEO', "Übungs Übersicht",  $ilCtrl->getLinkTarget($this,'subTabEO'));
+                       $ilTabs->addSubTab('subTabEO1',"Diagramme",$ilCtrl->getLinkTarget($this,'subTabEO1'));
+                        $ilTabs->addSubTab('subTabEO2', "Übungs Verwaltung", $ilCtrl->getLinkTarget($this,'subTabEO2'));
+                         $ilTabs->activateTab('ExerciseOverview'); 
+                        $ilTabs->activateSubTab('subTabEO1');   
+                        
+		 	$tpl->setContent("<p> Ranking: 230. von 500 Mitgliedern</p>");
+		  }
+
+	protected function subTabEO()
+	{
+		global $tpl, $ilUser, $ilTabs,$ilCtrl,$ilToolbar;
+                
+                        $ilTabs->addSubTab('subTabEO', "Übungs Übersicht",  $ilCtrl->getLinkTarget($this,'subTabEO'));
+                        $ilTabs->addSubTab('subTabEO1',"Diagramme",$ilCtrl->getLinkTarget($this,'subTabEO1'));
+                        $ilTabs->addSubTab('subTabEO2', "Übungs Verwaltung", $ilCtrl->getLinkTarget($this,'subTabEO2'));
+                        $ilTabs->activateTab('ExerciseOverview'); 
+                        $ilTabs->activateSubTab('subTabEO');   
+			$tpl->setContent("<p> EO CONTENT </p>");
+                        
+	 }
+
+	 protected function subTabEO2()
+	 {
+		global $tpl, $ilTabs,$ilCtrl,$ilToolbar;
+                        
+                        $ilTabs->addSubTab('subTabEO', "Übungs Übersicht",  $ilCtrl->getLinkTarget($this,'subTabEO'));                
+                        $ilTabs->addSubTab('subTabEO1',"Diagramme",$ilCtrl->getLinkTarget($this,'subTabEO1'));
+                        $ilTabs->addSubTab('subTabEO2', "Übungs Verwaltung", $ilCtrl->getLinkTarget($this,'subTabEO2'));
+                        $ilTabs->activateTab('ExerciseOverview'); 
+                        $ilTabs->activateSubTab('subTabEO2');   
+			$tpl->setContent("<p> EO2 Content </p>");
+		 
+	 }
 
 
 	  protected function ExerciseOverview()
 		{
-			global $tpl, $ilTabs,$ilCtrl;
-			$ilTabs->activateTab('ExerciseOverview');
-									$tpl->setContent("<p> Hello World </p>");
-
-									$ilTabs->addSubTab('subTabEO', "subTabEO1",  $ilCtrl->getLinkTarget($this,  'subTabEO'));
-									$ilTabs->addSubTab('subTabEO2', "subTabEO2", $ilCtrl->getLinkTarget($this,  'subTabEO2'));
-
+			global $tpl, $ilTabs,$ilCtrl,$ilToolbar;
+			$ilTabs->activateTab('ExerciseOverview');                        
+                        $ilTabs->addSubTab('subTabEO', "Übungs Übersicht",  $ilCtrl->getLinkTarget($this,'subTabEO'));
+                        $ilTabs->addSubTab('subTabEO1',"Diagramme",$ilCtrl->getLinkTarget($this,'subTabEO1'));
+                        $ilTabs->addSubTab('subTabEO2', "Übungs Verwaltung", $ilCtrl->getLinkTarget($this,'subTabEO2'));
+                        
+                        $ilTabs->activateSubTab('subTabEO1');                           
+		 	$tpl->setContent("<p> Ranking: 230. von 500 Mitgliedern</p>");               
 		}
         /**
  	 *	Command for saving the updated Test Overview settings.
@@ -428,7 +542,7 @@ class ilObjTestOverviewGUI
 			return;
 		}
 		ilUtil::sendSuccess($this->txt('tests_updated_success'), true);
-		$ilCtrl->redirect($this, 'editSettings');
+		$ilCtrl->redirect($this,'subTabTO2');
 		$this->editSettings();
 		return;
 	}
@@ -449,10 +563,11 @@ class ilObjTestOverviewGUI
 				$this->object->rmTest($testId);
 			}
 			ilUtil::sendSuccess($lng->txt('rep_robj_xtov_tests_updated_success'), true);
-			$ilCtrl->redirect($this, 'editSettings');
+			$ilCtrl->redirect($this,'subTabTO2');
 		}
 		ilUtil::sendFailure($lng->txt('rep_robj_xtov_min_one_check_test'), true);
-		$tpl->setContent($this->renderSettings());
+		//$tpl->setContent($this->renderSettings());
+                $ilCtrl->redirect($this, 'subTabTO2');
 	}
 	/**
 	 *	Command for updating the participants groups added to the overview.
@@ -500,10 +615,12 @@ class ilObjTestOverviewGUI
 					 ->addGroup( $groupId );
 			}
 			ilUtil::sendSuccess($lng->txt('rep_robj_xtov_memberships_updated_success'), true);
-			$ilCtrl->redirect($this, 'editSettings');
+			/* redirect umgeleitet für neues to*/
+                        $ilCtrl->redirect($this, 'subTabTO2');
 		}
 		ilUtil::sendFailure($lng->txt('rep_robj_xtov_min_one_check_membership'), true);
-		$tpl->setContent( $this->renderSettings() );
+		//$tpl->setContent( $this->renderSettings() );
+                $ilCtrl->redirect($this, 'subTabTO2');
 	}
 	public function addMemberships()
 	{
@@ -525,10 +642,11 @@ class ilObjTestOverviewGUI
 					->addGroup( $groupId );
 			}
 			ilUtil::sendSuccess($lng->txt('rep_robj_xtov_memberships_updated_success'), true);
-			$ilCtrl->redirect($this, 'editSettings');
+			$ilCtrl->redirect($this, 'subTabTO2');
 		}
 		ilUtil::sendFailure($lng->txt('rep_robj_xtov_min_one_check_membership'), true);
-		$tpl->setContent( $this->renderSettings() );
+		$ilCtrl->redirect($this, 'subTabTO2');
+                //$tpl->setContent( $this->renderSettings() );
 	}
 	public function removeMemberships()
 	{
@@ -551,12 +669,13 @@ class ilObjTestOverviewGUI
 				$this->object->rmGroup($containerId);
 			}
 			ilUtil::sendSuccess($lng->txt('rep_robj_xtov_memberships_updated_success'), true);
-			$ilCtrl->redirect($this, 'editSettings');
+			$ilCtrl->redirect($this, 'subTabTO2');
 		}
 
 		ilUtil::sendFailure($lng->txt('rep_robj_xtov_min_one_check_membership'));
-		$tpl->setContent( $this->renderSettings() );
-	}
+		//$tpl->setContent( $this->renderSettings() );
+                $ilCtrl->redirect($this, 'subTabTO2');
+                        }
 	/**
 	 *	Retrieve the plugin's creations forms.
 	 *

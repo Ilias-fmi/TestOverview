@@ -19,13 +19,8 @@ content#:#Inhalt
 properties#:#Einstellungen
 edit_properties#:#Einstellungen Bearbeiten
 title#:#Titel
-<<<<<<< HEAD
-HelloWorld#:#HalloWelt
-=======
-HelloWorld#:#Hallo
 TestOverview#:#Testübersicht
 ExerciseOverview#:#Übungsübersicht
->>>>>>> janChart
 description#:#Beschreibung
 save#:#Speichern
 cancel#:#Abbrechen

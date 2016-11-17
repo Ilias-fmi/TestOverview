@@ -53,12 +53,12 @@ class ilOverviewMapper
 			$conditions[] = sprintf(
 				"overview.obj_id = " . $this->db->quote($filters['overview_id'], 'integer'));
 		}
-
+                
 		return implode(' AND ', $conditions);
 	}
 
 	/**
-	 *	Get pairs of Participants groups.
+	 *	Get pairs of Participants groups
 	 *
 	 *	This method can be used to list groups in a
 	 *	HTML <select>. The index in the returned array
@@ -98,7 +98,7 @@ class ilOverviewMapper
 			INNER JOIN usr_data ud_std
 				ON ud_std.usr_id = act.user_fi
 			WHERE $in_tst_std)
-			UNION 
+			UNION
 			(SELECT inv.user_fi
 			FROM tst_tests tst_fixed
 			INNER JOIN object_data ON object_data.obj_id = tst_fixed.obj_fi AND object_data.type = 'tst'
