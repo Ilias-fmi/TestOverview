@@ -88,7 +88,7 @@ class ilObjTestOverviewGUI
 					case 'removeTests':
 					case 'addMemberships':
 					case 'removeMemberships':
-          case 'TestOverview':
+                                        case 'TestOverview':
 					case 'ExerciseOverview':
 					case 'editSettings':
 						$this->checkPermission('write');
@@ -186,13 +186,23 @@ global $tpl,$ilTabs;
 		 * @var $ilTabs ilTabsGUI
 		 */
 		global $tpl,$lng, $ilTabs,$ilToolbar,$ilCtrl;
+                
+                $ilTabs->addSubTab('subTabTO',"Eigene Leistungen", $this->ctrl->getLinkTarget($this,'subTabTO'));
+                $ilTabs->addSubTab('content',"Test Übersicht", $this->ctrl->getLinkTarget($this,  'showContent'));
+		$ilTabs->addSubTab( 'subTabTO2',"Test Verwaltung",$this->ctrl->getLinkTarget($this,  'subTabTO2'));
+                $ilTabs->activateSubTab('content');
+                $ilTabs->activateTab('TestOverview');
+               
+                
+                
+                
 		$this->includePluginClasses(array(
 			"ilTestOverviewTableGUI",
 			"ilOverviewMapper"));
- // Button um Graphiken der Übersicht zu erstellen
+                 // Button um Graphiken der Übersicht zu erstellen
 		$ilToolbar->addButton("Graphik erstellen", $ilCtrl->getLinkTarget($this,'uebersicht'));
-			$ilToolbar->addButton("Graphik erstellen2", $ilCtrl->getLinkTarget($this,'uebersicht'));
-  	$ilTabs->activateSubTab('showContent');
+                $ilToolbar->addButton("Graphik erstellen2", $ilCtrl->getLinkTarget($this,'uebersicht'));
+                $ilTabs->activateSubTab('showContent');
 
 		/* Configure content UI */
 		$table = new ilTestOverviewTableGUI( $this, 'showContent' );
@@ -243,19 +253,24 @@ global $tpl,$ilTabs;
    protected function TestOverview()
 	 {
 		global $tpl, $ilTabs,$ilCtrl;
-		$ilTabs->activateTab('TestOverview');
-    $tpl->setContent("<p> Hello World </p>");
+		
 		$ilTabs->addSubTab('subTabTO',"Eigene Leistungen", $this->ctrl->getLinkTarget($this,'subTabTO'));
-	  $ilTabs->addSubTab('content',"Test Übersicht", $this->ctrl->getLinkTarget($this,  'showContent'));
+                $ilTabs->addSubTab('content',"Test Übersicht", $this->ctrl->getLinkTarget($this,  'showContent'));
 		$ilTabs->addSubTab( 'subTabTO2',"Test Verwaltung",$this->ctrl->getLinkTarget($this,  'subTabTO2'));
-
+                $ilTabs->activateTab('TestOverview');
+                $ilTabs->activateSubTab('subTabTO');    
+                
+                
+                 $tpl->setContent("<p> Ranking: 500. von 500 Mitgliedern</p>"
+                     . "<hr />"
+                     ."In Blatt 1 erreichten Sie 0 von 10 möglichen Punkten"
+							 );
    }
 //	protected function uebersicht()
 //		{
 //			global $tpl, $ilTabs,	$ilCtrl;
-
 //
-//									$tpl->setContent("<p> ToSubtabContent </p>");
+//	$tpl->setContent("<p> ToSubtabContent </p>");
 //		 }
 
 
@@ -263,10 +278,16 @@ protected function subTabTO()
 	 {
 		 global $tpl, $ilTabs,$ilCtrl;
 
-		 $ilTabs->activateSubTab('subTabTO2');
-								 $tpl->setContent("<p> Ranking: 500. von 500 Mitgliedern</p>"
-                   . "<hr />"
-									 ."In Blatt 1 erreichten Sie 0 von 10 möglichen Punkten"
+                 
+                $ilTabs->addSubTab('subTabTO',"Eigene Leistungen", $this->ctrl->getLinkTarget($this,'subTabTO'));
+                $ilTabs->addSubTab('content',"Test Übersicht", $this->ctrl->getLinkTarget($this,  'showContent'));
+		$ilTabs->addSubTab( 'subTabTO2',"Test Verwaltung",$this->ctrl->getLinkTarget($this,  'subTabTO2'));
+                $ilTabs->activateTab('TestOverview');
+                $ilTabs->activateSubTab('subTabTO');   
+		 
+                 $tpl->setContent("<p> Ranking: 500. von 500 Mitgliedern</p>"
+                     . "<hr />"
+                     ."In Blatt 1 erreichten Sie 0 von 10 möglichen Punkten"
 							 );
 	 }
 
@@ -276,12 +297,22 @@ protected function rights(){
 
 	protected function subTabTO2()
 		 {
-			 global $tpl, $ilTabs,$ilCtrl,$ilToolbar;
+            
+             global $tpl, $ilTabs,$ilCtrl,$ilToolbar;
+            
+                $ilTabs->addSubTab('subTabTO',"Eigene Leistungen", $this->ctrl->getLinkTarget($this,'subTabTO'));
+                $ilTabs->addSubTab('content',"Test Übersicht", $this->ctrl->getLinkTarget($this,  'showContent'));
+		$ilTabs->addSubTab( 'subTabTO2',"Test Verwaltung",$this->ctrl->getLinkTarget($this,  'subTabTO2'));
+                $ilTabs->activateTab('TestOverview');
+                $ilTabs->activateSubTab('subTabTO2');   
+            
+            
+			
 
-			 $ilTabs->activateSubTab('subTabTO2');
+			 
 
     //$ilSplitButtonGUI= new ilSplitButtonGUI();
-		//$ilToolbar.addItem($ilSplitButtonGUI);
+    //$ilToolbar.addItem($ilSplitButtonGUI);
 
     //  $form = new ilFormGUI();
     //  $a=new ilRadioGroupInputGUI("Semester", 'uebersicht');
@@ -298,37 +329,53 @@ protected function rights(){
 
 protected function subTabEO1()
 		 {
-		 	global $tpl, $ilTabs,	$ilCtrl;
-		 	$ilTabs->activateSubTab('subTabEO');
-
-		 							$tpl->setContent("<p> ToSubtabContent </p>");
+		 	global $tpl, $ilTabs,$ilCtrl,$ilToolbar;
+                        
+                       $ilTabs->addSubTab('subTabEO1',"Eigene Leistungen",$ilCtrl->getLinkTarget($this,'subTabEO1'));
+                        $ilTabs->addSubTab('subTabEO', "Übungs Übersicht",  $ilCtrl->getLinkTarget($this,'subTabEO'));
+                        $ilTabs->addSubTab('subTabEO2', "Übungs Verwaltung", $ilCtrl->getLinkTarget($this,'subTabEO2'));
+                         $ilTabs->activateTab('ExerciseOverview'); 
+                        $ilTabs->activateSubTab('subTabEO1');   
+                        
+		 	$tpl->setContent("<p> Ranking: 230. von 500 Mitgliedern</p>");
 		  }
 
 	protected function subTabEO()
 	{
-		global $tpl, $ilTabs,	$ilCtrl;
-		$ilTabs->activateSubTab('subTabEO');
-
-								$tpl->setContent("<p> ToSubtabContent </p>");
+		global $tpl, $ilUser, $ilTabs,$ilCtrl,$ilToolbar;
+                
+                  $ilTabs->addSubTab('subTabEO1',"Eigene Leistungen",$ilCtrl->getLinkTarget($this,'subTabEO1'));
+                        $ilTabs->addSubTab('subTabEO', "Übungs Übersicht",  $ilCtrl->getLinkTarget($this,'subTabEO'));
+                        $ilTabs->addSubTab('subTabEO2', "Übungs Verwaltung", $ilCtrl->getLinkTarget($this,'subTabEO2'));
+                        $ilTabs->activateTab('ExerciseOverview'); 
+                        $ilTabs->activateSubTab('subTabEO');   
+			$tpl->setContent("<p> EO CONTENT </p>");
+                        
 	 }
 
 	 protected function subTabEO2()
 	 {
-		 global $tpl, $ilTabs;
-		 $ilTabs->activateSubTab('subTabEO2');
-								 $tpl->setContent("<p> ToSubtabContent </p>");
-
+		global $tpl, $ilTabs,$ilCtrl,$ilToolbar;
+                 
+                        $ilTabs->addSubTab('subTabEO1',"Eigene Leistungen",$ilCtrl->getLinkTarget($this,'subTabEO1'));
+                        $ilTabs->addSubTab('subTabEO', "Übungs Übersicht",  $ilCtrl->getLinkTarget($this,'subTabEO'));
+                        $ilTabs->addSubTab('subTabEO2', "Übungs Verwaltung", $ilCtrl->getLinkTarget($this,'subTabEO2'));
+                        $ilTabs->activateTab('ExerciseOverview'); 
+                        $ilTabs->activateSubTab('subTabEO2');   
+			$tpl->setContent("<p> EO2 Content </p>");
+		 
 	 }
 
 	  protected function ExerciseOverview()
 		{
-			global $tpl, $ilTabs,$ilCtrl;
+			global $tpl, $ilTabs,$ilCtrl,$ilToolbar;
 			$ilTabs->activateTab('ExerciseOverview');
-									$tpl->setContent("<p> Hello World </p>");
-                  $ilTabs->addSubTab('subTabEo1',"Eigene Leistungen",$ilCtrl->getLinkTarget($this,'ExerciseOverview'));
-									$ilTabs->addSubTab('subTabEO', "Übungs Übersicht",  $ilCtrl->getLinkTarget($this,  'ExerciseOverview'));
-									$ilTabs->addSubTab('subTabEO2', "Übungs Verwaltung", $ilCtrl->getLinkTarget($this,  'ExerciseOverview'));
-
+                        $ilTabs->addSubTab('subTabEO1',"Eigene Leistungen",$ilCtrl->getLinkTarget($this,'subTabEO1'));
+                        $ilTabs->addSubTab('subTabEO', "Übungs Übersicht",  $ilCtrl->getLinkTarget($this,'subTabEO'));
+                        $ilTabs->addSubTab('subTabEO2', "Übungs Verwaltung", $ilCtrl->getLinkTarget($this,'subTabEO2'));
+                        
+                        $ilTabs->activateSubTab('subTabEO1');                           
+		 	$tpl->setContent("<p> Ranking: 230. von 500 Mitgliedern</p>");               
 		}
         /**
  	 *	Command for saving the updated Test Overview settings.
@@ -446,7 +493,7 @@ protected function subTabEO1()
 			return;
 		}
 		ilUtil::sendSuccess($this->txt('tests_updated_success'), true);
-		$ilCtrl->redirect($this, 'editSettings');
+		$ilCtrl->redirect($this,'subTabTO2');
 		$this->editSettings();
 		return;
 	}
@@ -467,10 +514,11 @@ protected function subTabEO1()
 				$this->object->rmTest($testId);
 			}
 			ilUtil::sendSuccess($lng->txt('rep_robj_xtov_tests_updated_success'), true);
-			$ilCtrl->redirect($this, 'editSettings');
+			$ilCtrl->redirect($this,'subTabTO2');
 		}
 		ilUtil::sendFailure($lng->txt('rep_robj_xtov_min_one_check_test'), true);
-		$tpl->setContent($this->renderSettings());
+		//$tpl->setContent($this->renderSettings());
+                $ilCtrl->redirect($this, 'subTabTO2');
 	}
 	/**
 	 *	Command for updating the participants groups added to the overview.
@@ -518,10 +566,12 @@ protected function subTabEO1()
 					 ->addGroup( $groupId );
 			}
 			ilUtil::sendSuccess($lng->txt('rep_robj_xtov_memberships_updated_success'), true);
-			$ilCtrl->redirect($this, 'editSettings');
+			/* redirect umgeleitet für neues to*/
+                        $ilCtrl->redirect($this, 'subTabTO2');
 		}
 		ilUtil::sendFailure($lng->txt('rep_robj_xtov_min_one_check_membership'), true);
-		$tpl->setContent( $this->renderSettings() );
+		//$tpl->setContent( $this->renderSettings() );
+                $ilCtrl->redirect($this, 'subTabTO2');
 	}
 	public function addMemberships()
 	{
@@ -543,10 +593,11 @@ protected function subTabEO1()
 					->addGroup( $groupId );
 			}
 			ilUtil::sendSuccess($lng->txt('rep_robj_xtov_memberships_updated_success'), true);
-			$ilCtrl->redirect($this, 'editSettings');
+			$ilCtrl->redirect($this, 'subTabTO2');
 		}
 		ilUtil::sendFailure($lng->txt('rep_robj_xtov_min_one_check_membership'), true);
-		$tpl->setContent( $this->renderSettings() );
+		$ilCtrl->redirect($this, 'subTabTO2');
+                //$tpl->setContent( $this->renderSettings() );
 	}
 	public function removeMemberships()
 	{
@@ -569,11 +620,12 @@ protected function subTabEO1()
 				$this->object->rmGroup($containerId);
 			}
 			ilUtil::sendSuccess($lng->txt('rep_robj_xtov_memberships_updated_success'), true);
-			$ilCtrl->redirect($this, 'editSettings');
+			$ilCtrl->redirect($this, 'subTabTO2');
 		}
 		ilUtil::sendFailure($lng->txt('rep_robj_xtov_min_one_check_membership'));
-		$tpl->setContent( $this->renderSettings() );
-	}
+		//$tpl->setContent( $this->renderSettings() );
+                $ilCtrl->redirect($this, 'subTabTO2');
+                        }
 	/**
 	 *	Retrieve the plugin's creations forms.
 	 *

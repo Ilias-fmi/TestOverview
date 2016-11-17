@@ -53,12 +53,12 @@ class ilOverviewMapper
 			$conditions[] = sprintf(
 				"overview.obj_id = " . $this->db->quote($filters['overview_id'], 'integer'));
 		}
-
+                
 		return implode(' AND ', $conditions);
 	}
 
 	/**
-	 *	Get pairs of Participants groups.
+	 *	Get pairs of Participants groups
 	 *
 	 *	This method can be used to list groups in a
 	 *	HTML <select>. The index in the returned array
