@@ -166,12 +166,11 @@ class ilObjTestOverviewGUI
 
 		/* Check for write access (editSettings available) */
 		if ($ilAccess->checkAccess('write', '', $this->object->getRefId())) {
-                       // $ilTabs->addTab('content', $this->txt('content'), $ilCtrl->getLinkTarget($this, 'TestOverview'));
 			$ilTabs->addTab('properties', $this->txt('properties'), $ilCtrl->getLinkTarget($this, 'editSettings'));
 		}
 
 		if ($ilAccess->checkAccess('read', '', $this->object->getRefId())) {
-                        $ilTabs->addTab('TestOverview',"Ergebnisse", $ilCtrl->getLinkTarget($this, 'UserResults'));
+                        $ilTabs->addTab('UserResults',"Ergebnisse", $ilCtrl->getLinkTarget($this, 'UserResults'));
 			$ilTabs->addTab('TestOverview',$this->txt('TestOverview'), $this->ctrl->getLinkTarget($this, 'TestOverview'));
  			$ilTabs->addTab('ExerciseOverview',$this->txt('ExerciseOverview'), $this->ctrl->getLinkTarget($this, 'ExerciseOverview'));
 
@@ -287,7 +286,7 @@ protected function showContent()
 				->getDirectory() . '/classes/mapper/class.ilOverviewStudent.php';
             
             global $tpl, $ilTabs, $ilDB, $ilUser;
-            $ilTabs->activateTab('HelloWorld');
+            $ilTabs->activateTab('UserResults');
             $dataMapper = new studentMapper ();
             $tpl-> setContent ($dataMapper-> getResults($ilUser->getId(),$this-> object-> getId()));
            
@@ -300,11 +299,11 @@ protected function showContent()
    protected function TestOverview()
 	 {
 		global $tpl, $ilTabs,$ilCtrl;
-		
-                  
                 
-                $this->showContent();
-                 
+		$this->showContent();
+                $ilTabs->activateTab('TestOverview');
+                $ilTabs->activateSubTab('content'); 
+                
    }
 //	protected function uebersicht()
 //		{
