@@ -118,7 +118,8 @@ class ilObjTestOverviewGUI
 					case 'resetTestsFilter':
 					case 'resetGroupsFilter':
 					case 'addToDesk':
-
+                                        case 'Export':
+                                        case 'triggerExport':
 					case 'allLocalTests':
                                         case 'UserResults':
                                             $this-> checkPermission('read') ;
@@ -179,18 +180,82 @@ class ilObjTestOverviewGUI
 
 			$ilTabs->addTarget('meta_data', $this->ctrl->getLinkTargetByClass('ilmdeditorgui', ''), '', 'ilmdeditorgui');
 		}
-		$ilTabs->addTab('Export',"Export",$this->ctrl->getLinkTarget($this,'Export'));
+		// export
+                if($ilAccess->checkAccess('write','',$this->object->getRefId()))
+                {
+                        $ilTabs->addTab("export", "Export", $this->ctrl->getLinkTarget($this, "Export"));
+                }
 		$this->addPermissionTab();
 	}
 }
 
+        protected function Export() {
+                global $tpl, $ilTabs,$ilCtrl;
+                $ilTabs->activateTab('export');
 
-protected function Export()
-{
-global $tpl,$ilTabs;
-	$ilTabs->activateTab('Export');
-	$tpl->setContent("<p> Hello Export </p>");
-}
+                include_once("./Services/Form/classes/class.ilPropertyFormGUI.php");
+
+                $this->form = new ilPropertyFormGUI();
+                $this->form->setFormAction($ilCtrl->getFormAction($this));
+                $this->form->setTitle("Export ".$this->lng->txt("properties"));
+                $this->form->setFormAction($ilCtrl->getFormAction($this, 'triggerExport'));
+
+                //radio group: Export type
+                $checkbox_overview = new ilRadioGroupInputGUI("Type", "radio_test");
+                $overview_op = new ilCheckboxOption("TestOverview", "1", "Export the test database of this course");
+                $overview_op2 = new ilCheckboxOption ("ExerciseOverview", "1", "Export the exercise database of this course");
+
+                $checkbox_overview->addOption($overview_op);
+                $checkbox_overview->addOption($overview_op2);
+
+
+                //radiobox group
+                $radio_filter = new ilRadioGroupInputGUI("Gender", "radio_test");
+                $r_op  = new ilRadioOption("Male and Female", "1", "Export all results");
+                $r_op2 = new ilRadioOption("Male", "1", "Export all male results");
+                $r_op3 = new ilRadioOption("Female", "1", "Export all female results");
+
+                $radio_filter->addOption($r_op);
+                $radio_filter->addOption($r_op2);
+                $radio_filter->addOption($r_op3);
+
+                // checkbox group: Filter
+                $checkbox_filter = new ilCheckboxGroupInputGUI("Filter", "radio_test");
+                $checkbox_filter->setInfo("Please apply the filters of your choice.");
+
+                $c_op = new ilCheckboxOption("Filter: placeholder Option1", "1", "Infotext for Option 1");
+                $c_op2 = new ilCheckboxOption ("Filter: placeholder Option2", "1", "Infotext for Option 2");
+                $c_op3 = new ilCheckboxOption ("Filter: placeholder Option 3", "1", "Infotext for Option 3");
+                
+                $checkbox_filter->addOption($c_op);
+                $checkbox_filter->addOption($c_op2);
+                $checkbox_filter->addOption($c_op3);
+
+
+
+                //radio group: Export type
+                $checkbox_format = new ilRadioGroupInputGUI("Format", "radio_test");
+                $format_op = new ilCheckboxOption("CSV", "1", "Export");
+                $format_op2 = new ilCheckboxOption ("XML", "1", "Infotext for Option 2");
+
+                $checkbox_format->addOption($format_op); 
+                $checkbox_format->addOption($format_op2);
+
+                $this->form->addItem($checkbox_overview);
+                $this->form->addItem($radio_filter);   
+                $this->form->addItem($checkbox_filter);
+                $this->form->addItem($checkbox_format);
+                $this->form->addCommandButton("triggerExport", "Export");
+                $tpl->setContent($this->renderSettings());
+        }
+
+        protected function triggerExport(){
+            global $tpl;
+            $this->Export();
+            $yolo = "Export done <br> JK-System crashed";
+            $tpl->setContent($yolo);
+        }
+
 
 
 	/**
@@ -201,7 +266,7 @@ global $tpl,$ilTabs;
 	 *	@see self::performCommand().
 	 */
 
-protected function showContent()
+        protected function showContent()
 	{
 				/**
 		 * @var $tpl ilTemplate
@@ -296,15 +361,15 @@ protected function showContent()
 
 
 
-   protected function TestOverview()
-	 {
-		global $tpl, $ilTabs,$ilCtrl;
+        protected function TestOverview()
+	{
+                global $tpl, $ilTabs,$ilCtrl;
                 
-		$this->showContent();
+                $this->showContent();
                 $ilTabs->activateTab('TestOverview');
                 $ilTabs->activateSubTab('content'); 
                 
-   }
+        }
 //	protected function uebersicht()
 //		{
 //			global $tpl, $ilTabs,	$ilCtrl;
@@ -321,8 +386,8 @@ protected function showContent()
 
 
 
-protected function subTabTO()
-	 {
+        protected function subTabTO()
+	{
 		 global $tpl, $ilTabs,$ilCtrl;
 
                 
@@ -339,22 +404,20 @@ protected function subTabTO()
                     } catch (Exception $ex) {
                        $tpl-> setContent ("Error 300 This is Sparta!");
                     }
-	 }
+	}
 
-protected function rights(){
 
-}
 
 	protected function subTabTO2()
-		 {
+        {
             
-             global $tpl, $ilTabs,$ilCtrl,$ilToolbar;
+            global $tpl, $ilTabs,$ilCtrl,$ilToolbar;
                 
-                $ilTabs->addSubTab('content',"Test Übersicht", $this->ctrl->getLinkTarget($this,  'showContent'));
-                $ilTabs->addSubTab('subTabTO',"Diagramme", $this->ctrl->getLinkTarget($this,'subTabTO'));
-		$ilTabs->addSubTab( 'subTabTO2',"Test Verwaltung",$this->ctrl->getLinkTarget($this,  'subTabTO2'));
-                $ilTabs->activateTab('TestOverview');
-                $ilTabs->activateSubTab('subTabTO2');   
+            $ilTabs->addSubTab('content',"Test Übersicht", $this->ctrl->getLinkTarget($this,  'showContent'));
+            $ilTabs->addSubTab('subTabTO',"Diagramme", $this->ctrl->getLinkTarget($this,'subTabTO'));
+            $ilTabs->addSubTab( 'subTabTO2',"Test Verwaltung",$this->ctrl->getLinkTarget($this,  'subTabTO2'));
+            $ilTabs->activateTab('TestOverview');
+            $ilTabs->activateSubTab('subTabTO2');   
             
                 //$ilSplitButtonGUI= new ilSplitButtonGUI();
                 //$ilToolbar.addItem($ilSplitButtonGUI);
@@ -370,10 +433,10 @@ protected function rights(){
 				 		 $this->getTestList()->getHTML()
    		 			 . $this->getMembershipList()->getHTML());
 
-	 	 }
+	}
 
-protected function subTabEO1()
-		 {
+        protected function subTabEO1()
+	{
 		 	global $tpl, $ilTabs,$ilCtrl,$ilToolbar;
                         
                         $ilTabs->addSubTab('subTabEO', "Übungs Übersicht",  $ilCtrl->getLinkTarget($this,'subTabEO'));
@@ -383,7 +446,7 @@ protected function subTabEO1()
                         $ilTabs->activateSubTab('subTabEO1');   
                         
 		 	$tpl->setContent("<p> Ranking: 230. von 500 Mitgliedern</p>");
-		  }
+	}
 
 	protected function subTabEO()
 	{
@@ -398,8 +461,8 @@ protected function subTabEO1()
                         
 	 }
 
-	 protected function subTabEO2()
-	 {
+	protected function subTabEO2()
+	{
 		global $tpl, $ilTabs,$ilCtrl,$ilToolbar;
                         
                         $ilTabs->addSubTab('subTabEO', "Übungs Übersicht",  $ilCtrl->getLinkTarget($this,'subTabEO'));                
@@ -412,8 +475,8 @@ protected function subTabEO1()
 	 }
 
 
-	  protected function ExerciseOverview()
-		{
+	protected function ExerciseOverview()
+	{
 			global $tpl, $ilTabs,$ilCtrl,$ilToolbar;
 			$ilTabs->activateTab('ExerciseOverview');                        
                         $ilTabs->addSubTab('subTabEO', "Übungs Übersicht",  $ilCtrl->getLinkTarget($this,'subTabEO'));
