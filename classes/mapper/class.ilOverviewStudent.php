@@ -14,55 +14,55 @@ class studentMapper
      * @return string
      */
     public function getResults ($studId, $overviewId){
-        global $ilDB;
+        global $ilDB ;
         $average = array();
         //Style für die Tabelle
-        $html = "<style> table, td, th { border: 1px solid black; } </style>";
+        //$html = "<style> table, td, th { border: 1px solid black; } </style>";
         //$html = "<style>" . $this-> getCSS()  . "</style>";
-        $html .= "<div ID='student-view'>  <div ID='col-1'> <table>";
+        //$html .= "<div ID='student-view'>  <div ID='col-1'> <table>";
+        //$html .= "<tr> <td> Test Name </td> <td> Erreichte Punkte</td>  ";
 
-        $html .= "<tr> <td> Test Name </td> <td> Erreichte Punkte</td>  ";
-
-        
+        $data = array();
         $query = "Select DISTINCT title, points, maxpoints  From rep_robj_xtov_t2o Join object_reference Join tst_tests Join tst_active Join tst_pass_result Join object_data ON
                 (rep_robj_xtov_t2o.ref_id_test = object_reference.ref_id AND object_reference.obj_id = tst_tests.obj_fi AND tst_active.test_fi = tst_tests.test_id
                 AND tst_active.active_id = tst_pass_result.active_fi AND object_reference.obj_id = object_data.obj_id) 
                 where obj_id_overview ='" . $overviewId ."'AND tst_active.user_fi = '". $studId ."'" ;
         $result = $ilDB->query($query);
-        
+        $tpl = new ilTemplate("tpl.stud_view.html", true, true, "Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview");
         
         //Baut aus den Einzelnen Zeilen Objekte
         while ($testObj = $ilDB->fetchObject($result)){
-            $html .= "<tr>";
-            $html .= "<td>";
-            $html .= $testObj->title;
-            $html .= "</td>";
-            $html .= "<td>";
-            $points = (int)$testObj->points;
-            $maxPoints = (int)$testObj->maxpoints;
-            $res = (intval($points) / intval($maxPoints)) * 100;
-            array_push($average, $res);
-            $res = round($res,2);
-            $res .= " %";
-            $html .= $res ;
-            $html .= "</td";
-            $html .= "</tr>";
-            
-            
+            array_push($data, $testObj);
         }
-        $html .="</table> </div> <div ID='col-2'> ". $this-> calcAverage($average) ."</div> </div>";
+        
+        foreach ($data as $set){
+            $tpl->setCurrentBlock("test_results");
+            $tpl->setVariable("Name", $set->title);
+            if ($set-> points > ($set-> maxpoints/2)){
+                $pointsHtml = "<td class='green-result'>" . $set-> points  ."</td>";
+            }else {
+                $pointsHtml = "<td class='red-result'>" . $set-> points  ."</td>";
+            }        
+            $tpl->setVariable("Point", $pointsHtml);
+            $tpl->parseCurrentBlock();
+        }
         
         
-        
-        return $html;
+        return $tpl-> get();
     }
     
-    private function getCSS(){
-        $css = file_get_contents("Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview/templates/css/testoverview.css");
-        if (empty($css)){
-        $css .= "table, td, th { border: 1px solid black; }" ;
-        }
-        return $css;
+    /**
+     *  Counts the Number of Tests realted to the Overview Object
+     * @global type $ilDB
+     * @param int $overviewId
+     * @return int
+     */
+    private function numOfTests($overviewId){
+        global $ilDB; 
+        $query = "Select count(ref_id_test) as num from rep_robj_xtov_t2o where obj_id_overview = '" . $overviewId ."'";
+        $result =$ilDB->query($query); 
+        $numOfTests = $ilDB->fetchObject($result);
+        return $numOfTests-> num;
     }
 
 

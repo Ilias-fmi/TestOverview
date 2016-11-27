@@ -1,0 +1,65 @@
+<div id="scoped-content">
+<style type="text/css" scoped>
+
+      td{
+        text-align: center;
+        -moz-border-radius: 20px;
+        -webkit-border-radius: 20px;
+        -khtml-border-radius: 20px;
+        border-radius: 20px;
+        padding: 6px;
+
+
+      }
+      .green-result
+      {
+      	background: #0c0;
+      	color: #000;
+      }
+
+      .red-result
+       {
+         background: red;
+       }
+      .grey{
+
+      }
+      table{
+      margin-left:auto;
+      margin-right:auto;
+
+      }
+      tr {
+        background-color: #FCFCFC;
+      }
+
+      tr:nth-child(2n) {
+        background-color: #F4F4F4;
+      }
+
+
+  </style>
+  <div style="width:33.33%;">
+      <table >
+        <tr> <td >Test Name</td> <td>Erreichte Punkte</td> </tr>
+
+        <!-- BEGIN test_results -->
+        <tr>
+          <td class=""> {Name} </td> {Point}
+        </tr>
+        <!-- END test_results -->
+      </table>
+  </div>
+
+</div>
+
+<div style="width:33.33%;">
+
+
+</div>
+
+<div style="width: 33.33%">
+
+
+
+</div>

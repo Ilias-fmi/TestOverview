@@ -45,6 +45,12 @@ class ilExerciseMapper
         return $DbObject;
         
     } 
+    public function buildMatrix (){
+        
+        
+        
+        
+    }
         
     }
     
