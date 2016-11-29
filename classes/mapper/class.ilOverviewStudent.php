@@ -15,12 +15,8 @@ class studentMapper
      */
     public function getResults ($studId, $overviewId){
         global $ilDB ;
-        $average = array();
-        //Style für die Tabelle
-        //$html = "<style> table, td, th { border: 1px solid black; } </style>";
-        //$html = "<style>" . $this-> getCSS()  . "</style>";
-        //$html .= "<div ID='student-view'>  <div ID='col-1'> <table>";
-        //$html .= "<tr> <td> Test Name </td> <td> Erreichte Punkte</td>  ";
+        $average; 
+        $maxPoints;
 
         $data = array();
         $query = "Select DISTINCT title, points, maxpoints  From rep_robj_xtov_t2o Join object_reference Join tst_tests Join tst_active Join tst_pass_result Join object_data ON
@@ -38,6 +34,8 @@ class studentMapper
         foreach ($data as $set){
             $tpl->setCurrentBlock("test_results");
             $tpl->setVariable("Name", $set->title);
+            $average += $set-> points; 
+            $maxPoints += $set-> maxpoints;
             if ($set-> points > ($set-> maxpoints/2)){
                 $pointsHtml = "<td class='green-result'>" . $set-> points  ."</td>";
             }else {
@@ -46,7 +44,19 @@ class studentMapper
             $tpl->setVariable("Point", $pointsHtml);
             $tpl->parseCurrentBlock();
         }
+        if($this-> numOfTests($overviewId)== 0){
+            $averageNum = 0;
+        }else {
+            $averageNum = $average/$this->numOfTests($overviewId);
+        }
+        $tpl-> setVariable("AveragePoints",$averageNum);
+        if ($maxPoints == 0){
+            $Prozentnum = 0;
+        }else {
+            $Prozentnum = (float) ($average/$maxPoints)*100;
+        }
         
+        $tpl-> setVariable("Average",round($Prozentnum,2));
         
         return $tpl-> get();
     }

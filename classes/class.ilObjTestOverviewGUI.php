@@ -243,15 +243,23 @@ class ilObjTestOverviewGUI
         
         protected function UserResults()
         {
-            require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
+            global $tpl;
+            /*require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
 				->getDirectory() . '/classes/mapper/class.ilOverviewStudent.php';
             
             global $tpl, $ilTabs, $ilDB, $ilUser;
             $ilTabs->activateTab('HelloWorld');
             $dataMapper = new studentMapper ();
             $tpl-> setContent ($dataMapper-> getResults($ilUser->getId(),$this-> object-> getId()));
-           
-       
+           */
+            require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
+				->getDirectory() . '/classes/mapper/class.ilExerciseMapper.php';
+
+            $Obj = new ilExerciseMapper();
+            $matrix = $this-> buildMatrix(301);
+            //$stud = $matrix[0];
+            //$studName = $stud[0];
+            $tpl-> setContent ( implode(",",$matrix));
             
         }
 
@@ -277,6 +285,14 @@ class ilObjTestOverviewGUI
    }
 	protected function subTabTO()
 		{
+            global $tpl;
+
+
+            require_once 'Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview/classes/mapper/class.ilBinDiagrammMapper.php';
+                  
+                        //$Obj = new BinDiagrammMapper ($this,'showContent');
+                        //$tpl-> setContent("<p>" . $Obj->data() . "jop </p>" );
+                  /*
 			global $tpl, $ilTabs,	$ilCtrl, $ilDB;
 			$ilTabs->activateSubTab('subTabTO');
                         $result = $ilDB-> query ("Select * From  participants");
@@ -284,7 +300,7 @@ class ilObjTestOverviewGUI
                         while ($record = $ilDB->fetchAssoc($result)){
                             $txt .= $record ;
                         }
-                        return "<p>" . txt . "</p>";
+                        return "<p>" . txt . "</p>";*/
 		 }
 
 	protected function subTabTO2()
@@ -298,7 +314,14 @@ class ilObjTestOverviewGUI
                     } catch (Exception $ex) {
                        $tpl-> setContent ("Error 300 This is Sparta!");
                     }*/
+                  require_once 'Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview/classes/mapper/class.ilBinDiagrammMapper.php';
                   
+                        $Obj = new BinDiagrammMapper ($this,'showContent');
+                        $tpl-> setContent($Obj->data()+ "jop");
+                  
+                    
+                    
+                    /*
 		$this->includePluginClasses(array(
 			"ilObjExerciseOverviewGUI",
 			));
@@ -306,7 +329,7 @@ class ilObjTestOverviewGUI
                 $table = new ilObjExerciseOverviewListGUI();
                
                 
-               $tpl->setContent( $table-> data() );
+               $tpl->setContent( $table-> data() );*/
                  }
 
 

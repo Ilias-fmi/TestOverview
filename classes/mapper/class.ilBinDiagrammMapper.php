@@ -61,7 +61,7 @@ class BinDiagrammMapper
 		
 		$this->tpl->addBlockFile("TBL_CONTENT", "tbl_content", 'tpl.test_overview_rows.html',
 				$this->row_template_dir);
-	
+                           
 			foreach($data as $set)
 			{
 				$this->fillRow($set);
@@ -74,6 +74,7 @@ class BinDiagrammMapper
                       }catch (ilDiagrammExeption $e) {
                           throw new ilDiagrammException('Cannot split String');
                       }
+                      
                       
     }
     
