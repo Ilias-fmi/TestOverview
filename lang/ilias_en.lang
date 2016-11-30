@@ -49,6 +49,7 @@ test_overview_description#:#This table shows test results of participants, filte
 overview_test_not_passed#:#Not passed
 overview_avg_not_available#:#Not available
 overview_flt_participant_name#:#Participant
+overview_flt_participant_gender#:#Gender
 overview_flt_group_name#:#Membership
 test_list_flt_tst_name#:#Name
 membership_list_flt_grp_name#:#Name

@@ -116,6 +116,15 @@ class ilTestOverviewTableGUI
         $pname = new ilTextInputGUI($this->lng->txt('rep_robj_xtov_overview_flt_participant_name'), 'flt_participant_name');
         $pname->setSubmitFormOnEnter(true);
 
+        /* Martins sinnloser code */
+        
+        $pgender = new ilSelectInputGUI("Gender", 'flt_participant_gender');
+        $genderArray=array("" => "-- Select --","f"=>"f","m"=>"m");
+        
+        $pgender->setOptions($genderArray);
+        
+         /* Martins sinnloser code */
+        
 		/* Configure participant group name filter (select) */
 		$mapper = new ilOverviewMapper;
 		$groups = $mapper->getGroupPairs($this->getParentObject()->object->getId());
@@ -127,8 +136,17 @@ class ilTestOverviewTableGUI
 		/* Configure filter form */
         $this->addFilterItem($pname);
         $this->addFilterItem($gname);
+        
+        /*Martins sinnloser code*/
+        $this->addFilterItem($pgender);
+        $pgender->readFromSession();
+        /*Martins sinnloser code*/
+        
         $pname->readFromSession();
         $gname->readFromSession();
+        /*martis code gender filter */
+        $this->filter['flt_participant_gender'] = $pgender->getValue();
+        /* martins code*/
         $this->filter['flt_participant_name'] = $pname->getValue();
         $this->filter['flt_group_name']		  = $gname->getValue();
     }
@@ -286,12 +304,12 @@ class ilTestOverviewTableGUI
 	
 	private function fetchUserInformation($usr_ids)
 	{
-		global $ilDB;
+		global $ilDB,$tpl;
 		
 		$usr_id__IN__usrIds = $ilDB->in('usr_id', $usr_ids, false, 'integer');
 		
 		$query = "
-			SELECT usr_id, title, firstname, lastname FROM usr_data WHERE $usr_id__IN__usrIds
+			SELECT usr_id, title, firstname, lastname, gender FROM usr_data WHERE $usr_id__IN__usrIds
 		";
 		
 		$res = $ilDB->query($query);
@@ -307,14 +325,30 @@ class ilTestOverviewTableGUI
 			$user->setFirstname($row['firstname']);
 			$user->setLastname($row['lastname']);
 			$user->setFullname();
-
+                        $user->setGender($row['gender']);
+                        
 			if (! empty($this->filter['flt_participant_name']))
 			{
 				$name   = strtolower($user->getFullName());
 				$filter = strtolower($this->filter['flt_participant_name']);
-
+                                  
+                                
 				/* Simulate MySQL LIKE operator */
 				if (false === strstr($name, $filter))
+				{
+					/* User should be skipped. (Does not match filter) */
+					continue;
+				}
+			}
+                        if (! empty($this->filter['flt_participant_gender']))
+			{          
+                                
+				$gender   = $user->getGender();
+				$filterGender = $this->filter['flt_participant_gender'];
+                                echo($gender);
+                                 
+				/* Simulate MySQL LIKE operator */
+				if (false === strstr($gender,$filterGender))
 				{
 					/* User should be skipped. (Does not match filter) */
 					continue;
