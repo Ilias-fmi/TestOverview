@@ -244,22 +244,25 @@ class ilObjTestOverviewGUI
         protected function UserResults()
         {
             global $tpl;
-            /*require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
+           
+            require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
 				->getDirectory() . '/classes/mapper/class.ilOverviewStudent.php';
             
             global $tpl, $ilTabs, $ilDB, $ilUser;
             $ilTabs->activateTab('HelloWorld');
             $dataMapper = new studentMapper ();
             $tpl-> setContent ($dataMapper-> getResults($ilUser->getId(),$this-> object-> getId()));
-           */
-            require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
-				->getDirectory() . '/classes/mapper/class.ilExerciseMapper.php';
+           
+            //require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
+		//		->getDirectory() . '/classes/mapper/class.ilExerciseMapper.php';
 
-            $Obj = new ilExerciseMapper();
-            $matrix = $this-> buildMatrix(301);
+            //$Obj = new ilExerciseMapper();
+            //$matrix = $this-> buildMatrix(301);
             //$stud = $matrix[0];
             //$studName = $stud[0];
-            $tpl-> setContent ( implode(",",$matrix));
+            //$tpl-> setContent ( implode(",",$matrix));
+           
+           
             
         }
 

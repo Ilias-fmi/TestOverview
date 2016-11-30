@@ -19,7 +19,7 @@ class studentMapper
         $maxPoints;
 
         $data = array();
-        $query = "Select DISTINCT title, points, maxpoints  From rep_robj_xtov_t2o Join object_reference Join tst_tests Join tst_active Join tst_pass_result Join object_data ON
+        $query = "Select DISTINCT title, points, maxpoints, ending_time  From rep_robj_xtov_t2o Join object_reference Join tst_tests Join tst_active Join tst_pass_result Join object_data ON
                 (rep_robj_xtov_t2o.ref_id_test = object_reference.ref_id AND object_reference.obj_id = tst_tests.obj_fi AND tst_active.test_fi = tst_tests.test_id
                 AND tst_active.active_id = tst_pass_result.active_fi AND object_reference.obj_id = object_data.obj_id) 
                 where obj_id_overview ='" . $overviewId ."'AND tst_active.user_fi = '". $studId ."'" ;
@@ -32,17 +32,23 @@ class studentMapper
         }
         
         foreach ($data as $set){
-            $tpl->setCurrentBlock("test_results");
-            $tpl->setVariable("Name", $set->title);
-            $average += $set-> points; 
-            $maxPoints += $set-> maxpoints;
-            if ($set-> points > ($set-> maxpoints/2)){
-                $pointsHtml = "<td class='green-result'>" . $set-> points  ."</td>";
-            }else {
-                $pointsHtml = "<td class='red-result'>" . $set-> points  ."</td>";
-            }        
+            $timestamp = time();
+            $datum =  (float) date("YmdHis",$timestamp);
+            $testTime = (float)$set-> ending_time;
+            if (($testTime - $datum) < 0){
+                $tpl->setCurrentBlock("test_results");
+                $tpl->setVariable("Name", $set->title);
+                $average += $set-> points; 
+                $maxPoints += $set-> maxpoints;
+                if ($set-> points > ($set-> maxpoints/2)){
+                    $pointsHtml = "<td class='green-result'>" . $set-> points  ."</td>";
+                }else {
+                    $pointsHtml = "<td class='red-result'>" . $set-> points  ."</td>";
+                }           
             $tpl->setVariable("Point", $pointsHtml);
+            
             $tpl->parseCurrentBlock();
+            }
         }
         if($this-> numOfTests($overviewId)== 0){
             $averageNum = 0;
@@ -59,6 +65,7 @@ class studentMapper
         $tpl-> setVariable("Average",round($Prozentnum,2));
         
         return $tpl-> get();
+        
     }
     
     /**
@@ -95,11 +102,24 @@ class studentMapper
     }
     
     private function getNumTests($overviewId){
-        
-        $query = "Select Count('ref_id_test') as num From rep_robj_xtov_t2o where obj_id_overview = '". $overviewId ."'";
+        global $ilDB;
+        $count = 0 ;
+        $data = array ();
+        $query = "Select ref_id_test ,ending_time from rep_robj_xtov_t2o Join object_reference Join tst_tests "
+                . "on (ref_id_test = ref_id And obj_id = obj_fi) where obj_id_overview = '" . $overviewId . "'";
         $result = $ilDB->query($query);
-        $rowNum = $ilDB->fetchObject($result);
-        return $rowNum-> num;
+        while ($testObj = $ilDB->fetchObject($result)){
+            array_push($data, $testObj);
+        }
+            $timestamp = time();
+            $datum =  (float) date("YmdHis",$timestamp);
+        foreach ($data as $set){
+            $testTime = (float)$set-> ending_time;
+            if (($testTime - $datum) < 0){
+                $count ++;
+            }
+        }
+        return $count ;
                 
     }
         
