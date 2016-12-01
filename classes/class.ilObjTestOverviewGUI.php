@@ -203,21 +203,26 @@ class ilObjTestOverviewGUI
         protected function triggerExport(){
             global $tpl, $lng, $ilCtrl;
             $this->initExportForm();
+            
             if($this->form->checkInput())
             {
-               /* Form is sent and input validated,
-			   now save settings. */
-             
-                
-                $input_array = $this->form->getItems();
-                
                
-                
-                ilUtil::sendSuccess("Larry");
+               /* Save form input */
+               $export_type = $this->form->getInput("export_type"); 
+               $gender_filter = $this->form->getInput("gender_filter");
+               $filter = $this->form->getInput("filter");
+               $export_format = $this->form->getInput("export_format");
+               
+               
+               ilUtil::sendSuccess($export_type);
+               ilUtil::sendFailure($gender_filter);
+               if(!empty($filter)){
+               echo implode(",", $filter);
+               }
+               echo $export_format;
                 
             }
-            $this->form->setValuesByPost();
-            $tpl->setContent( $this->renderSettings() );
+            $ilCtrl->redirect(Export());
            // $this->Export();
            // $this->form->getInputItemsRecursive();
         }
@@ -233,8 +238,8 @@ class ilObjTestOverviewGUI
 
                 //radio group: Export type
                 $checkbox_overview = new ilRadioGroupInputGUI("Type", "export_type");
-                $overview_op = new ilCheckboxOption("TestOverview", "1", "Export the test database of this course");
-                $overview_op2 = new ilCheckboxOption ("ExerciseOverview", "1", "Export the exercise database of this course");
+                $overview_op = new ilCheckboxOption("TestOverview", "to", "Export the test database of this course");
+                $overview_op2 = new ilCheckboxOption ("ExerciseOverview", "eo", "Export the exercise database of this course");
 
                 $checkbox_overview->addOption($overview_op);
                 $checkbox_overview->addOption($overview_op2);
@@ -243,9 +248,9 @@ class ilObjTestOverviewGUI
 
                 //radiobox group
                 $gender_filter = new ilRadioGroupInputGUI("Gender", "gender_filter");
-                $r_op  = new ilRadioOption("Male and Female", "1", "Export all results");
-                $r_op2 = new ilRadioOption("Male", "1", "Export all male results");
-                $r_op3 = new ilRadioOption("Female", "1", "Export all female results");
+                $r_op  = new ilRadioOption("Male and Female", "maleFemale", "Export all results");
+                $r_op2 = new ilRadioOption("Male", "male", "Export all male results");
+                $r_op3 = new ilRadioOption("Female", "female", "Export all female results");
 
                 $gender_filter->addOption($r_op);
                 $gender_filter->addOption($r_op2);
@@ -253,12 +258,12 @@ class ilObjTestOverviewGUI
                 $gender_filter->setRequired(true);
 
                 // checkbox group: Filter
-                $checkbox_filter = new ilCheckboxGroupInputGUI("Filter", "filters");
+                $checkbox_filter = new ilCheckboxGroupInputGUI("Filter", "filter");
                 $checkbox_filter->setInfo("Please apply the filters of your choice.");
 
                 $c_op = new ilCheckboxOption("Filter: placeholder Option1", "1", "Infotext for Option 1");
-                $c_op2 = new ilCheckboxOption ("Filter: placeholder Option2", "1", "Infotext for Option 2");
-                $c_op3 = new ilCheckboxOption ("Filter: placeholder Option 3", "1", "Infotext for Option 3");
+                $c_op2 = new ilCheckboxOption ("Filter: placeholder Option2", "2", "Infotext for Option 2");
+                $c_op3 = new ilCheckboxOption ("Filter: placeholder Option 3", "3", "Infotext for Option 3");
                 
                 $checkbox_filter->addOption($c_op);
                 $checkbox_filter->addOption($c_op2);
@@ -269,8 +274,8 @@ class ilObjTestOverviewGUI
 
                 //radio group: Export type
                 $checkbox_format = new ilRadioGroupInputGUI("Format", "export_format");
-                $format_op = new ilCheckboxOption("CSV", "1", "Export");
-                $format_op2 = new ilCheckboxOption ("XML", "1", "Infotext for Option 2");
+                $format_op = new ilCheckboxOption("CSV", "CSV", "Export");
+                $format_op2 = new ilCheckboxOption ("XML", "XML", "Infotext for Option 2");
 
                 $checkbox_format->addOption($format_op); 
                 $checkbox_format->addOption($format_op2);
@@ -290,7 +295,7 @@ class ilObjTestOverviewGUI
 	 *
 	 *	This command displays a test overview entry
 	 *	and its data. This method is called by
-	 *	@see self::performCommand().
+	 *	@see self::performComma nd().
 	 */
 
         protected function showContent()
