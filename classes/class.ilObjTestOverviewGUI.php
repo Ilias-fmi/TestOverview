@@ -216,13 +216,29 @@ class ilObjTestOverviewGUI
                
                ilUtil::sendSuccess($export_type);
                ilUtil::sendFailure($gender_filter);
-               if(!empty($filter)){
-               echo implode(",", $filter);
+               
+               
+               //if(!empty($filter))
+               //{
+               //echo implode(",", $filter);
+               //}
+               ob_start();
+               $fp = fopen("php://output", "w");
+               
+               if ($fp && $filter) {
+                    
+                    header('Content-Type: text/csv');
+                    header('Content-Disposition: attachment; filename="export.csv"');
+                    header('Pragma: no-cache');
+                    header('Expires: 0');
+                    fputcsv($fp, array_values($filter));
+               
+                         echo "File written";
                }
-               echo $export_format;
-                
+               fclose($fp);
+                                  
             }
-            $ilCtrl->redirect(Export());
+            
            // $this->Export();
            // $this->form->getInputItemsRecursive();
         }
