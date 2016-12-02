@@ -45,13 +45,32 @@ class ilExerciseMapper
         
     } 
     
+    public function getExerciseName($exerciseID){
+        global $ilDB;
+        $query = "Select exc_id , title from exc_assignment
+                where exc_id = '" . $exerciseID . "'";
+        $result = $ilDB->query($query);
+        $record = $ilDB->fetchObject($result);
+        return $record-> title;
+    }
+    
+    public function  getStudName($studID){
+        global $ilDB;
+        $query = "Select usr_id ,firstname ,lastname From usr_data
+                where usr_id = '" . $studID . "'";
+        $result = $ilDB->query($query);
+        $record = $ilDB->fetchObject($result);
+        
+        return $record-> firstname . " " . $record-> lastname;
+    }
+    
     public function getHtml($overviewID){
        //global $tpl;
         $matrix = $this-> buildMatrix($overviewID);
         $tests = $this-> getUniqueExerciseId($overviewID);
         $tpl = new ilTemplate("tpl.exercise_view.html", true, true, "Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview");
         foreach ($tests as $test){
-            $txt = "<th> ". $test . "</th>";
+            $txt = "<th> ". $this-> getExerciseName($test) . "</th>";
             $tpl->setCurrentBlock("exercise_colum");
             $tpl->setVariable("colum", $txt);
             $tpl->parseCurrentBlock();
@@ -88,10 +107,10 @@ class ilExerciseMapper
         $outerArray = array ();
         for ($i = 0; $i < count($users); $i++){
             $innerArray = array();
-            $user = $users[$i];
+            $user = $this-> getStudName($users[$i]);
             array_push($innerArray,$user);
             for ($j = 0; $j < count($tests); $j++){
-                $mark = $this-> getMark ($user , $tests[$j],$DbObject);
+                $mark = $this-> getMark ($users[$i] , $tests[$j],$DbObject);
                 if ($mark > 0){
                     array_push($innerArray, $mark);
                 }else {

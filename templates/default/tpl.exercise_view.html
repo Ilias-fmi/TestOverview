@@ -1,4 +1,29 @@
-<div>
+<div id="scoped-content">
+<style type="text/css" scoped>
+  td{
+    text-align: center;
+    -moz-border-radius: 20px;
+    -webkit-border-radius: 20px;
+    -khtml-border-radius: 20px;
+    border-radius: 20px;
+    padding: 6px;
+
+
+  }
+
+  th{
+    padding: 4px;
+  }
+
+  tr {
+    background-color: #FCFCFC;
+  }
+
+  tr:nth-child(2n) {
+    background-color: #F4F4F4;
+  }
+
+</style>
   <table>
     <tr>
       <th> User </th>
@@ -6,10 +31,10 @@
         {colum}
 <!-- END exercise_colum -->
     </tr>
-    <tr>
+
 <!-- BEGIN exercise_row -->
         {data}
 <!-- END exercise_row -->
-    </tr>
+
     </table>
 </div>
