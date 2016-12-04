@@ -199,7 +199,12 @@ class ilObjTestOverviewGUI
                 /*Populate template*/
                 $tpl->setContent($this->renderSettings());
         }
-
+        /**
+         * 
+         * @global type $tpl
+         * @global type $lng
+         * @global type $ilCtrl
+         */
         protected function triggerExport(){
             global $tpl, $lng, $ilCtrl;
             $this->initExportForm();
@@ -236,9 +241,11 @@ class ilObjTestOverviewGUI
                          echo "File written";
                }
                fclose($fp);
+               
                                   
             }
-            
+            $this->form->setValuesByPost();
+            $tpl->setContent($this->renderSettings());
            // $this->Export();
            // $this->form->getInputItemsRecursive();
         }
