@@ -220,7 +220,7 @@ class ilObjTestOverviewGUI
                
                require_once 'Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview/classes/mapper/class.ilCsvExportMapper.php';
                $abc = new ilCsvExportMapper($export_type, $gender_filter, $filter, $export_format);
-               $abc->buildExportFile();
+               ilUtil::sendSuccess($abc->getExportDir());
                
                
                //if(!empty($filter))
