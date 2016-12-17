@@ -25,7 +25,7 @@ class ilCsvExportMapper {
      */
     var $ilDB;
     
-    
+    var $hashMap;
     /**
      * Constructor
      */
@@ -107,9 +107,7 @@ class ilCsvExportMapper {
 			case "to":
 				return $this->buildExportCSVFile();
 				break;
-                        case "eo":
-				return $this->buildExportFileXML();
-				break;
+                        
 		}
     }
     
@@ -128,10 +126,25 @@ class ilCsvExportMapper {
                 on (tst_test_result.question_fi = questionId.question_fi)
                 order by  active_fi, questionId.question_fi';
       $result = $ilDB->query($query);
-      while ($record = $ilDB->fetchObject($result)) {
+      while ($record = $ilDB->fetchAssoc($result)) {
           array_push($points, $record);
       }
       return $points;
+    }
+    
+    function getQuestionIDs($overviewID)
+    {
+        global $ilDB;
+        $ids = array();
+        
+        $query = 'SELECT question_fi FROM rep_robj_xtov_t2o JOIN object_reference JOIN tst_tests JOIN tst_test_question ON '
+                . '(rep_robj_xtov_t2o.ref_id_test = object_reference.ref_id AND obj_id = obj_fi AND test_id = test_fi)';
+        
+        $result= $ilDB->query($query);
+        while ($record = $ilDB->fetchAssoc($result)){
+            array_push($ids, $record);
+        }
+        return $ids;
     }
     
     function getQuestionTitle($questionID)
@@ -139,35 +152,37 @@ class ilCsvExportMapper {
         global $ilDB;
         $titles = array();
         
-        $query = "select title from  qpl_questions where question_fi= '".$questionID."'";
+        $query = "select title from qpl_questions where question_fi= '".$questionID."'";
         
         $result = $ilDB->query($query);
         $record = $ilDB->fetchObject($result);
         return $record -> title;
         
     }
-    function getUniqueTests($overviewID){
-        global $ilDB;
-        $testID = array();
-        
-        $query = 'select ';
-    }
+    
     function getUniqueUserID($overviewID)
     {
         global $ilDB;
         $uniqueIDs = array();
         
-        $query = "Select DISTINCT(exc_mem_ass_status.usr_id) from rep_robj_xtov_e2o  ,exc_returned , exc_mem_ass_status  join usr_data  on (exc_mem_ass_status.usr_id = usr_data.usr_id)
-                where exc_returned.ass_id = exc_mem_ass_status.ass_id 
-                And user_id = exc_mem_ass_status.usr_id and obj_id_exercise = obj_id 
-                and obj_id_overview = '" .$overviewID ."' order by exc_mem_ass_status.usr_id";
+        $query = "select DISTINCT(user_fi) from tst_active JOIN 
+                 (SELECT 
+                    *
+                   FROM
+                rep_robj_xtov_t2o
+                   JOIN
+                object_reference
+                   JOIN
+                tst_tests ON (rep_robj_xtov_t2o.ref_id_test = object_reference.ref_id
+                AND obj_id = obj_fi)) as TestUsers ON 
+                (TestUsers.test_id=tst_active.test_fi)";
         $result = $ilDB->query($query);
         
-        while ($record = $ilDB->fetchObject($result)){
-           array_push($UniqueIDs,$record->usr_id);  
+        while ($record = $ilDB->fetchAssoc($result)){
+           array_push($uniqueIDs,$record);  
         }
         
-        return $UniqueIDs;
+        return $uniqueIDs;
     }
     /**
      * 
@@ -200,6 +215,15 @@ class ilCsvExportMapper {
         return $outerArray;
             
             
+    }
+    
+    public function buildHashMap($overviewID){
+        $this->hashMap=array(); 
+        $user= $this->getUniqueUserID($overviewID);
+        $questions = $this->getQuestionIDs($overviewID);
+        for ($i = 0; $i < count($user); $i++){
+            //jedenUser als Key in array stecken - Student => (Questions => Students Punkte)
+        }
     }
     
     
