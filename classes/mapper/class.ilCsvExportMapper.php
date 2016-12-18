@@ -29,14 +29,11 @@ class ilCsvExportMapper {
     /**
      * Constructor
      */
-    public function __construct($type, $gender, $filter, $format) {
+    public function __construct($type) {
         /**
          * instantiate the variables with form input
          */
         $this->type=$type;
-        $this->filter=$filter;
-        $this->gender=$gender;
-        $this->format=$format;
         
         $date = time();
         
@@ -75,6 +72,21 @@ class ilCsvExportMapper {
         
     }
     
+    private function getActiveID($userID) {
+        global $ilDB;
+        $activeID = array();
+        $query = "SELECT active_id
+                  FROM
+                  tst_active
+                  WHERE (usr_id = ".$userID.")";
+        $result = $ilDB->query($query);
+        while ($record = $ilDB->fetchObject($result)){
+            array_push($activeID, $record);
+        }
+        
+        return $activeID;
+    }
+    
     private function getInfo($userID){
         global $ilDB;
         $info = array();
@@ -100,11 +112,21 @@ class ilCsvExportMapper {
       global $ilDB;
       $points = array();
       
-      $query = 'select active_fi, questionId.question_fi, points from tst_test_result join
-                (select question_fi from rep_robj_xtov_t2o join object_reference join tst_tests join tst_test_question on 
-                (rep_robj_xtov_t2o.ref_id_test = object_reference.ref_id and obj_id = obj_fi and test_id = test_fi)) as questionId
-                on (tst_test_result.question_fi = questionId.question_fi)
-                order by  active_fi, questionId.question_fi';
+      $query = "SELECT 
+                active_fi, questionId.question_fi, points
+                FROM
+                tst_test_result
+                JOIN
+                    (SELECT 
+                    question_fi
+                    FROM
+                    rep_robj_xtov_t2o
+                    JOIN object_reference
+                    JOIN tst_tests
+                    JOIN tst_test_question ON (rep_robj_xtov_t2o.ref_id_test = object_reference.ref_id
+                    AND obj_id = obj_fi
+                    AND test_id = test_fi)) AS questionId ON (tst_test_result.question_fi = questionId.question_fi)
+                    ORDER BY active_fi , questionId.question_fi";
       $result = $ilDB->query($query);
       while ($record = $ilDB->fetchAssoc($result)) {
           array_push($points, $record);
@@ -201,9 +223,22 @@ class ilCsvExportMapper {
             
             
     }
-    
+    public function getMark ($activeID, $questionID , $questionResultObject){
+            foreach ($questionResultObject as $row){
+                if ($row-> active_fi == $activeID AND $row-> questionId.question_fi == $questionID ){
+                    if ($row-> points != null){
+                        return $row-> points ;
+                    }else {
+                        return 0; 
+                    }        
+                }
+              
+            }
+            return 0;
+    }
     public function buildHashMap($overviewID){
         $this->testMap=array(); 
+        $resultObject= $this->getPoints($overviewID);
         $user= $this->getUniqueUserID($overviewID);
         $questions = $this->getQuestionIDs($overviewID);
         if(!empty($user)&&!empty(questions)){
@@ -212,7 +247,12 @@ class ilCsvExportMapper {
             $userInfo = $this->getInfo($user[i]);
             array_push($this->testMap, $userInfo);
                 for ($j = 0; $j<count($questions);$j++){
-                
+                $points = $this->getMark($this->getActiveID($user[i]), $questions[j], $resultObject);
+                if($points>0){
+                    array_push($this->testMap, $points);
+                }else{
+                    array_push($this->testMap, 0);
+                }
                 }
             //jedenUser als Key in array stecken - Student => (Questions => Students Punkte)
         }
