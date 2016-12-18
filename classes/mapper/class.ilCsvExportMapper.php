@@ -25,7 +25,7 @@ class ilCsvExportMapper {
      */
     var $ilDB;
     
-    var $hashMap;
+    var $testMap;
     /**
      * Constructor
      */
@@ -47,46 +47,6 @@ class ilCsvExportMapper {
         
     }
     
-    /**
-     * @return string chosen type 
-     */
-    function getType(){
-        switch ($this->type) {
-            case "eo":
-                return "eo"; break;
-            case "to":
-                return "to"; break;
-         
-        }
-    }
-    /** 
-     * @return chosen format
-     */
-    function getFormat(){
-        switch ($this->format) {
-            case "CSV":
-                return "csv"; break;
-
-            case "XML":
-                return "xml"; break;
-        }
-    }
-    /**
-     * @return string chosen gender
-     */
-    function getGender()
-    {
-        switch ($this->gender) {
-            case "m":
-                return "male"; break;
-            case "f":
-                return "female"; break;
-            default:
-                
-                break;
-        }
-        
-    }
     
     /**
      * Returns the directory where the export files are saved
@@ -115,7 +75,27 @@ class ilCsvExportMapper {
         
     }
     
-    function getPointsSet($overviewID)
+    private function getInfo($userID){
+        global $ilDB;
+        $info = array();
+        $query = "SELECT lastname, firstname, matriculation, email
+                  FROM
+                  usr_data
+                  WHERE (usr_id = ".$userID.")";
+        $result = $ilDB->query($query);
+        while ($record = $ilDB->fetchObject($result)){
+            array_push($info, $record);
+        }
+        
+        return $info;
+    }
+    /**
+     * 
+     * @global type $ilDB
+     * @param type $overviewID
+     * @return array
+     */
+    protected function getPoints($overviewID)
     {
       global $ilDB;
       $points = array();
@@ -131,14 +111,19 @@ class ilCsvExportMapper {
       }
       return $points;
     }
-    
-    function getQuestionIDs($overviewID)
+    /**
+     * 
+     * @global type $ilDB
+     * @param type $overviewID
+     * @return array filled with all existing question-ids for a given XTOV-instance
+     */
+    protected function getQuestionIDs($overviewID)
     {
         global $ilDB;
         $ids = array();
         
-        $query = 'SELECT question_fi FROM rep_robj_xtov_t2o JOIN object_reference JOIN tst_tests JOIN tst_test_question ON '
-                . '(rep_robj_xtov_t2o.ref_id_test = object_reference.ref_id AND obj_id = obj_fi AND test_id = test_fi)';
+        $query = "SELECT question_fi FROM rep_robj_xtov_t2o JOIN object_reference JOIN tst_tests JOIN tst_test_question ON 
+                    (rep_robj_xtov_t2o.ref_id_test = object_reference.ref_id AND obj_id = obj_fi AND test_id = test_fi)";
         
         $result= $ilDB->query($query);
         while ($record = $ilDB->fetchAssoc($result)){
@@ -147,7 +132,7 @@ class ilCsvExportMapper {
         return $ids;
     }
     
-    function getQuestionTitle($questionID)
+    protected function getQuestionTitle($questionID)
     {
         global $ilDB;
         $titles = array();
@@ -160,10 +145,10 @@ class ilCsvExportMapper {
         
     }
     
-    function getUniqueUserID($overviewID)
+    protected function getUniqueUserID($overviewID)
     {
         global $ilDB;
-        $uniqueIDs = array();
+        $this->uniqueIDs = array();
         
         $query = "select DISTINCT(user_fi) from tst_active JOIN 
                  (SELECT 
@@ -218,11 +203,19 @@ class ilCsvExportMapper {
     }
     
     public function buildHashMap($overviewID){
-        $this->hashMap=array(); 
+        $this->testMap=array(); 
         $user= $this->getUniqueUserID($overviewID);
         $questions = $this->getQuestionIDs($overviewID);
-        for ($i = 0; $i < count($user); $i++){
+        if(!empty($user)&&!empty(questions)){
+        
+        for ($i = 0; $i < count($user); $i++){              //jeden User als Key in array stecken
+            $userInfo = $this->getInfo($user[i]);
+            array_push($this->testMap, $userInfo);
+                for ($j = 0; $j<count($questions);$j++){
+                
+                }
             //jedenUser als Key in array stecken - Student => (Questions => Students Punkte)
+        }
         }
     }
     
