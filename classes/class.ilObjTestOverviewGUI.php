@@ -219,8 +219,10 @@ class ilObjTestOverviewGUI
                $export_format = $this->form->getInput("export_format");
                
                require_once 'Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview/classes/mapper/class.ilCsvExportMapper.php';
-               $abc = new ilCsvExportMapper($export_type, $gender_filter, $filter, $export_format);
-               ilUtil::sendSuccess($abc->getExportDir());
+               $abc = new ilCsvExportMapper($export_type);
+               $abc->buildHashMap();
+               $swag = $abc->getHashMap();
+               //var_dump($swag);
                
                
                //if(!empty($filter))
