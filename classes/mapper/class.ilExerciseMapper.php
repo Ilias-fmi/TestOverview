@@ -8,17 +8,17 @@ class ilExerciseMapper
     
     protected $tableName = "rep_robj_xtov_e2o";
     public function getSelectPart()
-	{
+    {
         return " DISTINCT (user_id), firstname, lastname, obj_id , mark";
     }
     
     public function getFromPart()
-	{
+    {
         return " rep_robj_xtov_e2o  ,exc_returned , exc_mem_ass_status  join usr_data  on (exc_mem_ass_status.usr_id = usr_data.usr_id)";
     }
     
     public function getWherePart(array $filters)
-	{
+    {
         return " exc_returned.ass_id = exc_mem_ass_status.ass_id 
                 And user_id = exc_mem_ass_status.usr_id and obj_id_exercise = obj_id ";
     }

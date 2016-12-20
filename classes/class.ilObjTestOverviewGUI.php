@@ -94,6 +94,7 @@ class ilObjTestOverviewGUI
 					case 'initSelectTests':
 					case 'selectTests':
 					case 'performAddTests':
+                                        case 'performAddExcercise':
 					case 'removeTests':
 					case 'addMemberships':
 					case 'removeMemberships':
@@ -243,16 +244,21 @@ class ilObjTestOverviewGUI
         
         protected function UserResults()
         { 
+           global $tpl;
+           require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
+				->getDirectory() . '/classes/class.ilTestOverviewExerciseSelectionExplorer.php';
            
+           $this-> initSelectExercise();
+           $tpl-> setContent ("das hier sieht man ");
             
-           
+           /*
             require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
 				->getDirectory() . '/classes/mapper/class.ilOverviewStudent.php';
             
             global $tpl, $ilTabs, $ilDB, $ilUser;
             $ilTabs->activateTab('HelloWorld');
             $dataMapper = new studentMapper ();
-            $tpl-> setContent ($dataMapper-> getResults($ilUser->getId(),$this-> object-> getId()));
+            $tpl-> setContent ($dataMapper-> getResults($ilUser->getId(),$this-> object-> getId()));*/
             
            /*
             require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
@@ -379,6 +385,49 @@ class ilObjTestOverviewGUI
 		$this->form->setValuesByPost();
 		$tpl->setContent( $this->renderSettings() );
 	}
+        
+        public function initSelectExercise() {
+            global $tree,$tpl, $lng, $ilCtrl, $ilTabs, $ilToolbar;
+		// empty session on init
+		$_SESSION['select_exercise'] = array();
+		// copy opend nodes from repository explorer
+		$_SESSION['select_exercise'] = is_array($_SESSION['repexpand']) ? $_SESSION['repexpand'] : array();
+		// open current position
+		$path = $tree->getPathId((int)$_GET['ref_id']);
+		foreach((array)$path as $node_id)
+		{
+			if(!in_array($node_id, $_SESSION['select_exercise']))
+				$_SESSION['select_exercise'][] = $node_id;
+		}
+		//$this->selectTests();
+                $ilToolbar->addButton($this->lng->txt('cancel'), $ilCtrl->getLinkTarget($this,'editSettings'));
+		$tpl->addBlockfile('ADM_CONTENT', 'adm_content', 'tpl.paste_into_multiple_objects.html', 'Services/Object');
+                require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
+				->getDirectory() . '/classes/class.ilTestOverviewExerciseSelectionExplorer.php';
+                $exp = new ilTestOverviewExerciseSelectionExplorer ('select_exercise');
+                $exp->setTargetGet('ref_id');
+		$exp->setPostVar('nodes[]');
+		$exp->highlightNode((int)$_GET['ref_id']);
+		$exp->setCheckedItems(
+			is_array($_POST['nodes']) ?  (array)$_POST['nodes'] : array()
+		);
+                $tpl->setVariable('FORM_TARGET', '_top');
+		$tpl->setVariable('FORM_ACTION', $ilCtrl->getFormAction($this, 'performAddTests'));
+                $exp->setExpand(
+			isset($_GET['select_exercise']) && (int)$_GET['select_exercise'] ?
+			(int) $_GET['select_exercise'] :
+			$this->tree->readRootId()
+		);
+                //$exp->setDefaultHiddenObjects($this->object->getUniqueTests(true));
+		$exp->setOutput(0);
+		$tpl->setVariable('OBJECT_TREE', $exp->getOutput());
+                $tpl->setVariable('OBJECT_TREE', $exp->getOutput());
+		$tpl->setVariable('CMD_SUBMIT', 'performAddExcercise');
+		$tpl->setVariable('TXT_SUBMIT', $lng->txt('select'));
+                
+		return;
+        }
+        
 	public function initSelectTests()
 	{
 		/**
@@ -431,9 +480,31 @@ class ilObjTestOverviewGUI
 		$exp->setDefaultHiddenObjects($this->object->getUniqueTests(true));
 		$exp->setOutput(0);
 		$tpl->setVariable('OBJECT_TREE', $exp->getOutput());
-		$tpl->setVariable('CMD_SUBMIT', 'performAddTests');
+		$tpl->setVariable('CMD_SUBMIT', 'performAddExcercise');
 		$tpl->setVariable('TXT_SUBMIT', $lng->txt('select'));
 	}
+        
+        public function performAddExcercise(){
+            
+            global $tpl;
+            $tpl-> setContent("jo");
+
+
+           
+            $txt = "";
+            if ($_POST['nodes'] != null){
+                foreach($_POST['nodes'] as $ref_id)
+                    {
+                    $txt .= ";";
+                    $txt .= $ref_id;
+                    ++$num_nodes;
+                }
+            }else{
+                ilUtil::sendFailure($lng->txt('select_one'));
+            }
+            $tpl-> setContent($txt);
+            
+        }
 
 	public function performAddTests()
 	{
