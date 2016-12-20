@@ -8,32 +8,33 @@ require_once 'Customizing/global/plugins/Services/Repository/RepositoryObject/Te
  */
 class ilCsvExportMapper {
     
-    /** @var type extended (TestQuestions) */
+    /** @var type extended/reduced (TestQuestions) */
     var $type;
 
+    var $overviewID;
     
     var $filename;
-
     /**
      *
-     * @var testMap containing student-information
+     * @var testMap containing student-information for tests
      */
     var $testMap = array();
+
     /**
      * Constructor
      */
-    public function __construct($type) {
+    public function __construct($type, $overviewID) {
         /**
          * instantiate the variables with form input
          */
         $this->type=$type;
-        
+        $this->overviewID = $overviewID;
         $date = time();
         
         $this->inst_id = IL_INST_ID;
         
-        $this->subdir = $date."__".$this->inst_id;
-	$this->filename = $this->subdir;        
+        $this->subdir = $date."__".$type."_extov";
+	$this->filename = $this->subdir;  
         
     }
     
@@ -65,25 +66,115 @@ class ilCsvExportMapper {
         
     }
     
-    function getHashMap() {
+    /**
+     * @return array 
+     */
+    function getStudentMap() {
         return $this->testMap;
     }
     
-    private function getActiveID($userID) {
+    /**
+     * 
+     * @global type $ilDB
+     * @param type $overviewID
+     * @return array containing all testIDs associtated with the TO-Object
+     */
+    protected function getTestIDs() {
         global $ilDB;
-        $activeID = array();
-        $query = "SELECT active_id
+        $testIDs=array();
+        $query = "SELECT 
+                  tst_tests.test_id
                   FROM
-                  tst_active
-                  WHERE user_fi = ".$ilDB->quote($userID, "integer");
-        $result = $ilDB->query($query);
-        while ($record = $ilDB->fetchAssoc($result)){
-            array_push($activeID, $record);
-        }
+                  rep_robj_xtov_t2o
+                  JOIN object_reference
+                  JOIN tst_tests
+                  ON (rep_robj_xtov_t2o.ref_id_test = object_reference.ref_id
+                  AND obj_id = obj_fi)
+                  WHERE obj_id_overview =".$ilDB->quote($this->overviewID, 'integer');
         
-        return $activeID;
+        $result= $ilDB->query($query);
+        while ($record = $ilDB->fetchAssoc($result)){
+            array_push($testIDs, $record);
+        }
+        return $testIDs;
     }
     
+    
+    protected function getTest($questionID) {
+        global $ilDB;
+        $query = "  SELECT 
+                    DISTINCT test_fi
+                    FROM
+                    tst_test_question
+                    WHERE question_fi=".$ilDB->quote($questionID, 'integer');
+        
+        $result= $ilDB->query($query);
+        $record = $ilDB->fetchAssoc($result);
+        return $record['test_fi'];
+    }
+    
+    
+    
+    /**
+     * 
+     * @global type $ilDB
+     * @param type $overviewID
+     * @return array filled with all existing question-ids for a given XTOV-instance
+     */
+    private function getQuestionIDs()
+    {
+        global $ilDB;
+        $qIDs = array();
+        
+        $query = "SELECT 
+                  question_fi
+                  FROM
+                  rep_robj_xtov_t2o
+                  JOIN object_reference
+                  JOIN tst_tests
+                  JOIN tst_test_question ON (rep_robj_xtov_t2o.ref_id_test = object_reference.ref_id
+                  AND obj_id = obj_fi
+                  AND test_id = test_fi)
+                  WHERE obj_id_overview =".$ilDB->quote($this->overviewID, 'integer');
+        $result= $ilDB->query($query);
+        while ($record = $ilDB->fetchAssoc($result)){
+            array_push($qIDs, $record);
+        }
+        return $qIDs;
+    }
+    
+    
+    /**
+     * 
+     * @global type $ilDB
+     * @param type $userID
+     * @param type $testID
+     * @return string 
+     */
+    private function getActiveID($userID, $testID) {
+        global $ilDB;
+           
+        $result = $ilDB->queryF("SELECT tst_active.active_id FROM tst_active WHERE user_fi = %s AND test_fi = %s",
+			array('integer', 'integer'),
+			array($userID, $testID));
+        
+        if ($result->numRows()) 
+	{
+            $row = $ilDB->fetchAssoc($result);
+            return $row["active_id"];
+	}else {
+            return "";
+        }
+        
+                
+       
+    }
+    /**
+     * 
+     * @global type $ilDB
+     * @param type $userID
+     * @return type
+     */
     private function getInfo($userID){
         global $ilDB;
         $info = array();
@@ -93,10 +184,9 @@ class ilCsvExportMapper {
                   WHERE (usr_id = '".$userID."')";
         $result = $ilDB->query($query);
         while ($record = $ilDB->fetchAssoc($result)){
-            array_push($info, $record);
+            //array_push($info, $record);
+            return $record;
         }
-        
-        return $info;
     }
     /**
      * 
@@ -104,6 +194,31 @@ class ilCsvExportMapper {
      * @param type $overviewID
      * @return array
      */
+    
+    public function getTestResultsForActiveId($active_id)
+	{
+		global $ilDB;   
+		
+		$query = "
+			SELECT		*
+			FROM		tst_result_cache
+			WHERE		active_fi = %s
+		";
+		
+		$result = $ilDB->queryF($query, 
+                        array('integer'), array($active_id)
+		);
+		
+		
+		
+		$row = $ilDB->fetchAssoc($result);
+		
+		return $row;
+		
+	}
+    
+    
+    
     protected function getAssociation()
     {
       global $ilDB;
@@ -130,26 +245,9 @@ class ilCsvExportMapper {
       }
       return $points;
     }
-    /**
-     * 
-     * @global type $ilDB
-     * @param type $overviewID
-     * @return array filled with all existing question-ids for a given XTOV-instance
-     */
-    protected function getQuestionIDs()
-    {
-        global $ilDB;
-        $ids = array();
-        
-        $query = "SELECT question_fi FROM rep_robj_xtov_t2o JOIN object_reference JOIN tst_tests JOIN tst_test_question ON 
-                    (rep_robj_xtov_t2o.ref_id_test = object_reference.ref_id AND obj_id = obj_fi AND test_id = test_fi)";
-        
-        $result= $ilDB->query($query);
-        while ($record = $ilDB->fetchAssoc($result)){
-            array_push($ids, $record);
-        }
-        return $ids;
-    }
+    
+    
+    
     
     protected function getQuestionTitle($questionID)
     {
@@ -173,7 +271,7 @@ class ilCsvExportMapper {
         global $ilDB;
         $uniqueIDs = array();
         
-        $query = "select DISTINCT(user_fi) from tst_active JOIN 
+        $query = "SELECT user_fi from tst_active JOIN 
                  (SELECT 
                     *
                    FROM
@@ -203,14 +301,15 @@ class ilCsvExportMapper {
      */
     public function getMark ($activeID, $questionID , $questionResultObject){
             foreach ($questionResultObject as $row => $value){
-                if ($value-> active_fi == $activeID AND $value-> questionId.question_fi == $questionID ){
-                    if ($value-> points != null){
-                        return $value-> points ;
-                    }else {
-                        return 0; 
-                    }        
-                }
+                //echo "10 Punkte: $value->active_fi, $value->question_fi, $value->points\n";
+
+                if ($value->active_fi == $activeID && $value->question_fi == $questionID ){
+
+                    if ($value->points != null){
+                        return $value->points;   
+                    }
               
+                }
             }
             return 0;
     }
@@ -225,46 +324,47 @@ class ilCsvExportMapper {
      *                                                Question2 => Points,...))
      *                                               
      */
-    public function buildHashMap(){
+    public function buildStudentMap(){
         $this->testMap=array(); 
         $resultObject= $this->getAssociation();
         $userArray= $this->getUniqueTestUserID();
-        $questions = $this->getQuestionIDs();
+        $questions= $this->getQuestionIDs();
         
-        
+        echo $this->testsQuestion;
         $userID;
         $questionID;
         
         //var_dump($userArray);
-        var_dump($resultObject);
+        //var_dump($resultObject);
         //var_dump($questions);
-        if(!empty($userArray)&&!empty($questions)){
+        //var_dump($tests);
+        //var_dump($userArray);
+        if(empty($userArray))
+            ilUtil::sendFailure("No users to dump.");
+        if(empty($questions))
+            ilUtil::sendFailure("No Questions to dump.");
         
-        for ($i = 0; $i < count($userArray); $i++){
-            $userID = $userArray[$i]['user_fi'];
-            $activeID = $this->getActiveID($userID)[$i]['active_id'];
+        foreach($userArray as $elem => $userFi){
+            $userID = $userFi['user_fi'];
+            $this->testMap[$userID] = array();
+            //$userInfo = $this->getInfo($userID); // Retrieve UserInfo (Lastname, Firstname, Email, Matriculation) for userID
             
-            $userInfo = $this->getInfo($userID); // Retrieve UserInfo (Lastname, Firstname, Email, Matriculation) for userID
-             ;//Store UserInfo in Array 
-            
-                for ($j = 0; $j<count($questions);$j++){  
-                    $questionID = $questions[$j]['question_fi'];
-                    $this->testMap[$userID] = array();
+            foreach ($questions as $key => $value) {
+                    $questionID = $value['question_fi'];
+                    $testID = $this->getTest($questionID);
+                    $activeID = $this->getActiveID($userID, $testID);
+
+                    
                     $points = $this->getMark($activeID, $questionID, $resultObject); //Points for a given user on a given question
-                    echo $points;  
-                    if($points>0){
-                        array_push($this->testMap, $points);
-                        $this->testMap[$userID][$questionID] = $points; 
-                        
-                        }else{
-                        $this->testMap[$userID][$questionID] = 0;
-                        } 
-                        var_dump($this->testMap);
+                    //echo "UserID: $userID, QuestionID: $questionID, Punkte: $points\n";
+                    
+                    
+                    $this->testMap[$userID][$questionID] = $points;
+                    
                 }            
+        
         }
-        }else{
-            ilUtil::sendFailure("Either no Users or no Tests");
-        }
+        var_dump($this->testMap);
     }
     
     

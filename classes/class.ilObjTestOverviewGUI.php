@@ -208,20 +208,18 @@ class ilObjTestOverviewGUI
         protected function triggerExport(){
             global $tpl, $lng, $ilCtrl;
             $this->initExportForm();
-            
+            $xtov_ID = $this->object->getID();
             if($this->form->checkInput())
             {
                
                /* Save form input */
                $export_type = $this->form->getInput("export_type"); 
-               $gender_filter = $this->form->getInput("gender_filter");
-               $filter = $this->form->getInput("filter");
-               $export_format = $this->form->getInput("export_format");
                
                require_once 'Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview/classes/mapper/class.ilCsvExportMapper.php';
-               $abc = new ilCsvExportMapper($export_type);
-               $abc->buildHashMap();
-               $swag = $abc->getHashMap();
+               $abc = new ilCsvExportMapper($export_type, $xtov_ID);
+               $abc->buildStudentMap();
+               //$swag = $abc->getStudentMap();
+               
                //var_dump($swag);
                
                
@@ -263,55 +261,15 @@ class ilObjTestOverviewGUI
 
                 //radio group: Export type
                 $checkbox_overview = new ilRadioGroupInputGUI("Type", "export_type");
-                $overview_op = new ilCheckboxOption("TestOverview", "to", "Export the test database of this course");
-                $overview_op2 = new ilCheckboxOption ("ExerciseOverview", "eo", "Export the exercise database of this course");
+                $overview_op = new ilCheckboxOption("Reduced", "reduced", "Export the results for all tests ");
+                $overview_op2 = new ilCheckboxOption ("Extended", "extended", "Export the results for all questions for every test");
 
                 $checkbox_overview->addOption($overview_op);
                 $checkbox_overview->addOption($overview_op2);
                 $checkbox_overview->setRequired(true);
 
 
-                //radiobox group
-                $gender_filter = new ilRadioGroupInputGUI("Gender", "gender_filter");
-               
-                $r_op2 = new ilRadioOption("Male", "m", "Export all male results");
-                $r_op3 = new ilRadioOption("Female", "f", "Export all female results");
-
-                
-                $gender_filter->addOption($r_op2);
-                $gender_filter->addOption($r_op3);
-                $r_op2->setDisabled(true);
-
-                // checkbox group: Filter
-                $checkbox_filter = new ilCheckboxGroupInputGUI("Filter", "filter");
-                $checkbox_filter->setInfo("Please apply the filters of your choice.");
-
-                $c_op = new ilCheckboxOption("Filter: placeholder Option1", "1", "Infotext for Option 1");
-                $c_op2 = new ilCheckboxOption ("Filter: placeholder Option2", "2", "Infotext for Option 2");
-                $c_op3 = new ilCheckboxOption ("Filter: placeholder Option 3", "3", "Infotext for Option 3");
-                
-                $checkbox_filter->addOption($c_op);
-                $checkbox_filter->addOption($c_op2);
-                $checkbox_filter->addOption($c_op3);
-                $checkbox_filter->setRequired(false);
-                
-                
-
-
-
-                //radio group: Export type
-                $checkbox_format = new ilRadioGroupInputGUI("Format", "export_format");
-                $format_op = new ilCheckboxOption("CSV", "CSV", "Export");
-                $format_op2 = new ilCheckboxOption ("XML", "XML", "Infotext for Option 2");
-
-                $checkbox_format->addOption($format_op); 
-                $checkbox_format->addOption($format_op2);
-                $checkbox_format->setRequired(true);
-
                 $this->form->addItem($checkbox_overview);
-                $this->form->addItem($gender_filter);   
-                $this->form->addItem($checkbox_filter);
-                $this->form->addItem($checkbox_format);
                 
                 $this->form->addCommandButton("triggerExport", "Export");
                 $tpl->setContent($this->renderSettings());
