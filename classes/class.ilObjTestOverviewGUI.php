@@ -218,6 +218,8 @@ class ilObjTestOverviewGUI
 		return $this->form->getHTML()
 			 . "<hr />"
 			 . $this->getTestList()->getHTML()
+                         . "<hr />"
+                         . $this->getExerciseList()
 			 . "<hr />"
 			 . $this->getMembershipList()->getHTML();
 	}
@@ -387,24 +389,37 @@ class ilObjTestOverviewGUI
 	}
         
         public function initSelectExercise() {
-            global $tree,$tpl, $lng, $ilCtrl, $ilTabs, $ilToolbar;
+            
+            global $tree;
 		// empty session on init
 		$_SESSION['select_exercise'] = array();
 		// copy opend nodes from repository explorer
 		$_SESSION['select_exercise'] = is_array($_SESSION['repexpand']) ? $_SESSION['repexpand'] : array();
 		// open current position
 		$path = $tree->getPathId((int)$_GET['ref_id']);
+                
 		foreach((array)$path as $node_id)
 		{
-			if(!in_array($node_id, $_SESSION['select_exercise']))
-				$_SESSION['select_exercise'][] = $node_id;
+			if(!in_array($node_id, $_SESSION['select_exercise'])){
+                        $_SESSION['select_exercise'][] = $node_id;}
 		}
-		//$this->selectTests();
+                $this-> selectExercises();
+                return;
+                
+                
+		
+        }
+        
+        public function selectExercises(){
+            
+            global $tpl, $lng, $ilCtrl, $ilToolbar;
+            
                 $ilToolbar->addButton($this->lng->txt('cancel'), $ilCtrl->getLinkTarget($this,'editSettings'));
 		$tpl->addBlockfile('ADM_CONTENT', 'adm_content', 'tpl.paste_into_multiple_objects.html', 'Services/Object');
                 require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
 				->getDirectory() . '/classes/class.ilTestOverviewExerciseSelectionExplorer.php';
                 $exp = new ilTestOverviewExerciseSelectionExplorer ('select_exercise');
+                $exp->setExpandTarget($ilCtrl->getLinkTarget($this, 'selectExercises'));
                 $exp->setTargetGet('ref_id');
 		$exp->setPostVar('nodes[]');
 		$exp->highlightNode((int)$_GET['ref_id']);
@@ -421,7 +436,6 @@ class ilObjTestOverviewGUI
                 //$exp->setDefaultHiddenObjects($this->object->getUniqueTests(true));
 		$exp->setOutput(0);
 		$tpl->setVariable('OBJECT_TREE', $exp->getOutput());
-                $tpl->setVariable('OBJECT_TREE', $exp->getOutput());
 		$tpl->setVariable('CMD_SUBMIT', 'performAddExcercise');
 		$tpl->setVariable('TXT_SUBMIT', $lng->txt('select'));
                 
@@ -448,6 +462,7 @@ class ilObjTestOverviewGUI
 		$this->selectTests();
 		return;
 	}
+	
 	public function selectTests()
 	{
 		/**
@@ -480,7 +495,7 @@ class ilObjTestOverviewGUI
 		$exp->setDefaultHiddenObjects($this->object->getUniqueTests(true));
 		$exp->setOutput(0);
 		$tpl->setVariable('OBJECT_TREE', $exp->getOutput());
-		$tpl->setVariable('CMD_SUBMIT', 'performAddExcercise');
+		$tpl->setVariable('CMD_SUBMIT', 'performAddTests');
 		$tpl->setVariable('TXT_SUBMIT', $lng->txt('select'));
 	}
         
@@ -497,16 +512,17 @@ class ilObjTestOverviewGUI
                 foreach($_POST['nodes'] as $ref_id)
                     {
                     $mapper-> createEntry($overviewId,$ref_id);
+                    $this->editSettings();
                 }
             }else{
                 ilUtil::sendFailure($lng->txt('select_one'));
                 $this-> initSelectExercise();
             }
-            $tpl-> setContent("jo");
+           
             
         }
 
-	public function performAddTests()
+		public function performAddTests()
 	{
 		/**
 		 * @var $lng      ilLanguage
@@ -514,7 +530,7 @@ class ilObjTestOverviewGUI
 		 * @var $ilAccess ilAccessHandler
 		 */
 		global $lng, $ilCtrl, $ilAccess;
-
+		
 		if(!isset($_POST['nodes']) || !is_array($_POST['nodes']) || !$_POST['nodes'])
 		{
 			ilUtil::sendFailure($lng->txt('select_one'));
@@ -538,6 +554,7 @@ class ilObjTestOverviewGUI
 		}
 		ilUtil::sendSuccess($this->txt('tests_updated_success'), true);
 		$ilCtrl->redirect($this, 'editSettings');
+		
 		$this->editSettings();
 		return;
 	}
@@ -843,7 +860,15 @@ class ilObjTestOverviewGUI
 				 ->populate();
 		return $testList;
 	}
-	/**
+        /**
+         * 
+         * @return string Returns the HTML of all Exercises that are realted to the Overview Object
+         */
+        protected function getExerciseList(){
+            return "<p> Füll Kontent </p>";
+        }
+
+        /**
 	 *	Retrieve the memberships list table.
 	 *
 	 *	The getMembershipList() method should be used to
