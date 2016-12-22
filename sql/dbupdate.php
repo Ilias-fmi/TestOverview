@@ -17,7 +17,7 @@ $fields_tests = array(
 	'obj_id_overview' => array(
 		'type'    => 'integer',
 		'length'  => 4,
-		'notnull' => true,
+            
 		'default' => 0
 	),
 	'obj_id_test' => array(

@@ -124,6 +124,7 @@ class ilTestListTableGUI extends ilMappedTableGUI
 	 * @param stdClass $item
 	 * @return string
 	 */
+    
 	private function getTestPath( stdClass $item )
 	{
 		/**

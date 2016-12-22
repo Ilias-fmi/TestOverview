@@ -43,10 +43,11 @@ td.result div.result, td.result a.result
 	background: #f00;
 	color: #fff;
 }
+#jo{
+  background-color: black;
+}
 
-div.student-view
-{
-  .col-1 {width: 33.33%;}
+  .col-1 {width: 33.33%;
+          background-color: black;}
   .col-2 {width: 33.33%;}
   .col-3 {width: 33.33%;}
-}

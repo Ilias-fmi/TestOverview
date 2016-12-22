@@ -94,6 +94,7 @@ class ilObjTestOverviewGUI
 					case 'initSelectTests':
 					case 'selectTests':
 					case 'performAddTests':
+                                        case 'performAddExcercise':
 					case 'removeTests':
 					case 'addMemberships':
 					case 'removeMemberships':
@@ -199,7 +200,7 @@ class ilObjTestOverviewGUI
                 /*Populate template*/
                 $tpl->setContent($this->renderSettings());
         }
-
+        /*
         protected function triggerExport(){
             global $tpl, $lng, $ilCtrl;
             $this->initExportForm();
@@ -207,7 +208,7 @@ class ilObjTestOverviewGUI
             {
                /* Form is sent and input validated,
 			   now save settings. */
-             
+           /*  
                 
                 $input_array = $this->form->getItems();
                 
@@ -221,7 +222,7 @@ class ilObjTestOverviewGUI
            // $this->Export();
            // $this->form->getInputItemsRecursive();
         }
-
+        
         protected function initExportForm() {
         
                 global $ilCtrl, $tpl;   
@@ -344,11 +345,15 @@ class ilObjTestOverviewGUI
 	 */
 	protected function renderSettings()
 	{
-		return $this->form->getHTML();
-		//	 . "<hr />"
-		//	 . $this->getTestList()->getHTML();
-		//	 . "<hr />"
-		//	 . $this->getMembershipList()->getHTML();
+
+		return $this->form->getHTML()
+			 . "<hr />"
+			 . $this->getTestList()->getHTML()
+                         . "<hr />"
+                         . $this->getExerciseList()
+			 . "<hr />"
+			 . $this->getMembershipList()->getHTML();
+
 	}
 	/**
 	 *	Command for editing the settings of a Test Overview.
@@ -373,44 +378,69 @@ class ilObjTestOverviewGUI
 
         
         protected function UserResults()
-        {
-            require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
+        { 
+           /*global $tpl;
+           require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
+				->getDirectory() . '/classes/class.ilTestOverviewExerciseSelectionExplorer.php';
+           
+           $this-> initSelectExercise();
+           $tpl-> setContent ("das hier sieht man ");
+            
+           */
+          global  $tpl;
+          require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
 				->getDirectory() . '/classes/mapper/class.ilOverviewStudent.php';
             
             global $tpl, $ilTabs, $ilDB, $ilUser;
             $ilTabs->activateTab('UserResults');
             $dataMapper = new studentMapper ();
             $tpl-> setContent ($dataMapper-> getResults($ilUser->getId(),$this-> object-> getId()));
+            
+           /*
+            require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
+				->getDirectory() . '/classes/mapper/class.ilExerciseMapper.php';
+
+            $Obj = new ilExerciseMapper();
+            $matrix = $Obj-> buildMatrix(300);
+            //$tpl-> setContent ();
+            //$users = $Obj-> getUniqueUserId (300);
+            $tpl-> setContent ($Obj-> getHtml(300));
+           */
            
-       
             
         }
 
 
 
-        protected function TestOverview()
-	{
-                global $tpl, $ilTabs,$ilCtrl;
-                
-                $this->showContent();
+		
+
+   protected function TestOverview()
+	 {
+		global $tpl, $ilTabs,$ilCtrl;
+                 $ilTabs->addSubTab('content',"Test Übersicht", $this->ctrl->getLinkTarget($this,  'showContent')); 
+                $ilTabs->addSubTab('subTabTO',"Diagramme", $this->ctrl->getLinkTarget($this,'subTabTO'));
+		$ilTabs->addSubTab( 'subTabTO2',"Test Verwaltung",$this->ctrl->getLinkTarget($this,  'subTabTO2'));
                 $ilTabs->activateTab('TestOverview');
-                $ilTabs->activateSubTab('content'); 
-                
-        }
-//	protected function uebersicht()
-//		{
-//			global $tpl, $ilTabs,	$ilCtrl;
-//
-//	$tpl->setContent("<p> ToSubtabContent </p>");
-//		 }
+                $ilTabs->activateSubTab('subTabTO');   
+             $this->includePluginClasses(array(
+			"ilTestOverviewTableGUI",
+			"ilOverviewMapper"));
+                 // Button um Graphiken der Übersicht zu erstellen
+		
+                $ilTabs->activateSubTab('showContent');
 
 
-
-		 
-
+		/* Configure content UI */
+		$table = new ilTestOverviewTableGUI( $this, 'showContent' );
+		$table->setMapper(new ilOverviewMapper)
+			  ->populate();
+		/* Populate template */
+		$tpl->setDescription($this->object->getDescription());
+                $data = array_slice($table-> getData(), $table->getOffset(), $table->getLimit());
+		$tpl->setContent( $table->getHTML());
+								
+   }
 	
-
-
 
 
         protected function subTabTO()
@@ -424,14 +454,21 @@ class ilObjTestOverviewGUI
                 $ilTabs->activateTab('TestOverview');
                 $ilTabs->activateSubTab('subTabTO');   
 		 
-                  require_once 'Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview/classes/mapper/class.ilBinDiagrammMapper.php';
+
+            global $tpl,$lng, $ilTabs,$ilToolbar, $ilDB;
+                    $ilTabs->activateSubTab('subTabTO2');
+                    require_once 'Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview/classes/mapper/class.ilBinDiagrammMapper.php';
+
                     try{
                         $Obj = new BinDiagrammMapper ($this,'showContent');
                         $tpl-> setContent($Obj->createAverageDia("BARS"));
                     } catch (Exception $ex) {
                        $tpl-> setContent ("Error 300 This is Sparta!");
+
                     }
-	}
+		 }
+
+	
 
 
 
@@ -483,8 +520,16 @@ class ilObjTestOverviewGUI
                         $ilTabs->addSubTab('subTabEO1',"Diagramme",$ilCtrl->getLinkTarget($this,'subTabEO1'));
                         $ilTabs->addSubTab('subTabEO2', "Übungs Verwaltung", $ilCtrl->getLinkTarget($this,'subTabEO2'));
                         $ilTabs->activateTab('ExerciseOverview'); 
-                        $ilTabs->activateSubTab('subTabEO');   
-			$tpl->setContent("<p> EO CONTENT </p>");
+                        $ilTabs->activateSubTab('subTabEO');  
+                        require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
+				->getDirectory() . '/classes/mapper/class.ilExerciseMapper.php';
+
+            $Obj = new ilExerciseMapper();
+            //$matrix = $Obj-> buildMatrix(305);
+            //$tpl-> setContent ();
+            //$users = $Obj-> getUniqueUserId (300);
+            $tpl-> setContent ($Obj-> getHtml($this-> object-> getId()));
+			//$tpl->setContent("<p> EO CONTENT </p>");
                         
 	 }
 
@@ -497,9 +542,36 @@ class ilObjTestOverviewGUI
                         $ilTabs->addSubTab('subTabEO2', "Übungs Verwaltung", $ilCtrl->getLinkTarget($this,'subTabEO2'));
                         $ilTabs->activateTab('ExerciseOverview'); 
                         $ilTabs->activateSubTab('subTabEO2');   
-			$tpl->setContent("<p> EO2 Content </p>");
+			global $tpl;
+           require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
+				->getDirectory() . '/classes/class.ilTestOverviewExerciseSelectionExplorer.php';
+           
+           $this-> initSelectExercise();
+           $tpl-> setContent ("das hier sieht man ");
 		 
-	 }
+	 
+
+                    
+                  require_once 'Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview/classes/mapper/class.ilBinDiagrammMapper.php';
+                  
+                        $Obj = new BinDiagrammMapper ($this,'showContent');
+                        $tpl-> setContent($Obj->data() . "jop");
+                  
+                    
+                    
+                    /*
+		$this->includePluginClasses(array(
+			"ilObjExerciseOverviewGUI",
+			));
+                
+                $table = new ilObjExerciseOverviewListGUI();
+               
+                
+               $tpl->setContent( $table-> data() );*/
+                 }
+
+
+	 
 
 
 	protected function ExerciseOverview()
@@ -544,6 +616,61 @@ class ilObjTestOverviewGUI
 		$this->form->setValuesByPost();
 		$tpl->setContent( $this->renderSettings() );
 	}
+        
+        public function initSelectExercise() {
+            
+            global $tree;
+		// empty session on init
+		$_SESSION['select_exercise'] = array();
+		// copy opend nodes from repository explorer
+		$_SESSION['select_exercise'] = is_array($_SESSION['repexpand']) ? $_SESSION['repexpand'] : array();
+		// open current position
+		$path = $tree->getPathId((int)$_GET['ref_id']);
+                
+		foreach((array)$path as $node_id)
+		{
+			if(!in_array($node_id, $_SESSION['select_exercise'])){
+                        $_SESSION['select_exercise'][] = $node_id;}
+		}
+                $this-> selectExercises();
+                return;
+                
+                
+		
+        }
+        
+        public function selectExercises(){
+            
+            global $tpl, $lng, $ilCtrl, $ilToolbar;
+            
+                $ilToolbar->addButton($this->lng->txt('cancel'), $ilCtrl->getLinkTarget($this,'editSettings'));
+		$tpl->addBlockfile('ADM_CONTENT', 'adm_content', 'tpl.paste_into_multiple_objects.html', 'Services/Object');
+                require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
+				->getDirectory() . '/classes/class.ilTestOverviewExerciseSelectionExplorer.php';
+                $exp = new ilTestOverviewExerciseSelectionExplorer ('select_exercise');
+                $exp->setExpandTarget($ilCtrl->getLinkTarget($this, 'selectExercises'));
+                $exp->setTargetGet('ref_id');
+		$exp->setPostVar('nodes[]');
+		$exp->highlightNode((int)$_GET['ref_id']);
+		$exp->setCheckedItems(
+			is_array($_POST['nodes']) ?  (array)$_POST['nodes'] : array()
+		);
+                $tpl->setVariable('FORM_TARGET', '_top');
+		$tpl->setVariable('FORM_ACTION', $ilCtrl->getFormAction($this, 'performAddTests'));
+                $exp->setExpand(
+			isset($_GET['select_exercise']) && (int)$_GET['select_exercise'] ?
+			(int) $_GET['select_exercise'] :
+			$this->tree->readRootId()
+		);
+                //$exp->setDefaultHiddenObjects($this->object->getUniqueTests(true));
+		$exp->setOutput(0);
+		$tpl->setVariable('OBJECT_TREE', $exp->getOutput());
+		$tpl->setVariable('CMD_SUBMIT', 'performAddExcercise');
+		$tpl->setVariable('TXT_SUBMIT', $lng->txt('select'));
+                
+		return;
+        }
+        
 	public function initSelectTests()
 	{
 		/**
@@ -564,6 +691,7 @@ class ilObjTestOverviewGUI
 		$this->selectTests();
 		return;
 	}
+	
 	public function selectTests()
 	{
 		/**
@@ -599,8 +727,31 @@ class ilObjTestOverviewGUI
 		$tpl->setVariable('CMD_SUBMIT', 'performAddTests');
 		$tpl->setVariable('TXT_SUBMIT', $lng->txt('select'));
 	}
+        
+        public function performAddExcercise(){
+            
+            global $tpl,$lng, $ilCtrl, $ilAccess;
+            
+            include_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
+                                                    ->getDirectory() . "/classes/mapper/class.ilExerciseImport.php";
+           $mapper = new ExerciseImport ();
+           $overviewId = $this-> object-> getId();
+            $txt = "";
+            if ($_POST['nodes'] != null){
+                foreach($_POST['nodes'] as $ref_id)
+                    {
+                    $mapper-> createEntry($overviewId,$ref_id);
+                    $this->editSettings();
+                }
+            }else{
+                ilUtil::sendFailure($lng->txt('select_one'));
+                $this-> initSelectExercise();
+            }
+           
+            
+        }
 
-	public function performAddTests()
+		public function performAddTests()
 	{
 		/**
 		 * @var $lng      ilLanguage
@@ -608,7 +759,7 @@ class ilObjTestOverviewGUI
 		 * @var $ilAccess ilAccessHandler
 		 */
 		global $lng, $ilCtrl, $ilAccess;
-
+		
 		if(!isset($_POST['nodes']) || !is_array($_POST['nodes']) || !$_POST['nodes'])
 		{
 			ilUtil::sendFailure($lng->txt('select_one'));
@@ -631,7 +782,9 @@ class ilObjTestOverviewGUI
 			return;
 		}
 		ilUtil::sendSuccess($this->txt('tests_updated_success'), true);
+
 		$ilCtrl->redirect($this,'subTabTO2');
+
 		$this->editSettings();
 		return;
 	}
@@ -873,7 +1026,7 @@ class ilObjTestOverviewGUI
 	{
 		$this->includePluginClasses(array(
 			"ilMembershipListTableGUI"));
-		$table = new ilMembershipListTableGUI( $this, 'editSettings' );
+		$table = new ilMembershipListTableGUI( $this, 'editSettings');
 		$table->resetOffset();
 		$table->writeFilterToSession();
 		$this->editSettings();
@@ -942,7 +1095,15 @@ class ilObjTestOverviewGUI
 				 ->populate();
 		return $testList;
 	}
-	/**
+        /**
+         * 
+         * @return string Returns the HTML of all Exercises that are realted to the Overview Object
+         */
+        protected function getExerciseList(){
+            return "<p> Füll Kontent </p>";
+        }
+
+        /**
 	 *	Retrieve the memberships list table.
 	 *
 	 *	The getMembershipList() method should be used to
