@@ -55,23 +55,30 @@ class ilCsvExportMapper {
     {
 		switch ($this->type)
 		{
-			case "to":
-				return $this->buildExportCSVFile();
+			case "reduced":
+				return $this->buildReducedFile();
 				break;
+                        case "extended":
+                                return $this->buildExtendedFile();
+                                break;
                         
 		}
     }
     
-    function buildExportCSVFile() {
+    
+    function buildExtendedFile() {
+        $data= $this->buildStudentMap();
+        $rows= array();
+        $datarow = array();
+        $col = 1;
+        array_push($datarow, $this->lng->txt("name"));
+        array_push($datarow,$this->lng->txt("matriculation"));
+        array_push($datarow,$this->lng->txt("email"));
+        array_push($datarow,$this->lng->txt("gender"));
         
     }
     
-    /**
-     * @return array 
-     */
-    function getStudentMap() {
-        return $this->testMap;
-    }
+    
     
     /**
      * 
@@ -196,26 +203,26 @@ class ilCsvExportMapper {
      */
     
     public function getTestResultsForActiveId($active_id)
-	{
-		global $ilDB;   
+    {
+	global $ilDB;   
+	
+	$query = "
+		SELECT		*
+		FROM		tst_result_cache
+		WHERE		active_fi = %s
+	";
+	
+	$result = $ilDB->queryF($query, 
+                       array('integer'), array($active_id)
+	);
 		
-		$query = "
-			SELECT		*
-			FROM		tst_result_cache
-			WHERE		active_fi = %s
-		";
-		
-		$result = $ilDB->queryF($query, 
-                        array('integer'), array($active_id)
-		);
 		
 		
+	$row = $ilDB->fetchAssoc($result);
+	
+	return $row;
 		
-		$row = $ilDB->fetchAssoc($result);
-		
-		return $row;
-		
-	}
+    }
     
     
     
@@ -224,21 +231,21 @@ class ilCsvExportMapper {
       global $ilDB;
       $points = array();
       
-      $query = "SELECT 
-                active_fi, questionId.question_fi, points
-                FROM
-                tst_test_result
-                JOIN
-                    (SELECT 
-                    question_fi
-                    FROM
-                    rep_robj_xtov_t2o
-                    JOIN object_reference
-                    JOIN tst_tests
-                    JOIN tst_test_question ON (rep_robj_xtov_t2o.ref_id_test = object_reference.ref_id
-                    AND obj_id = obj_fi
-                    AND test_id = test_fi)) AS questionId ON (tst_test_result.question_fi = questionId.question_fi)
-                    ORDER BY active_fi , questionId.question_fi";
+        $query = "SELECT 
+                  active_fi, questionId.question_fi, points
+                  FROM
+                  tst_test_result
+                  JOIN
+                      (SELECT 
+                      question_fi
+                      FROM
+                      rep_robj_xtov_t2o
+                      JOIN object_reference
+                      JOIN tst_tests
+                      JOIN tst_test_question ON (rep_robj_xtov_t2o.ref_id_test = object_reference.ref_id
+                      AND obj_id = obj_fi
+                      AND test_id = test_fi)) AS questionId ON (tst_test_result.question_fi = questionId.question_fi)
+                      ORDER BY active_fi , questionId.question_fi";
       $result = $ilDB->query($query);
       while ($record = $ilDB->fetchObject($result)) {
           array_push($points, $record);
@@ -247,14 +254,14 @@ class ilCsvExportMapper {
     }
     
     
-    
+
     
     protected function getQuestionTitle($questionID)
     {
         global $ilDB;
         $titles = array();
         
-        $query = "SELECT title FROM qpl_questions WHERE (question_fi= '".$questionID."')";
+        $query = "SELECT title FROM qpl_questions WHERE question_fi= ".$ilDB->quote($questionID, 'integer');
         
         $result = $ilDB->query($query);
         $record = $ilDB->fetchObject($result);
@@ -340,9 +347,10 @@ class ilCsvExportMapper {
         //var_dump($tests);
         //var_dump($userArray);
         if(empty($userArray))
-            ilUtil::sendFailure("No users to dump.");
+            ilUtil::sendFailure("No user-results to export.");
         if(empty($questions))
-            ilUtil::sendFailure("No Questions to dump.");
+            ilUtil::sendFailure("No questions to export.");
+        
         
         foreach($userArray as $elem => $userFi){
             $userID = $userFi['user_fi'];
@@ -365,6 +373,7 @@ class ilCsvExportMapper {
         
         }
         var_dump($this->testMap);
+        return $this->testMap;
     }
     
     
