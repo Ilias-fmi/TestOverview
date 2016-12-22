@@ -14,7 +14,7 @@ class ilTestOverviewExerciseSelectionExplorer extends ilPasteIntoMultipleItemsEx
 		$this->addFilter('exc');
 	}
     
-    
+  
     
 }
 

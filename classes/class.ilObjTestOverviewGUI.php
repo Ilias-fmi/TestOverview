@@ -486,23 +486,23 @@ class ilObjTestOverviewGUI
         
         public function performAddExcercise(){
             
-            global $tpl;
-            $tpl-> setContent("jo");
-
-
-           
+            global $tpl,$lng, $ilCtrl, $ilAccess;
+            
+            include_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
+                                                    ->getDirectory() . "/classes/mapper/class.ilExerciseImport.php";
+           $mapper = new ExerciseImport ();
+           $overviewId = $this-> object-> getId();
             $txt = "";
             if ($_POST['nodes'] != null){
                 foreach($_POST['nodes'] as $ref_id)
                     {
-                    $txt .= ";";
-                    $txt .= $ref_id;
-                    ++$num_nodes;
+                    $mapper-> createEntry($overviewId,$ref_id);
                 }
             }else{
                 ilUtil::sendFailure($lng->txt('select_one'));
+                $this-> initSelectExercise();
             }
-            $tpl-> setContent($txt);
+            $tpl-> setContent("jo");
             
         }
 
