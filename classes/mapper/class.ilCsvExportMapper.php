@@ -247,10 +247,17 @@ class ilCsvExportMapper {
                       AND test_id = test_fi)) AS questionId ON (tst_test_result.question_fi = questionId.question_fi)
                       ORDER BY active_fi , questionId.question_fi";
       $result = $ilDB->query($query);
-      while ($record = $ilDB->fetchObject($result)) {
-          array_push($points, $record);
-      }
-      return $points;
+      $foundusers = array();
+		/** @noinspection PhpAssignmentInConditionInspection */
+		while ($row = $ilDB->fetchAssoc($result))
+		{
+			if (!array_key_exists($row["active_fi"], $foundusers))
+			{
+				$foundusers[$row["active_fi"]] = array();
+			}
+			array_push($foundusers[$row["active_fi"]], array( "qid" => $row["question_fi"], "points" => $row["points"]));
+		}
+        return $foundusers;
     }
     
     
@@ -342,7 +349,7 @@ class ilCsvExportMapper {
         $questionID;
         
         //var_dump($userArray);
-        //var_dump($resultObject);
+        var_dump($resultObject);
         //var_dump($questions);
         //var_dump($tests);
         //var_dump($userArray);
@@ -352,28 +359,34 @@ class ilCsvExportMapper {
             ilUtil::sendFailure("No questions to export.");
         
         
-        foreach($userArray as $elem => $userFi){
-            $userID = $userFi['user_fi'];
-            $this->testMap[$userID] = array();
+        //foreach($resultObject as $elem => $object){
+            //$userID = $userFi['user_fi'];
+            //$active_ID = $object['active_fi'];
             //$userInfo = $this->getInfo($userID); // Retrieve UserInfo (Lastname, Firstname, Email, Matriculation) for userID
-            
-            foreach ($questions as $key => $value) {
-                    $questionID = $value['question_fi'];
-                    $testID = $this->getTest($questionID);
-                    $activeID = $this->getActiveID($userID, $testID);
+            //$questionID = $object['question_fi'];
+            //$testID = $this->getTest($questionID);
+                    
+            //$activeID = $this->getActiveID($userID, $testID);
 
+            //$points = $object['points'];
+            //$points = $this->getMark($activeID, $questionID, $resultObject); //Points for a given user on a given question
+            //echo "UserID: $active_ID, QuestionID: $questionID, Punkte: $points\n";
                     
-                    $points = $this->getMark($activeID, $questionID, $resultObject); //Points for a given user on a given question
-                    //echo "UserID: $userID, QuestionID: $questionID, Punkte: $points\n";
-                    
-                    
-                    $this->testMap[$userID][$questionID] = $points;
-                    
-                }            
+            
+            
+            
+            //if (!array_key_exists($active_ID, $this->testMap)) {
+            //    $this->testMap['active_fi']= array();
+              //$this->testMap['active_fi'][]= ($questionID => $points); 
+            //}
+            //    array_push($this->testMap[$active_ID], array("question_id"=>$questionID, "points"=>$points));
+            
+            
+        //}            
         
-        }
-        var_dump($this->testMap);
-        return $this->testMap;
+        
+        //var_dump($this->testMap);
+        //return $this->testMap;
     }
     
     
