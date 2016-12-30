@@ -10,8 +10,9 @@ class ilCsvExportMapper {
     
     /** @var type extended/reduced (TestQuestions) */
     var $type;
-
+    /** @var integer ID of current TestOverview  */
     var $overviewID;
+    
     
     var $filename;
     /**
@@ -19,7 +20,13 @@ class ilCsvExportMapper {
      * @var testMap containing student-information for tests
      */
     var $testMap = array();
-
+    
+    var $testIDs;
+    
+    var $users;
+    
+    var $assoc;
+    
     /**
      * Constructor
      */
@@ -30,6 +37,10 @@ class ilCsvExportMapper {
         $this->type=$type;
         $this->overviewID = $overviewID;
         $date = time();
+        
+        $this->testIDs = $this->getTestIDs();
+        $this->users = $this->getUniqueTestUserID();
+        $this->assoc = $this->getAssociation();
         
         $this->inst_id = IL_INST_ID;
         
@@ -66,19 +77,170 @@ class ilCsvExportMapper {
     }
     
     
-    function buildExtendedFile() {
+    function buildReducedFile() {
+        global $lng;
         $data= $this->buildStudentMap();
         $rows= array();
         $datarow = array();
-        $col = 1;
-        array_push($datarow, $this->lng->txt("name"));
-        array_push($datarow,$this->lng->txt("matriculation"));
-        array_push($datarow,$this->lng->txt("email"));
-        array_push($datarow,$this->lng->txt("gender"));
+        array_push($datarow, "lastname");
+        array_push($datarow, "firstname");
+        array_push($datarow,"matriculation");
+        array_push($datarow,"email");
+        array_push($datarow,"gender");
+        foreach ($this->testIDs as $key => $value) {
+            $testID = $value['test_id'];
+            $testName = $this->getTestTitle($testID);
+            array_push($datarow, $testName);
+            $questionIDs = $this->getQuestionID($testID);
+        }
+        
+        $headrow= $datarow;
+        array_push($rows, $headrow);
+        
+         foreach ($this->users as $num => $preValue) {
+            $userID = $preValue['user_fi'];
+            $datarow = $headrow;
+            $datarow2 = array();
+            $userInfo = $this->getInfo($userID);
+            array_push($datarow2, $userInfo['lastname']);    
+            array_push($datarow2, $userInfo['firstname']);
+            array_push($datarow2, $userInfo['matriculation']);
+            array_push($datarow2, $userInfo['email']);
+            array_push($datarow2, $userInfo['gender']);
+            //push userinfo 
+            foreach ($this->testIDs as $num2 => $preValue2) {
+                $testID = $preValue2['test_id'];
+                $activeID = $this->getActiveID($userID, $testID);
+                $testResult = $this ->getTestResultsForActiveId($activeID);
+                array_push($datarow2, $testResult);
+            }
+         
+            array_push($rows,$datarow2);
+            $datarow2 = array();
+        }
+        $csv = "";
+        $separator = ";";
+	foreach ($rows as $evalrow)
+	{
+		$csvrow = $this->processCSVRow($evalrow, TRUE, $separator);
+		$csv .= join($csvrow, $separator) . "\n";
+                //var_dump($evalrow);
+	}
+        ilUtil::deliverData($csv, ilUtil::getASCIIFilename("Larry_results.csv"));
+	exit;
+    
         
     }
     
     
+    
+    
+    function buildExtendedFile() {
+        global $lng;
+        $data= $this->buildStudentMap();
+        $rows= array();
+        $datarow = array();
+        //$testIDs = $this->getTestIDs();
+        //$users = $this->getUniqueTestUserID();
+        //$association = $this->getAssociation();
+        
+        array_push($datarow, "lastname");
+        array_push($datarow, "firstname");
+        array_push($datarow,"matriculation");
+        array_push($datarow,"email");
+        array_push($datarow,"gender");
+        foreach ($this->testIDs as $key => $value) {
+            $testID = $value['test_id'];
+            $testName = $this->getTestTitle($testID);
+            array_push($datarow, $testName);
+            $questionIDs = $this->getQuestionID($testID);
+            
+            foreach ($questionIDs as $key => $questionInfo) {
+                $questionID = $questionInfo['question_fi'];
+                $questionName = $this->getQuestionTitle($questionID);
+                array_push($datarow, $questionName);
+            }
+        }
+        
+        
+        $headrow= $datarow;
+        array_push($rows, $headrow);
+        
+        foreach ($this->users as $num => $preValue) {
+            $userID = $preValue['user_fi'];
+            $datarow = $headrow;
+            $datarow2 = array();
+            $userInfo = $this->getInfo($userID);
+            array_push($datarow2, $userInfo['lastname']);    
+            array_push($datarow2, $userInfo['firstname']);
+            array_push($datarow2, $userInfo['matriculation']);
+            array_push($datarow2, $userInfo['email']);
+            array_push($datarow2, $userInfo['gender']);
+            //push userinfo 
+            foreach ($this->testIDs as $num2 => $preValue2) {
+                $testID = $preValue2['test_id'];
+                $activeID = $this->getActiveID($userID, $testID);
+                $testResult = $this ->getTestResultsForActiveId($activeID);
+                array_push($datarow2, $testResult);
+                $questionIDs2 = $this->getQuestionID($testID);
+                foreach ($questionIDs2 as $key => $value) {
+                    $questionID2 = $value['question_fi'];
+                    $questionPoints = $this->getMark($activeID, $questionID2);
+                    array_push($datarow2, $questionPoints);
+                }
+            }
+            
+            array_push($rows,$datarow2);
+            $datarow2 = array();
+        }
+        
+        
+        
+        $csv = "";
+        $separator = ";";
+	foreach ($rows as $evalrow)
+	{
+		$csvrow = $this->processCSVRow($evalrow, TRUE, $separator);
+		$csv .= join($csvrow, $separator) . "\n";
+                //var_dump($evalrow);
+	}
+        ilUtil::deliverData($csv, ilUtil::getASCIIFilename("Larry_results.csv"));
+	exit;
+        //var_dump($datarow);
+    }
+    
+    
+    function processCSVRow($row, $quoteAll = FALSE, $separator = ";")
+	{
+		$resultarray = array();
+		foreach ($row as $rowindex => $entry)
+		{
+			$surround = FALSE;
+			if ($quoteAll)
+			{
+				$surround = TRUE;
+			}
+			if (strpos($entry, "\"") !== FALSE)
+			{
+				$entry = str_replace("\"", "\"\"", $entry);
+				$surround = TRUE;
+			}
+			if (strpos($entry, $separator) !== FALSE)
+			{
+				$surround = TRUE;
+			}
+			// replace all CR LF with LF (for Excel for Windows compatibility
+			$entry = str_replace(chr(13).chr(10), chr(10), $entry);
+
+			if ($surround)
+			{
+			    $entry = "\"" . $entry . "\"";
+			}
+
+			$resultarray[$rowindex] = $entry;
+		}
+		return $resultarray;
+	}
     
     /**
      * 
@@ -128,7 +290,7 @@ class ilCsvExportMapper {
      * @param type $overviewID
      * @return array filled with all existing question-ids for a given XTOV-instance
      */
-    private function getQuestionIDs()
+    private function getQuestionID($testID)
     {
         global $ilDB;
         $qIDs = array();
@@ -142,8 +304,10 @@ class ilCsvExportMapper {
                   JOIN tst_test_question ON (rep_robj_xtov_t2o.ref_id_test = object_reference.ref_id
                   AND obj_id = obj_fi
                   AND test_id = test_fi)
-                  WHERE obj_id_overview =".$ilDB->quote($this->overviewID, 'integer');
-        $result= $ilDB->query($query);
+                  WHERE obj_id_overview = %s AND test_id = %s";
+        $result= $ilDB->queryF($query, 
+                               array('integer', 'integer'),
+                               array($this->overviewID, $testID));
         while ($record = $ilDB->fetchAssoc($result)){
             array_push($qIDs, $record);
         }
@@ -185,15 +349,15 @@ class ilCsvExportMapper {
     private function getInfo($userID){
         global $ilDB;
         $info = array();
-        $query = "SELECT lastname, firstname, matriculation, email
+        $query = "SELECT lastname, firstname, matriculation, email, gender
                   FROM
                   usr_data
                   WHERE (usr_id = '".$userID."')";
         $result = $ilDB->query($query);
-        while ($record = $ilDB->fetchAssoc($result)){
+        $record = $ilDB->fetchAssoc($result);
             //array_push($info, $record);
-            return $record;
-        }
+        return $record;
+        
     }
     /**
      * 
@@ -207,7 +371,7 @@ class ilCsvExportMapper {
 	global $ilDB;   
 	
 	$query = "
-		SELECT		*
+		SELECT		reached_points
 		FROM		tst_result_cache
 		WHERE		active_fi = %s
 	";
@@ -220,7 +384,7 @@ class ilCsvExportMapper {
 		
 	$row = $ilDB->fetchAssoc($result);
 	
-	return $row;
+	return $row['reached_points'];
 		
     }
     
@@ -228,8 +392,8 @@ class ilCsvExportMapper {
     
     protected function getAssociation()
     {
-      global $ilDB;
-      $points = array();
+        global $ilDB;
+        $points = array();
       
         $query = "SELECT 
                   active_fi, questionId.question_fi, points
@@ -246,31 +410,62 @@ class ilCsvExportMapper {
                       AND obj_id = obj_fi
                       AND test_id = test_fi)) AS questionId ON (tst_test_result.question_fi = questionId.question_fi)
                       ORDER BY active_fi , questionId.question_fi";
-      $result = $ilDB->query($query);
-      $foundusers = array();
-		/** @noinspection PhpAssignmentInConditionInspection */
-		while ($row = $ilDB->fetchAssoc($result))
+        $result = $ilDB->query($query);
+        
+		
+		/*while ($row = $ilDB->fetchAssoc($result))
 		{
 			if (!array_key_exists($row["active_fi"], $foundusers))
 			{
 				$foundusers[$row["active_fi"]] = array();
 			}
 			array_push($foundusers[$row["active_fi"]], array( "qid" => $row["question_fi"], "points" => $row["points"]));
-		}
-        return $foundusers;
+		}*/
+        while ($record = $ilDB->fetchObject($result)){
+            array_push($points, $record);
+        }
+        return $points;
     }
     
-    
+    protected function getTestTitle($testID) {
+        global $ilDB;
+        
+        
+        $query = "SELECT 
+                  od.title
+                  FROM
+                  rep_robj_xtov_t2o
+                  INNER JOIN
+                  object_reference ref ON (ref.ref_id = rep_robj_xtov_t2o.ref_id_test
+                  AND deleted IS NULL)
+                  INNER JOIN
+                  object_data od ON (od.obj_id = ref.obj_id)
+                  AND od.type = 'tst'
+                  INNER JOIN
+                  tst_tests test ON (test.obj_fi = od.obj_id)
+                  WHERE test_id = %s";
+        $result= $ilDB->queryF($query, 
+                               array('integer'),
+                               array($testID));
+        $record = $ilDB->fetchAssoc($result);
+        
+        return $record['title']; 
+    }
 
-    
+    /**
+     * 
+     * @global type $ilDB
+     * @param type $questionID
+     * @return type
+     */
     protected function getQuestionTitle($questionID)
     {
         global $ilDB;
-        $titles = array();
         
-        $query = "SELECT title FROM qpl_questions WHERE question_fi= ".$ilDB->quote($questionID, 'integer');
         
-        $result = $ilDB->query($query);
+        $query = "SELECT title FROM qpl_questions WHERE question_id= %s";
+        
+        $result = $ilDB->queryF($query, array('integer'), array($questionID));
         $record = $ilDB->fetchObject($result);
         return $record -> title;
         
@@ -313,8 +508,8 @@ class ilCsvExportMapper {
      * @param type $questionResultObject
      * @return int Points for a given activeID (TestID-StudentID) and a questionID
      */
-    public function getMark ($activeID, $questionID , $questionResultObject){
-            foreach ($questionResultObject as $row => $value){
+    public function getMark ($activeID, $questionID){
+            foreach ($this->assoc as $row => $value){
                 //echo "10 Punkte: $value->active_fi, $value->question_fi, $value->points\n";
 
                 if ($value->active_fi == $activeID && $value->question_fi == $questionID ){
@@ -342,17 +537,20 @@ class ilCsvExportMapper {
         $this->testMap=array(); 
         $resultObject= $this->getAssociation();
         $userArray= $this->getUniqueTestUserID();
-        $questions= $this->getQuestionIDs();
-        
+        $questions= $this->getQuestionID(2);
+        $testID = $this->getTestIDs();
+        $testTitle = $this->getTestTitle(2);
         echo $this->testsQuestion;
         $userID;
         $questionID;
         
+        //var_dump($testID);
         //var_dump($userArray);
-        var_dump($resultObject);
+        //var_dump($resultObject);
         //var_dump($questions);
         //var_dump($tests);
         //var_dump($userArray);
+        //var_dump($testTitle);
         if(empty($userArray))
             ilUtil::sendFailure("No user-results to export.");
         if(empty($questions))

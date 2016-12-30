@@ -217,10 +217,9 @@ class ilObjTestOverviewGUI
                
                require_once 'Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview/classes/mapper/class.ilCsvExportMapper.php';
                $abc = new ilCsvExportMapper($export_type, $xtov_ID);
-               $abc->buildStudentMap();
-               //$swag = $abc->getStudentMap();
+               $abc->buildExportFile();
+               //$abc->buildStudentMap();
                
-               //var_dump($swag);
                
                
                //if(!empty($filter))
