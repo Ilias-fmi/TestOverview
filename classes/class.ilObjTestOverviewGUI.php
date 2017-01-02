@@ -92,6 +92,7 @@ class ilObjTestOverviewGUI
 					case 'updateSettings':
 					case 'updateMemberships':
 					case 'initSelectTests':
+                                        case 'initSelectExercise';    
 					case 'selectTests':
 					case 'performAddTests':
                                         case 'performAddExcercise':
@@ -200,7 +201,7 @@ class ilObjTestOverviewGUI
                 /*Populate template*/
                 $tpl->setContent($this->renderSettings());
         }
-        /*
+        
         protected function triggerExport(){
             global $tpl, $lng, $ilCtrl;
             $this->initExportForm();
@@ -208,13 +209,13 @@ class ilObjTestOverviewGUI
             {
                /* Form is sent and input validated,
 			   now save settings. */
-           /*  
+            
                 
                 $input_array = $this->form->getItems();
                 
                
                 
-                ilUtil::sendSuccess("Larry");
+                //ilUtil::sendSuccess("Larry");
                 
             }
             $this->form->setValuesByPost();
@@ -283,7 +284,7 @@ class ilObjTestOverviewGUI
                 $this->form->addItem($checkbox_format);
                 
                 $this->form->addCommandButton("triggerExport", "Export");
-                $tpl->setContent($this->renderSettings());
+                //$tpl->setContent($this->renderSettings());
         }
 
 	/**
@@ -395,18 +396,6 @@ class ilObjTestOverviewGUI
             $ilTabs->activateTab('UserResults');
             $dataMapper = new studentMapper ();
             $tpl-> setContent ($dataMapper-> getResults($ilUser->getId(),$this-> object-> getId()));
-            
-           /*
-            require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
-				->getDirectory() . '/classes/mapper/class.ilExerciseMapper.php';
-
-            $Obj = new ilExerciseMapper();
-            $matrix = $Obj-> buildMatrix(300);
-            //$tpl-> setContent ();
-            //$users = $Obj-> getUniqueUserId (300);
-            $tpl-> setContent ($Obj-> getHtml(300));
-           */
-           
             
         }
 
@@ -545,19 +534,18 @@ class ilObjTestOverviewGUI
 			global $tpl;
            require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
 				->getDirectory() . '/classes/class.ilTestOverviewExerciseSelectionExplorer.php';
-           
-           $this-> initSelectExercise();
-           $tpl-> setContent ("das hier sieht man ");
-		 
-	 
+           require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
+				->getDirectory() . '/classes/GUI/class.ilExerciseListTableGUI.php';
+           $this-> getExerciseList();
+           $Obj = new ExerciseListTableGUI ($this, 'editSettings');
+           $tpl-> setContent ($Obj-> getHTML());
 
-                    
-                  require_once 'Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview/classes/mapper/class.ilBinDiagrammMapper.php';
+                 /* require_once 'Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview/classes/mapper/class.ilBinDiagrammMapper.php';
                   
                         $Obj = new BinDiagrammMapper ($this,'showContent');
                         $tpl-> setContent($Obj->data() . "jop");
                   
-                    
+                   */ 
                     
                     /*
 		$this->includePluginClasses(array(
@@ -1100,7 +1088,10 @@ class ilObjTestOverviewGUI
          * @return string Returns the HTML of all Exercises that are realted to the Overview Object
          */
         protected function getExerciseList(){
-            return "<p> Füll Kontent </p>";
+            
+            global $ilToolbar,$tpl,$ilCtrl;
+            $ilToolbar->addButton($this->lng->txt('Add Tests'), $ilCtrl->getLinkTarget($this,'initSelectExercise'));
+            return ;
         }
 
         /**
