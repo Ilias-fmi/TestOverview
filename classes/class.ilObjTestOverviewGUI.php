@@ -188,23 +188,23 @@ class ilObjTestOverviewGUI
 		$this->addPermissionTab();
 	}
 }
-
+        /**
+         * 
+         * Command for initialising the Export GUI
+         * 
+         */
         protected function Export() {
-                global $tpl, $ilTabs,$ilCtrl;
+                global $tpl, $ilTabs;
                
                 $ilTabs->activateTab('export');
                 /*initialize Export form*/
                 $this->initExportForm();
                 
                 /*Populate template*/
-                $tpl->setContent($this->renderSettings());
+                $tpl->setContent($this->form->getHTML());
         }
-        /**
-         * 
-         * @global type $tpl
-         * @global type $lng
-         * @global type $ilCtrl
-         */
+        
+        
         protected function triggerExport(){
             global $tpl, $lng, $ilCtrl;
             $this->initExportForm();
@@ -219,36 +219,14 @@ class ilObjTestOverviewGUI
                $abc = new ilCsvExportMapper($export_type, $xtov_ID);
                $abc->buildExportFile();
                //$abc->buildStudentMap();
-               
-               
-               
-               //if(!empty($filter))
-               //{
-               //echo implode(",", $filter);
-               //}
-               //ob_start();
-               //$fp = fopen("php://output", "w");
-               
-               /**if ($fp && $filter) {
-                    
-                    header('Content-Type: text/csv');
-                    header('Content-Disposition: attachment; filename="export.csv"');
-                    header('Pragma: no-cache');
-                    header('Expires: 0');
-                    fputcsv($fp, array_values($filter));
-               
-                         echo "File written";
-               }
-               fclose($fp);
-               
-            **/                      
+               ilUtil::sendSuccess('Exportfile created', true);
+               $ilCtrl->redirect('initExportForm');
+              
+                                   
             }
-            $this->form->setValuesByPost();
-            $tpl->setContent($this->renderSettings());
-           // $this->Export();
-           // $this->form->getInputItemsRecursive();
+            
         }
-
+        
         protected function initExportForm() {
         
                 global $ilCtrl, $tpl;   
@@ -271,7 +249,7 @@ class ilObjTestOverviewGUI
                 $this->form->addItem($checkbox_overview);
                 
                 $this->form->addCommandButton("triggerExport", "Export");
-                $tpl->setContent($this->renderSettings());
+                $tpl->setContent($this->form->getHTML());
         }
 
 	/**
