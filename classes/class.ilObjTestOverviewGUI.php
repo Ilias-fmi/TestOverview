@@ -190,38 +190,43 @@ class ilObjTestOverviewGUI
 		$this->addPermissionTab();
 	}
 }
-
+        /**
+         * 
+         * Command for initialising the Export GUI
+         * 
+         */
         protected function Export() {
-                global $tpl, $ilTabs,$ilCtrl;
+                global $tpl, $ilTabs;
                
                 $ilTabs->activateTab('export');
                 /*initialize Export form*/
                 $this->initExportForm();
                 
                 /*Populate template*/
-                $tpl->setContent($this->renderSettings());
+                $tpl->setContent($this->form->getHTML());
         }
+        
         
         protected function triggerExport(){
             global $tpl, $lng, $ilCtrl;
             $this->initExportForm();
+            $xtov_ID = $this->object->getID();
             if($this->form->checkInput())
             {
-               /* Form is sent and input validated,
-			   now save settings. */
-            
-                
-                $input_array = $this->form->getItems();
-                
+
+               $export_type = $this->form->getInput("export_type"); 
                
-                
-                //ilUtil::sendSuccess("Larry");
-                
+               require_once 'Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview/classes/mapper/class.ilCsvExportMapper.php';
+               $abc = new ilCsvExportMapper($export_type, $xtov_ID);
+               $abc->buildExportFile();
+               //$abc->buildStudentMap();
+               ilUtil::sendSuccess('Exportfile created', true);
+               $ilCtrl->redirect('initExportForm');
+              
+                                   
+
             }
-            $this->form->setValuesByPost();
-            $tpl->setContent( $this->renderSettings() );
-           // $this->Export();
-           // $this->form->getInputItemsRecursive();
+            
         }
         
         protected function initExportForm() {
@@ -235,56 +240,20 @@ class ilObjTestOverviewGUI
 
                 //radio group: Export type
                 $checkbox_overview = new ilRadioGroupInputGUI("Type", "export_type");
-                $overview_op = new ilCheckboxOption("TestOverview", "1", "Export the test database of this course");
-                $overview_op2 = new ilCheckboxOption ("ExerciseOverview", "1", "Export the exercise database of this course");
+                $overview_op = new ilCheckboxOption("Reduced", "reduced", "Export the results for all tests ");
+                $overview_op2 = new ilCheckboxOption ("Extended", "extended", "Export the results for all questions for every test");
 
                 $checkbox_overview->addOption($overview_op);
                 $checkbox_overview->addOption($overview_op2);
                 $checkbox_overview->setRequired(true);
 
 
-                //radiobox group
-                $gender_filter = new ilRadioGroupInputGUI("Gender", "gender_filter");
-                $r_op  = new ilRadioOption("Male and Female", "1", "Export all results");
-                $r_op2 = new ilRadioOption("Male", "1", "Export all male results");
-                $r_op3 = new ilRadioOption("Female", "1", "Export all female results");
-
-                $gender_filter->addOption($r_op);
-                $gender_filter->addOption($r_op2);
-                $gender_filter->addOption($r_op3);
-                $gender_filter->setRequired(true);
-
-                // checkbox group: Filter
-                $checkbox_filter = new ilCheckboxGroupInputGUI("Filter", "filters");
-                $checkbox_filter->setInfo("Please apply the filters of your choice.");
-
-                $c_op = new ilCheckboxOption("Filter: placeholder Option1", "1", "Infotext for Option 1");
-                $c_op2 = new ilCheckboxOption ("Filter: placeholder Option2", "1", "Infotext for Option 2");
-                $c_op3 = new ilCheckboxOption ("Filter: placeholder Option 3", "1", "Infotext for Option 3");
-                
-                $checkbox_filter->addOption($c_op);
-                $checkbox_filter->addOption($c_op2);
-                $checkbox_filter->addOption($c_op3);
-                $checkbox_filter->setRequired(false);
-
-
-
-                //radio group: Export type
-                $checkbox_format = new ilRadioGroupInputGUI("Format", "export_format");
-                $format_op = new ilCheckboxOption("CSV", "1", "Export");
-                $format_op2 = new ilCheckboxOption ("XML", "1", "Infotext for Option 2");
-
-                $checkbox_format->addOption($format_op); 
-                $checkbox_format->addOption($format_op2);
-                $checkbox_format->setRequired(true);
-
                 $this->form->addItem($checkbox_overview);
-                $this->form->addItem($gender_filter);   
-                $this->form->addItem($checkbox_filter);
-                $this->form->addItem($checkbox_format);
                 
                 $this->form->addCommandButton("triggerExport", "Export");
-                //$tpl->setContent($this->renderSettings());
+                
+                $tpl->setContent($this->form->getHTML());
+
         }
 
 	/**
@@ -292,7 +261,7 @@ class ilObjTestOverviewGUI
 	 *
 	 *	This command displays a test overview entry
 	 *	and its data. This method is called by
-	 *	@see self::performCommand().
+	 *	@see self::performComma nd().
 	 */
 
         protected function showContent()
@@ -310,7 +279,7 @@ class ilObjTestOverviewGUI
 
 		global $tpl,$lng, $ilTabs,$ilToolbar,$ilCtrl;
                 
-                $ilTabs->addSubTab('content',"Test Übersicht", $this->ctrl->getLinkTarget($this,  'showContent'));
+                $ilTabs->addSubTab('content',"Test Ãœbersicht", $this->ctrl->getLinkTarget($this,  'showContent'));
                 $ilTabs->addSubTab('subTabTO',"Diagramme", $this->ctrl->getLinkTarget($this,'subTabTO'));
 		$ilTabs->addSubTab( 'subTabTO2',"Test Verwaltung",$this->ctrl->getLinkTarget($this,  'subTabTO2'));
                 $ilTabs->activateSubTab('content');
@@ -321,7 +290,7 @@ class ilObjTestOverviewGUI
 		$this->includePluginClasses(array(
 			"ilTestOverviewTableGUI",
 			"ilOverviewMapper"));
-                 // Button um Graphiken der Übersicht zu erstellen
+                 // Button um Graphiken der Ãœbersicht zu erstellen
 		
                 $ilTabs->activateSubTab('showContent');
 
@@ -437,7 +406,7 @@ class ilObjTestOverviewGUI
 		 global $tpl, $ilTabs,$ilCtrl;
 
                 
-                $ilTabs->addSubTab('content',"Test Übersicht", $this->ctrl->getLinkTarget($this,  'showContent')); 
+                $ilTabs->addSubTab('content',"Test Ãœbersicht", $this->ctrl->getLinkTarget($this,  'showContent')); 
                 $ilTabs->addSubTab('subTabTO',"Diagramme", $this->ctrl->getLinkTarget($this,'subTabTO'));
 		$ilTabs->addSubTab( 'subTabTO2',"Test Verwaltung",$this->ctrl->getLinkTarget($this,  'subTabTO2'));
                 $ilTabs->activateTab('TestOverview');
@@ -466,7 +435,7 @@ class ilObjTestOverviewGUI
             
             global $tpl, $ilTabs,$ilCtrl,$ilToolbar;
                 
-            $ilTabs->addSubTab('content',"Test Übersicht", $this->ctrl->getLinkTarget($this,  'showContent'));
+            $ilTabs->addSubTab('content',"Test Ãœbersicht", $this->ctrl->getLinkTarget($this,  'showContent'));
             $ilTabs->addSubTab('subTabTO',"Diagramme", $this->ctrl->getLinkTarget($this,'subTabTO'));
             $ilTabs->addSubTab( 'subTabTO2',"Test Verwaltung",$this->ctrl->getLinkTarget($this,  'subTabTO2'));
             $ilTabs->activateTab('TestOverview');
@@ -492,9 +461,9 @@ class ilObjTestOverviewGUI
 	{
 		 	global $tpl, $ilTabs,$ilCtrl,$ilToolbar;
                         
-                        $ilTabs->addSubTab('subTabEO', "Übungs Übersicht",  $ilCtrl->getLinkTarget($this,'subTabEO'));
+                        $ilTabs->addSubTab('subTabEO', "Ãœbungs Ãœbersicht",  $ilCtrl->getLinkTarget($this,'subTabEO'));
                        $ilTabs->addSubTab('subTabEO1',"Diagramme",$ilCtrl->getLinkTarget($this,'subTabEO1'));
-                        $ilTabs->addSubTab('subTabEO2', "Übungs Verwaltung", $ilCtrl->getLinkTarget($this,'subTabEO2'));
+                        $ilTabs->addSubTab('subTabEO2', "Ãœbungs Verwaltung", $ilCtrl->getLinkTarget($this,'subTabEO2'));
                          $ilTabs->activateTab('ExerciseOverview'); 
                         $ilTabs->activateSubTab('subTabEO1');   
                         
@@ -505,9 +474,9 @@ class ilObjTestOverviewGUI
 	{
 		global $tpl, $ilUser, $ilTabs,$ilCtrl,$ilToolbar;
                 
-                        $ilTabs->addSubTab('subTabEO', "Übungs Übersicht",  $ilCtrl->getLinkTarget($this,'subTabEO'));
+                        $ilTabs->addSubTab('subTabEO', "Ãœbungs Ãœbersicht",  $ilCtrl->getLinkTarget($this,'subTabEO'));
                         $ilTabs->addSubTab('subTabEO1',"Diagramme",$ilCtrl->getLinkTarget($this,'subTabEO1'));
-                        $ilTabs->addSubTab('subTabEO2', "Übungs Verwaltung", $ilCtrl->getLinkTarget($this,'subTabEO2'));
+                        $ilTabs->addSubTab('subTabEO2', "Ãœbungs Verwaltung", $ilCtrl->getLinkTarget($this,'subTabEO2'));
                         $ilTabs->activateTab('ExerciseOverview'); 
                         $ilTabs->activateSubTab('subTabEO');  
                         require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
@@ -526,9 +495,9 @@ class ilObjTestOverviewGUI
 	{
 		global $tpl, $ilTabs,$ilCtrl,$ilToolbar;
                         
-                        $ilTabs->addSubTab('subTabEO', "Übungs Übersicht",  $ilCtrl->getLinkTarget($this,'subTabEO'));                
+                        $ilTabs->addSubTab('subTabEO', "Ãœbungs Ãœbersicht",  $ilCtrl->getLinkTarget($this,'subTabEO'));                
                         $ilTabs->addSubTab('subTabEO1',"Diagramme",$ilCtrl->getLinkTarget($this,'subTabEO1'));
-                        $ilTabs->addSubTab('subTabEO2', "Übungs Verwaltung", $ilCtrl->getLinkTarget($this,'subTabEO2'));
+                        $ilTabs->addSubTab('subTabEO2', "Ãœbungs Verwaltung", $ilCtrl->getLinkTarget($this,'subTabEO2'));
                         $ilTabs->activateTab('ExerciseOverview'); 
                         $ilTabs->activateSubTab('subTabEO2');   
 			global $tpl;
@@ -566,9 +535,9 @@ class ilObjTestOverviewGUI
 	{
 			global $tpl, $ilTabs,$ilCtrl,$ilToolbar;
 			$ilTabs->activateTab('ExerciseOverview');                        
-                        $ilTabs->addSubTab('subTabEO', "Übungs Übersicht",  $ilCtrl->getLinkTarget($this,'subTabEO'));
+                        $ilTabs->addSubTab('subTabEO', "Ãœbungs Ãœbersicht",  $ilCtrl->getLinkTarget($this,'subTabEO'));
                         $ilTabs->addSubTab('subTabEO1',"Diagramme",$ilCtrl->getLinkTarget($this,'subTabEO1'));
-                        $ilTabs->addSubTab('subTabEO2', "Übungs Verwaltung", $ilCtrl->getLinkTarget($this,'subTabEO2'));
+                        $ilTabs->addSubTab('subTabEO2', "Ãœbungs Verwaltung", $ilCtrl->getLinkTarget($this,'subTabEO2'));
                         
                         $ilTabs->activateSubTab('subTabEO1');                           
 		 	$tpl->setContent("<p> Ranking: 230. von 500 Mitgliedern</p>");               
@@ -845,7 +814,7 @@ class ilObjTestOverviewGUI
 					 ->addGroup( $groupId );
 			}
 			ilUtil::sendSuccess($lng->txt('rep_robj_xtov_memberships_updated_success'), true);
-			/* redirect umgeleitet für neues to*/
+			/* redirect umgeleitet fÃ¼r neues to*/
                         $ilCtrl->redirect($this, 'subTabTO2');
 		}
 		ilUtil::sendFailure($lng->txt('rep_robj_xtov_min_one_check_membership'), true);
