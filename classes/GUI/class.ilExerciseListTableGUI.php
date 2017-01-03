@@ -31,10 +31,10 @@ class ExerciseListTableGUI extends ilMappedTableGUI {
             
         
     }
-    public function getSelectedExercises(){
+    public function getSelectedExercises($overviewId){
         global $ilDB;
         $exercises = array ();
-        $query = "Select obj_id_exercise,title from rep_robj_xtov_e2o join exc_assignment on (rep_robj_xtov_e2o.obj_id_exercise = exc_assignment.exc_id)";
+        $query = "Select obj_id_exercise,title from rep_robj_xtov_e2o join exc_assignment on (rep_robj_xtov_e2o.obj_id_exercise = exc_assignment.exc_id) where obj_id_overview ='". $overviewId . "'" ;
         $result = $ilDB->query($query);
                 while ($record = $ilDB->fetchObject($result)){
                     array_push($exercises,$record);
@@ -42,8 +42,8 @@ class ExerciseListTableGUI extends ilMappedTableGUI {
         return $exercises;           
     }
     
-    public function getHTML(){
-        $exercises = $this->getSelectedExercises();
+    public function getHTML($overviewId){
+        $exercises = $this->getSelectedExercises($overviewId);
          $plugin = ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview');
         $tpl = new ilTemplate ('tpl.simple_object_row_exercise.html',true, true ,$plugin->getDirectory());
         //$tpl-> addColumn($this->lng->txt('rep_robj_xtov_test_list_hdr_test_title'), 'title');

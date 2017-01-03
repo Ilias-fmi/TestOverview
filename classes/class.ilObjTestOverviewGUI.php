@@ -507,7 +507,7 @@ class ilObjTestOverviewGUI
 				->getDirectory() . '/classes/GUI/class.ilExerciseListTableGUI.php';
            $this-> getExerciseList();
            $Obj = new ExerciseListTableGUI ($this, 'editSettings');
-           $tpl-> setContent ($Obj-> getHTML());
+           $tpl-> setContent ($Obj-> getHTML($this->object -> getId()));
 
                  /* require_once 'Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview/classes/mapper/class.ilBinDiagrammMapper.php';
                   
