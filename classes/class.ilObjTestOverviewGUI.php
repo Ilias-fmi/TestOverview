@@ -111,6 +111,7 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
                     case 'applyTestsFilter':
                     case 'uebersicht':
                     case 'subTabTO':
+                    case 'testPieChart':
                     case 'subTabTO2':
                     case 'subTabEO':
                     case 'subTabEO1':
@@ -384,8 +385,34 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
         try {
             $Obj = new BinDiagrammMapper($this, 'showContent');
             $tpl->setContent($Obj->createAverageDia("BARS"));
+            $ilToolbar->addButton("PIE Chart", $ilCtrl->getLinkTarget($this, 'testPieChart'));
+            $ilToolbar->addButton("BARS Chart", $ilCtrl->getLinkTarget($this, 'subTabTO'));
         } catch (Exception $ex) {
-            $tpl->setContent("Error 300 This is Sparta!");
+            $tpl->setContent("Diagramm can not be Created");
+        }
+    }
+
+    protected function testPieChart() {
+        global $tpl, $ilTabs, $ilCtrl;
+
+        $ilTabs->addSubTab('content', "Test Ãœbersicht", $this->ctrl->getLinkTarget($this, 'showContent'));
+        $ilTabs->addSubTab('subTabTO', "Diagramme", $this->ctrl->getLinkTarget($this, 'subTabTO'));
+        $ilTabs->addSubTab('subTabTO2', "Test Verwaltung", $this->ctrl->getLinkTarget($this, 'subTabTO2'));
+        $ilTabs->activateTab('TestOverview');
+        $ilTabs->activateSubTab('subTabTO');
+
+
+        global $tpl, $lng, $ilTabs, $ilToolbar, $ilDB;
+        $ilTabs->activateSubTab('subTabTO2');
+        require_once 'Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview/classes/mapper/class.ilBinDiagrammMapper.php';
+
+        try {
+            $Obj = new BinDiagrammMapper($this, 'showContent');
+            $ilToolbar->addButton("PIE Chart", $ilCtrl->getLinkTarget($this, 'testPieChart'));
+            $ilToolbar->addButton("BARS Chart", $ilCtrl->getLinkTarget($this, 'subTabTO'));
+            $tpl->setContent($Obj->createAverageDia("PIE"));
+        } catch (Exception $ex) {
+            $tpl->setContent("Diagramm can not be Created");
         }
     }
 
