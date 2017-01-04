@@ -34,8 +34,8 @@ class ilExerciseMapper
                 from rep_robj_xtov_e2o  ,exc_returned , exc_mem_ass_status  join usr_data  on (exc_mem_ass_status.usr_id = usr_data.usr_id)
                 where exc_returned.ass_id = exc_mem_ass_status.ass_id 
                 And user_id = exc_mem_ass_status.usr_id and obj_id_exercise = obj_id 
-                and obj_id_overview = '300'
-                ORDER BY obj_id DESC ";
+                and obj_id_overview = '" . $overviewID .
+                "' ORDER BY obj_id DESC ";
                 $result = $ilDB->query($query);
                 while ($record = $ilDB->fetchObject($result)){
                     array_push($DbObject,$record);
