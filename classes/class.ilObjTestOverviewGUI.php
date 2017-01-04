@@ -328,8 +328,6 @@ class ilObjTestOverviewGUI
 			 . "<hr />"
 			 . $this->getTestList()->getHTML()
                          . "<hr />"
-                         . $this->getExerciseList()
-			 . "<hr />"
 			 . $this->getMembershipList()->getHTML();
 
 	}
@@ -491,12 +489,7 @@ class ilObjTestOverviewGUI
 				->getDirectory() . '/classes/mapper/class.ilExerciseMapper.php';
 
             $Obj = new ilExerciseMapper();
-            //$matrix = $Obj-> buildMatrix(305);
-            //$tpl-> setContent ();
-            //$users = $Obj-> getUniqueUserId (300);
-            $tpl-> setContent ($Obj-> getHtml($this-> object-> getId()). $this-> exerciseDeleteChecks->addCommandButton("deleteExercises", "Delete Exercises"));
-			//$tpl->setContent("<p> EO CONTENT </p>");
-                        
+            $tpl-> setContent ($Obj-> getHtml($this-> object-> getId()));
 	 }
 
 	protected function subTabEO2()
@@ -609,7 +602,7 @@ class ilObjTestOverviewGUI
             
             global $tpl, $lng, $ilCtrl, $ilToolbar;
             
-                $ilToolbar->addButton($this->lng->txt('cancel'), $ilCtrl->getLinkTarget($this,'editSettings'));
+                $ilToolbar->addButton($this->lng->txt('cancel'), $ilCtrl->getLinkTarget($this,'subTabEO2'));
 		$tpl->addBlockfile('ADM_CONTENT', 'adm_content', 'tpl.paste_into_multiple_objects.html', 'Services/Object');
                 require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
 				->getDirectory() . '/classes/class.ilTestOverviewExerciseSelectionExplorer.php';
@@ -713,6 +706,7 @@ class ilObjTestOverviewGUI
                 ilUtil::sendFailure($lng->txt('select_one'));
                 $this-> initSelectExercise();
             }
+            $ilCtrl->redirect($this, 'subTabEO2');
            
             
         }
@@ -1215,6 +1209,6 @@ class ilObjTestOverviewGUI
        public function deleteE2O ($excId){
            global $ilDB, $ilCtrl;
             $ilDB->manipulate("DELETE FROM rep_robj_xtov_e2o where obj_id_overview = '". $this-> object->getId() ."' and obj_id_exercise = '" . $excId  ."'");
-        $ilCtrl->redirect($this, 'initSelectExercise');
+        $ilCtrl->redirect($this, 'subTabEO2');
        }
 }
