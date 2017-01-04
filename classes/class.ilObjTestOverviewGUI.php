@@ -29,7 +29,12 @@ class ilObjTestOverviewGUI
 	 *	@var ilPropertyFormGUI
 	 */
 	protected $form;
-	/**
+        
+        /**
+         * 
+         */
+        public $exerciseDeleteChecks ;
+        /**
 	 *	@return string
 	 */
 	public function getType()
@@ -114,6 +119,7 @@ class ilObjTestOverviewGUI
 					case 'subTabEO':
 					case 'subTabEO1':
 					case 'subTabEO2':
+                                       
 					case 'rights':
 					case 'applyGroupsFilter':
 					case 'resetOverviewFilter':
@@ -121,6 +127,7 @@ class ilObjTestOverviewGUI
 					case 'resetGroupsFilter':
 					case 'addToDesk':
                                         case 'Export':
+                                        case 'deleteExercises':
                                         case 'triggerExport':
 					case 'allLocalTests':
                                         case 'UserResults':
@@ -233,6 +240,7 @@ class ilObjTestOverviewGUI
         
                 global $ilCtrl, $tpl;   
                 include_once("./Services/Form/classes/class.ilPropertyFormGUI.php");
+                
 
                 $this->form = new ilPropertyFormGUI();
                 $this->form->setTitle("Export ".$this->lng->txt("properties"));
@@ -486,7 +494,7 @@ class ilObjTestOverviewGUI
             //$matrix = $Obj-> buildMatrix(305);
             //$tpl-> setContent ();
             //$users = $Obj-> getUniqueUserId (300);
-            $tpl-> setContent ($Obj-> getHtml($this-> object-> getId()));
+            $tpl-> setContent ($Obj-> getHtml($this-> object-> getId()). $this-> exerciseDeleteChecks->addCommandButton("deleteExercises", "Delete Exercises"));
 			//$tpl->setContent("<p> EO CONTENT </p>");
                         
 	 }
@@ -505,7 +513,8 @@ class ilObjTestOverviewGUI
 				->getDirectory() . '/classes/class.ilTestOverviewExerciseSelectionExplorer.php';
            require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
 				->getDirectory() . '/classes/GUI/class.ilExerciseListTableGUI.php';
-           $this-> getExerciseList();
+           
+           
            $Obj = new ExerciseListTableGUI ($this, 'editSettings');
            $tpl-> setContent ($Obj-> getHTML($this->object -> getId()));
 
@@ -1174,4 +1183,38 @@ class ilObjTestOverviewGUI
 		ilUtil::sendSuccess($lng->txt('removed_from_desktop'));
 		$this->showContent();
 	}
+        /**
+         * This methods appends the created checkboxes to the Checkboxarray 
+         * @param type $box ilUtil::formCheckbox
+         */
+        public function appendExerciseCheckBox($box){
+            array_push($this-> exerciseDeleteChecks, $box);
+        }
+        
+        public function deleteExercises (){
+            global $tpl;
+            $this-> subTabEO2();
+            
+            
+            if($this-> exerciseDeleteChecks-> checkInput()) {
+                $toDelete = $_POST['jo'];
+                if ($toDelete != null){
+                    foreach ($toDelete as $exc){
+                        $this-> deleteE2O($exc);
+                    }
+                }
+                $tpl-> setContent ($toDelete[0]);
+            }
+      
+            
+           
+                
+            
+        }
+              
+       public function deleteE2O ($excId){
+           global $ilDB, $ilCtrl;
+            $ilDB->manipulate("DELETE FROM rep_robj_xtov_e2o where obj_id_overview = '". $this-> object->getId() ."' and obj_id_exercise = '" . $excId  ."'");
+        $ilCtrl->redirect($this, 'initSelectExercise');
+       }
 }

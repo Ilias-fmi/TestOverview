@@ -5,8 +5,10 @@
 
 require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')->getDirectory() . '/classes/GUI/class.ilMappedTableGUI.php';
 class ExerciseListTableGUI extends ilMappedTableGUI {
+    protected $parent;
     
-    
+
+
     /**
      * des is die query 
      * Select * from rep_robj_xtov_e2o join object_reference join exc_assignment on (obj_id_exercise = ref_id and object_reference.obj_id = exc_assignment.exc_id )
@@ -15,13 +17,13 @@ class ExerciseListTableGUI extends ilMappedTableGUI {
         global $ilCtrl,$tpl;
         
         
-        
+        $this->parent = $a_parent_obj;
 
 		parent::__construct($a_parent_obj, $a_parent_cmd);
 
 		$this->setTitle(
 			sprintf(
-				$this->lng->txt('rep_robj_xtov_test_list_table_title'),
+				$this->lng->txt('rep_robj_xtov_exercise_list_gui'),
 				$a_parent_obj->object->getTitle()
 			)
 		);
@@ -42,21 +44,26 @@ class ExerciseListTableGUI extends ilMappedTableGUI {
         return $exercises;           
     }
     
-    public function getHTML($overviewId){
-        $exercises = $this->getSelectedExercises($overviewId);
-         $plugin = ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview');
-        $tpl = new ilTemplate ('tpl.simple_object_row_exercise.html',true, true ,$plugin->getDirectory());
-        //$tpl-> addColumn($this->lng->txt('rep_robj_xtov_test_list_hdr_test_title'), 'title');
-        $tpl->setCurrentBlock("exercises");
-        foreach($exercises as $exercise){
-            $tpl->setVariable("VAL_CHECKBOX", ilUtil::formCheckbox(false, 'test_ids[]', $exercise-> obj_id_exercise));
-            $tpl->setVariable("OBJECT_TITLE", $exercise-> title);
-            $tpl->setVariable("OBJECT_INFO", "Des der Pfad");
-            $tpl->parseCurrentBlock();
-        }
-return $tpl->get();
-    }
     
+    public function getHTML(){
+        global $ilCtrl;
+        include_once 'Services/Form/classes/class.ilCheckboxGroupInputGUI.php';
+        $this->parent->exerciseDeleteChecks = new ilPropertyFormGUI();
+        $group = new ilCheckboxGroupInputGUI("Exercises","jo");
+        $this->parent->exerciseDeleteChecks->setFormAction($ilCtrl->getFormAction($this->parent, 'deleteExercises'));
+        $this->parent->exerciseDeleteChecks->addCommandButton("initSelectExercise", "Insert Exercise");
+        $exercises = $this->getSelectedExercises($this->parent->object-> getId());
+        if ($exercises != null){
+            foreach ($exercises as $exercise){
+                $exc_check = new ilCheckboxOption($exercise-> title, $exercise-> obj_id_exercise, "Bald wird hier ihr Pfad stehen ");
+                $group->addOption($exc_check);
+            }
+        }       
+                
+                $this->parent->exerciseDeleteChecks-> addItem($group);
+                $this-> parent-> exerciseDeleteChecks->addCommandButton("deleteExercises", "Delete Exercises");
+         return $this->parent->exerciseDeleteChecks -> getHTML();
+    }
 }
 
 

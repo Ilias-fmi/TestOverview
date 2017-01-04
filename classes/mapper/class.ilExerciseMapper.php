@@ -220,10 +220,28 @@ class ilExerciseMapper
          }
          return $UniqueIDs;
     }
+    /**
+     * Deletes all relation from the given Overview ID to the Exercises ID's specified in the parameter 
+     */
+     public function deleteExercises ($exercises,$overviewID){
+        if (gettype($exercises) == "array" ){
+            foreach ($exercises as $exercise){
+                $this-> deleteExercise ($exercise,$overviewID);
+            }
+        }
+    }
     
+    public function deleteExercise ($exercise ,$overviewID){
+        global $ilDB;
+        
+        
+        
+    }
     
         
     }
+    
+   
     
     
     
