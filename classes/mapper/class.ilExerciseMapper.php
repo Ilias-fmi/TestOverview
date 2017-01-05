@@ -84,12 +84,18 @@ class ilExerciseMapper extends ilDataMapper {
         foreach ($matrix as $row) {
             $txt = "<tr>";
             $subString = "";
+            $totalScore = 0;
             foreach ($row as $field) {
                 $subString .= "<th>";
                 $subString .= $field;
                 $subString .= "</th>";
+                $totalScore += $field;
             }
             $txt .= $subString;
+            $txt .= "<th>";
+            $txt .= $totalScore;
+            $txt .= "</th>";
+            $totalScore = 0;
             $txt .= "</tr>";
             $tpl->setCurrentBlock("exercise_row");
             $tpl->setVariable("data", $txt);
