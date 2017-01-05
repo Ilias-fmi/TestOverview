@@ -51,6 +51,23 @@ class studentMapper
             $tpl->parseCurrentBlock();
             }
         }
+        ////Exercise Part ////
+        require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
+                ->getDirectory() . '/classes/mapper/class.ilExerciseMapper.php';
+        $excMapper = new ilExerciseMapper();
+        $grades = $this-> getExerciseMarks($studId,$overviewId);
+        foreach ($grades as $grade){
+             $gradeName = $excMapper-> getExerciseName($grade-> obj_id);
+             $tpl->setCurrentBlock("exercise_results");
+             $tpl->setVariable("Exercise", $gradeName);
+             $tpl->setVariable("Mark", $grade-> mark);
+             $tpl->parseCurrentBlock();   
+        }
+        
+        
+        
+        
+        //// generall Part /////
         if($this-> numOfTests($overviewId)== 0){
             $averageNum = 0;
         }else {
@@ -123,6 +140,26 @@ class studentMapper
         return $count ;
                 
     }
+    
+    /////////////////////////////////////////// Exercise VIEW ////////////////////////////////////////
+    /**
+     * Gets all Exercises + Marks for the given Student 
+     * @param type $studId
+     */
+    private function getExerciseMarks($studId, $overviewId){
+        global $ilDB;
+        $grades = array ();
+        $query = "select user_id, obj_id,mark from exc_returned join exc_mem_ass_status join rep_robj_xtov_e2o 
+                  on (user_id = usr_id and exc_returned.ass_id = exc_mem_ass_status.ass_id 
+                  and  exc_returned.obj_id = rep_robj_xtov_e2o.obj_id_exercise)
+                  where user_id = '". $studId . "' and rep_robj_xtov_e2o.obj_id_overview = '" . $overviewId . "'";
+        $result = $ilDB->query($query);
+        while ($exercise = $ilDB->fetchObject($result)){
+            array_push($grades, $exercise);
+        }
+        return $grades;
+    }
+    
         
     
     }
