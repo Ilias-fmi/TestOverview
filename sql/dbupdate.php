@@ -171,15 +171,12 @@ if(!$ilDB->tableExists('rep_robj_xtov_e2o'))
 }
 ?>
 <#6>
+
 <?php
-/* Enable to test the Functions of $ilDB
- * $test_field = array(
-	'test_row' => array(
-		'type'    => 'integer',
-		'length'  => 4,
-		'notnull' => true,
-		'default' => 0
-            ));
-$ilDB->createTable('to_test_script', $test_field);
-*/
+/**
+ * Update of varchar length
+ */
+//
+//$ilDB->query("ALTER TABLE table_properties MODIFY table_id varchar(255)");
+
 ?>

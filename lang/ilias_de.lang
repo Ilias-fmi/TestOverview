@@ -57,3 +57,10 @@ membership_count_members#:#Mitglieder
 copy#:#Kopieren
 overview_test_no_permission#:#(Kein Zugriff)
 add_tsts_to_overview#:#Tests hinzufügen
+pie_chart#:#Kuchen Diagramm
+bar_chart#:#Säulen Diagramm
+test_overview#:#Test Übersicht
+diagram#:#Diagramm
+test_administration#:#Test Verwaltung
+exercise_overview#:#Aufgaben Übersicht
+exercise_administration#:#Aufgaben Verwaltung
