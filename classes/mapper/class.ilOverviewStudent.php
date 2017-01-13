@@ -67,7 +67,7 @@ class studentMapper {
         if ($this->numOfTests($overviewId) == 0) {
             $averageNum = 0;
         } else {
-            $averageNum = $average / $this->numOfTests($overviewId);
+            $averageNum = round($average / $this->numOfTests($overviewId),2);
         }
         $tpl->setVariable("AveragePoints", $averageNum);
         if ($maxPoints == 0) {
@@ -141,10 +141,9 @@ class studentMapper {
     private function getExerciseMarks($studId, $overviewId) {
         global $ilDB;
         $grades = array();
-        $query = "select user_id, obj_id,mark from exc_returned join exc_mem_ass_status join rep_robj_xtov_e2o 
-                  on (user_id = usr_id and exc_returned.ass_id = exc_mem_ass_status.ass_id 
-                  and  exc_returned.obj_id = rep_robj_xtov_e2o.obj_id_exercise)
-                  where user_id = '" . $studId . "' and rep_robj_xtov_e2o.obj_id_overview = '" . $overviewId . "'";
+        $query = "select ut_lp_marks.usr_id as user_id,obj_id ,mark from  rep_robj_xtov_e2o join ut_lp_marks join usr_data on 
+                    (rep_robj_xtov_e2o.obj_id_exercise = ut_lp_marks.obj_id and ut_lp_marks.usr_id = usr_data.usr_id) 
+                    where obj_id_overview = '".$overviewId . "' And ut_lp_marks.usr_id='" .$studId ."'";
         $result = $ilDB->query($query);
         while ($exercise = $ilDB->fetchObject($result)) {
             array_push($grades, $exercise);
