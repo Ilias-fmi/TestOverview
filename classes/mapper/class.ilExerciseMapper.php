@@ -27,17 +27,16 @@ class ilExerciseMapper extends ilDataMapper {
         global $ilDB;
         $DbObject = array();
 
-        $query = "select DISTINCT (exc_returned.user_id), firstname, lastname, ut_lp_marks.obj_id , ut_lp_marks.mark 
-                from rep_robj_xtov_e2o  ,exc_returned , exc_mem_ass_status  join usr_data join ut_lp_marks on (exc_mem_ass_status.usr_id = usr_data.usr_id)
-                where exc_returned.ass_id = exc_mem_ass_status.ass_id 
-                And user_id = exc_mem_ass_status.usr_id and obj_id_exercise = ut_lp_marks.obj_id 
-                and obj_id_overview = '".$overviewID .
-                "' ORDER BY obj_id DESC ";
+        $query = "select ut_lp_marks.usr_id as user_id, firstname ,lastname ,obj_id ,mark from  rep_robj_xtov_e2o join ut_lp_marks join usr_data on 
+                    (rep_robj_xtov_e2o.obj_id_exercise = ut_lp_marks.obj_id and ut_lp_marks.usr_id = usr_data.usr_id) 
+                    where obj_id_overview = '".$overviewID.
+                    "' ORDER BY obj_id DESC";
+       
         $result = $ilDB->query($query);
         while ($record = $ilDB->fetchObject($result)) {
             array_push($DbObject, $record);
         }
-
+        
         return $DbObject;
     }
 
@@ -123,9 +122,10 @@ class ilExerciseMapper extends ilDataMapper {
             for ($j = 0; $j < count($tests); $j++) {
                 $mark = $this->getMark($users[$i], $tests[$j], $DbObject);
                 if ($mark > 0) {
-                    array_push($innerArray, $mark);
+                    //array_push($innerArray, $mark);
+                    array_push($innerArray,$mark);
                 } else {
-                    array_push($innerArray, 0);
+                    array_push($innerArray, $mark);
                 }
             }
             array_push($outerArray, $innerArray);
