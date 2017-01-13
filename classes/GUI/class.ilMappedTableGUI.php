@@ -67,7 +67,67 @@ abstract class ilMappedTableGUI extends ilTable2GUI
 	{
 		return $data;
 	}
+          /*
+           * Hack zum sortieren nach  Rank             
+           */
 
+        public function populateR($id)
+        {  
+		if( $this->getExternalSegmentation() && $this->getExternalSorting() )
+		{
+			$this->determineOffsetAndOrder();
+		}
+		elseif( !$this->getExternalSegmentation() && $this->getExternalSorting() )
+		{
+			$this->determineOffsetAndOrder(true);
+		}
+		else
+		{
+			throw new ilException('invalid table configuration: extSort=false / extSegm=true');
+		}
+		
+		/* Configure query execution */
+		$params = array();
+		if( $this->getExternalSegmentation() )
+		{
+			$params['limit'] = $this->getLimit();
+			$params['offset'] = $this->getOffset();
+		}
+		if( $this->getExternalSorting() )
+		{
+			$params['order_field'] = $this->getOrderField();
+			$params['order_direction'] = $this->getOrderDirection();
+		}
+
+		$overview = $this->getParentObject()->object;
+		$filters  = array("overview_id" => $overview->getId()) + $this->filter;
+
+		/* Execute query. */
+        $data = $this->getMapper()
+				     ->getList($params, $filters);
+
+        if( !count($data['items']) && $this->getOffset() > 0) {
+			/* Query again, offset was incorrect. */
+            $this->resetOffset();
+	        $data = $this->getMapper()
+					     ->getList($params, $filters);
+        }
+
+		/* Post-query logic. Implement custom sorting or display
+		   in formatData overload. */
+		$data = $this->formatData($data,true);
+
+		$this->setData( $this->buildTableRowsArray($data['items']) );
+		
+ 		if( $this->getExternalSegmentation() )
+		{
+			$this->setMaxCount($data['cnt']);
+		}
+		
+        return $this;
+    }
+        
+        
 	/**
 	 *    Populate the TableGUI using the Mapper.
 	 *
@@ -81,6 +141,8 @@ abstract class ilMappedTableGUI extends ilTable2GUI
 	 * @throws ilException
 	 * @return ilMappedTableGUI
 	 */
+       
+        
 	public function populate()
     {
 		if( $this->getExternalSegmentation() && $this->getExternalSorting() )

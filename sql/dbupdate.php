@@ -169,17 +169,59 @@ if(!$ilDB->tableExists('rep_robj_xtov_e2o'))
     $ilDB->createTable('rep_robj_xtov_p2e', $fields_participants);
     $ilDB->addPrimaryKey('rep_robj_xtov_p2e', array('obj_id_exview', 'obj_id_grpcrs'));
 }
-?>
+ ?>
 <#6>
 <?php
-/* Enable to test the Functions of $ilDB
- * $test_field = array(
-	'test_row' => array(
+$fields_rankto = array(
+        'stud_id' => array(
 		'type'    => 'integer',
 		'length'  => 4,
 		'notnull' => true,
-		'default' => 0
-            ));
-$ilDB->createTable('to_test_script', $test_field);
-*/
-?>
+		'default' => 0    
+	),
+        'rank' => array(
+		'type'    => 'integer',
+		'length'  => 4,
+		'notnull' => true,
+		'default' => 0    
+	),
+        'to_id' => array(
+		'type'    => 'integer',
+		'length'  => 4,
+		'notnull' => true,
+		'default' => 0    
+	),
+);
+
+$ilDB->createTable('rep_robj_xtov_torank', $fields_rankto);
+$ilDB->addPrimaryKey('rep_robj_xtov_torank', array('stud_id','to_id'));
+ ?>
+
+<#7>
+<?php
+$fields_rankeo = array(
+        'stud_id' => array(
+		'type'    => 'integer',
+		'length'  => 4,
+		'notnull' => true,
+		'default' => 0    
+	),
+        'rank' => array(
+		'type'    => 'integer',
+		'length'  => 4,
+		'notnull' => true,
+		'default' => 0    
+	),
+        'eo_id' => array(
+		'type'    => 'integer',
+		'length'  => 4,
+		'notnull' => true,
+		'default' => 0    
+	),
+);
+
+$ilDB->createTable('rep_robj_xtov_eorank', $fields_rankeo);
+$ilDB->addPrimaryKey('rep_robj_xtov_eorank', array('stud_id','eo_id'));
+
+
+ ?>

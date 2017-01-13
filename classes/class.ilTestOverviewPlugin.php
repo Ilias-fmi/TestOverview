@@ -34,7 +34,8 @@ class ilTestOverviewPlugin
 		 */
 		global $ilDB;
 		$ilDB->query('DROP TABLE 	rep_robj_xtov_overview, rep_robj_xtov_t2o, 
-									rep_robj_xtov_p2o');
+						rep_robj_xtov_p2o, rep_robj_xtov_torank,
+                                                rep_robj_xtov_eorank, rep_robj_xtov_e2o, rep_robj_xtov_exview ');
 	}
 
 }

@@ -112,6 +112,7 @@ class ilObjTestOverviewGUI
 					case 'subTabEO':
 					case 'subTabEO1':
 					case 'subTabEO2':
+                                        case 'showRanking':    
 					case 'rights':
 					case 'applyGroupsFilter':
 					case 'resetOverviewFilter':
@@ -207,40 +208,67 @@ protected function showContent()
 		 * @var $tpl ilTemplate
 		 * @var $ilTabs ilTabsGUI
 		 */
-
-		global $tpl, $ilTabs;
+                global $tpl,$lng, $ilTabs,$ilToolbar,$ilCtrl;
+                echo("<script>console.log('PHP: wdesfrdgtfzhgujhikjol');</script>");
+                echo("<script>console.log('PHP: wdesfrdgtfzhgujhikjol');</script>");
 		$this->includePluginClasses(array(
 			"ilTestOverviewTableGUI",
 			"ilOverviewMapper"));
-		//$ilTabs->activateTab("content");
-
-		global $tpl,$lng, $ilTabs,$ilToolbar,$ilCtrl;
-                
+                /*Darstellung der Tabs*/
                 $ilTabs->addSubTab('content',"Test Übersicht", $this->ctrl->getLinkTarget($this,  'showContent'));
                 $ilTabs->addSubTab('subTabTO',"Diagramme", $this->ctrl->getLinkTarget($this,'subTabTO'));
 		$ilTabs->addSubTab( 'subTabTO2',"Test Verwaltung",$this->ctrl->getLinkTarget($this,  'subTabTO2'));
                 $ilTabs->activateSubTab('content');
                 $ilTabs->activateTab('TestOverview');
-              
-                
-                
+                             
 		$this->includePluginClasses(array(
 			"ilTestOverviewTableGUI",
-			"ilOverviewMapper"));
-                 // Button um Graphiken der Übersicht zu erstellen
-		
-                $ilTabs->activateSubTab('showContent');
-
-
+			"ilOverviewMapper"));		
 		/* Configure content UI */
+                $ilMapper =new ilOverviewMapper;
+                $ilMapper->resetRanks($this->object->getid());
 		$table = new ilTestOverviewTableGUI( $this, 'showContent' );
-		$table->setMapper(new ilOverviewMapper)
+		$table->setMapper($ilMapper)
 			  ->populate();
 		/* Populate template */
 		$tpl->setDescription($this->object->getDescription());
                 $data = array_slice($table-> getData(), $table->getOffset(), $table->getLimit());
 		$tpl->setContent( $table->getHTML());
+                $ilToolbar->addButton("Ordne nach Ranking", $ilCtrl->getLinkTarget($this,'showRanking'));
 	}
+        protected function showRanking()
+	{		/**
+		 * @var $tpl ilTemplate
+		 * @var $ilTabs ilTabsGUI
+		 */
+                global $tpl,$lng, $ilTabs,$ilToolbar,$ilCtrl;
+		$this->includePluginClasses(array(
+			"ilTestOverviewTableGUI",
+			"ilOverviewMapper"));
+                /*Darstellung der Tabs*/
+                $ilTabs->addSubTab('content',"Test Übersicht", $this->ctrl->getLinkTarget($this,  'showContent'));
+                $ilTabs->addSubTab('subTabTO',"Diagramme", $this->ctrl->getLinkTarget($this,'subTabTO'));
+		$ilTabs->addSubTab( 'subTabTO2',"Test Verwaltung",$this->ctrl->getLinkTarget($this,  'subTabTO2'));
+                $ilTabs->activateSubTab('content');
+                $ilTabs->activateTab('TestOverview');
+                             
+		$this->includePluginClasses(array(
+			"ilTestOverviewTableGUI",
+			"ilOverviewMapper"));		
+		/* Configure content UI */
+                $ilMapper =new ilOverviewMapper;
+                $ilMapper->resetRanks($this->object->getid());
+		$table = new ilTestOverviewTableGUI( $this, 'showContent' );
+		$table->setMapper($ilMapper)
+			  ->populateR(true);
+		/* Populate template */
+		$tpl->setDescription($this->object->getDescription());
+                $data = array_slice($table-> getData(), $table->getOffset(), $table->getLimit());
+		$tpl->setContent( $table->getHTML());
+                $table->getData();
+                $ilToolbar->addButton("Ordne nach Namen", $ilCtrl->getLinkTarget($this,'showContent'));
+                }
+        
 	/**
 	 *	Render the settings page.
 	 *
@@ -289,7 +317,7 @@ protected function showContent()
             $ilTabs->activateTab('UserResults');
             $dataMapper = new studentMapper ();
             $tpl-> setContent ($dataMapper-> getResults($ilUser->getId(),$this-> object-> getId()));
-           
+                                        
        
             
         }

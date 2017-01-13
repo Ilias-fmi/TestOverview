@@ -413,7 +413,7 @@ class ilObjTestOverview extends ilObjectPlugin
 
 		return $this->test_objects[$obj_id];
 	}
-
+        
 	/**
 	 *    Retrieve the list of participants groups.
 	 *
