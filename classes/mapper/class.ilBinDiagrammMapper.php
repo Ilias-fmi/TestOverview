@@ -75,15 +75,6 @@ class BinDiagrammMapper extends ilTestOverviewTableGUI {
     }
 
     /**
-     * PHPUnit Method to test the String Splitting
-     * @param type $string
-     */
-    public function testSplit($string) {
-        $this->splitStudent($string);
-        return $this->rawData;
-    }
-
-    /**
      * Splits the String by the | so that seperate can Create an Obj. of every Student
      * @param type $string
      */

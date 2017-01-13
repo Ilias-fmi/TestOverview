@@ -27,11 +27,11 @@ class ilExerciseMapper extends ilDataMapper {
         global $ilDB;
         $DbObject = array();
 
-        $query = "select DISTINCT (user_id), firstname, lastname, obj_id , mark 
-                from rep_robj_xtov_e2o  ,exc_returned , exc_mem_ass_status  join usr_data  on (exc_mem_ass_status.usr_id = usr_data.usr_id)
+        $query = "select DISTINCT (exc_returned.user_id), firstname, lastname, ut_lp_marks.obj_id , ut_lp_marks.mark 
+                from rep_robj_xtov_e2o  ,exc_returned , exc_mem_ass_status  join usr_data join ut_lp_marks on (exc_mem_ass_status.usr_id = usr_data.usr_id)
                 where exc_returned.ass_id = exc_mem_ass_status.ass_id 
-                And user_id = exc_mem_ass_status.usr_id and obj_id_exercise = obj_id 
-                and obj_id_overview = '" . $overviewID .
+                And user_id = exc_mem_ass_status.usr_id and obj_id_exercise = ut_lp_marks.obj_id 
+                and obj_id_overview = '".$overviewID .
                 "' ORDER BY obj_id DESC ";
         $result = $ilDB->query($query);
         while ($record = $ilDB->fetchObject($result)) {
