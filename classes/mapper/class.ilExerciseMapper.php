@@ -4,6 +4,10 @@ require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'T
                 ->getDirectory() . '/classes/mapper/class.ilDataMapper.php';
 
 class ilExerciseMapper extends ilDataMapper {
+    public $lng;
+    public function setParent($lng){
+        $this-> lng = $lng;
+    }
 
     protected $tableName = "rep_robj_xtov_e2o";
 
@@ -69,17 +73,24 @@ class ilExerciseMapper extends ilDataMapper {
      * Renders the HTML code into the Given Template
      */
     public function getHtml($overviewID) {
-        //global $tpl;
+       
+        global $lng;
         $matrix = $this->buildMatrix($overviewID);
         $tests = $this->getUniqueExerciseId($overviewID);
         $tpl = new ilTemplate("tpl.exercise_view.html", true, true, "Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview");
+        $lng->loadLanguageModule("assessment");
+        $tpl-> setCurrentBlock("user_colum");
+        $tpl-> setVariable("user",$lng->txt("eval_search_users"));
+        $tpl->parseCurrentBlock();
         foreach ($tests as $test) {
             $txt = "<th> " . $this->getExerciseName($test) . "</th>";
             $tpl->setCurrentBlock("exercise_colum");
             $tpl->setVariable("colum", $txt);
             $tpl->parseCurrentBlock();
         }
-
+        $tpl-> setCurrentBlock("score_colum");
+        $tpl-> setVariable("score",$lng->txt("toplist_col_score"));
+        $tpl->parseCurrentBlock();
         foreach ($matrix as $row) {
             $txt = "<tr>";
             $subString = "";

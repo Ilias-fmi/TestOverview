@@ -454,6 +454,7 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
                         ->getDirectory() . '/classes/mapper/class.ilExerciseMapper.php';
 
         $Obj = new ilExerciseMapper();
+        $Obj-> setParent($this);
         $tpl->setContent($Obj->getHtml($this->object->getId()));
     }
 
