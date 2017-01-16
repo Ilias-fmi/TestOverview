@@ -13,7 +13,7 @@ class studentMapper {
      * @return string
      */
     public function getResults($studId, $overviewId) {
-        global $ilDB;
+        global $ilDB,$lng;
         $average;
         $maxPoints;
 
@@ -24,7 +24,12 @@ class studentMapper {
                 where obj_id_overview ='" . $overviewId . "'AND tst_active.user_fi = '" . $studId . "'";
         $result = $ilDB->query($query);
         $tpl = new ilTemplate("tpl.stud_view.html", true, true, "Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview");
-
+        $lng->loadLanguageModule("assessment");
+            $lng->loadLanguageModule("certificate"); 
+            $tpl-> setCurrentBlock("head_row");
+            $tpl-> setVariable("testTitle",$lng->txt("certificate_ph_testtitle"));
+            $tpl-> setVariable("score",$lng->txt("toplist_col_score"));
+            $tpl->parseCurrentBlock();
         //Baut aus den Einzelnen Zeilen Objekte
         while ($testObj = $ilDB->fetchObject($result)) {
             array_push($data, $testObj);
@@ -34,6 +39,8 @@ class studentMapper {
             $timestamp = time();
             $datum = (float) date("YmdHis", $timestamp);
             $testTime = (float) $set->ending_time;
+            
+            
             /* Checks if the test has been finished or if no end time is given */
             if (($testTime - $datum) < 0 || $set->timeded == 1) {
                 $tpl->setCurrentBlock("test_results");
