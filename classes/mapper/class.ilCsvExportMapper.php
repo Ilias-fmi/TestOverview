@@ -15,6 +15,8 @@ class ilCsvExportMapper {
       
     var $testIDs;
     
+    var $exerciseIDs;
+    
     var $users;
     
     var $assoc;
@@ -31,7 +33,8 @@ class ilCsvExportMapper {
         $date = time();
         
         $this->testIDs = $this->getTestIDs();
-        $this->users = $this->getUniqueTestUserID();
+        $this->exerciseIDs = $this->getUniqueExerciseIDs();
+        $this->users = $this->concatUsers();
         $this->assoc = $this->getAssociation();
         
         $this->inst_id = IL_INST_ID;
@@ -72,7 +75,6 @@ class ilCsvExportMapper {
         global $lng;
         $rows= array();
         $datarow = array();
-        
         //build headrow
         array_push($datarow, "name");
         array_push($datarow,"matriculation");
@@ -83,6 +85,14 @@ class ilCsvExportMapper {
             $testID = $value['test_id'];
             $testName = $this->getTestTitle($testID);
             array_push($datarow, $testName);
+        }
+        //push a name of every exercise into headrow
+        foreach ($this->exerciseIDs as $num => $exvalue) {
+            $exerciseID = $exvalue['obj_id'];
+            
+            $exName = $this->getExerciseName($exerciseID);
+            echo $exName;
+            array_push($datarow, $exName);
         }
         
         $headrow= $datarow;
@@ -103,6 +113,12 @@ class ilCsvExportMapper {
                 $activeID = $this->getActiveID($userID, $testID);
                 $testResult = $this ->getTestResultsForActiveId($activeID);
                 array_push($datarow2, $testResult);
+            }
+            //push exerciseResult into user row
+            foreach ($this->exerciseIDs as $num3 => $preValue3) {
+                $exerciseID = $preValue3['obj_id'];
+                $exerciseResult = $this->getExerciseMark($userID, $exerciseID);
+                array_push($datarow2, $exerciseResult);
             }
             array_push($rows,$datarow2);
             
@@ -154,7 +170,21 @@ class ilCsvExportMapper {
                 $qCounter++;
             }
         }
-        
+        //push a name of every exercise into headrow
+        foreach ($this->exerciseIDs as $num => $exvalue) {
+            $exerciseID = $exvalue['obj_id'];
+            $exName = $this->getExerciseName($exerciseID);
+            array_push($datarow, $exName);
+            $assignmentIDs = $this->getAssignments($exerciseID);
+            $aCounter = 1;
+            //push a name for every assignments a exercise has into the headrow
+            foreach ($assignmentIDs as $key => $assignmentInfo) {
+                $assignmentIDs = $assignmentInfo['id'];
+                $assignmentName = "Assignment ".$aCounter;
+                array_push($datarow, $assignmentName);
+                $aCounter++;
+            }
+        }
         
         $headrow= $datarow;
         array_push($rows, $headrow);
@@ -183,6 +213,19 @@ class ilCsvExportMapper {
                 }
             }
             
+            //push exerciseResult into user row
+            foreach ($this->exerciseIDs as $num3 => $preValue3) {
+                $exerciseID = $preValue3['obj_id'];
+                $exerciseResult = $this->getExerciseMark($userID, $exerciseID);
+                array_push($datarow2, $exerciseResult);
+                $assignmentIDs = $this->getAssignments($exerciseID);
+                //push assignmentResults into user row
+                foreach ($assignmentIDs as $key => $preValue4) {
+                   $assignmentIDs = $preValue4['id'];
+                   $assignmentPoints = $this->getAssignmentMark($userID, $assignmentIDs);
+                   array_push($datarow2, $assignmentPoints);
+                }
+            }
             array_push($rows,$datarow2);
             $datarow2 = array();
         }
@@ -455,7 +498,7 @@ class ilCsvExportMapper {
      * 
      * @global type $ilDB
      * @param type $questionID
-     * @return type
+     * @return Name of Question
      */
     protected function getQuestionTitle($questionID)
     {
@@ -505,6 +548,10 @@ class ilCsvExportMapper {
         
         return $uniqueIDs;
     }
+    
+    
+    
+    
 
     /**
      * 
@@ -528,8 +575,136 @@ class ilCsvExportMapper {
     }
     
     
+    /**
+     * 
+     * @global type $ilDB
+     * @return array of unique ExerciseIDs added to TO-Object 
+     */
+    protected function getUniqueExerciseIDs(){
+        
+        global $ilDB;
+        $uniqueIDs = array();
+        
+        $query = "SELECT obj_id_exercise AS obj_id from rep_robj_xtov_e2o WHERE obj_id_overview = %s";
+        $result = $ilDB->queryF($query, 
+                               array('integer'),
+                               array($this->overviewID));
+        
+        while ($record = $ilDB->fetchAssoc($result)){
+            array_push($uniqueIDs, $record);
+        }
+        
+        return $uniqueIDs;
+        
+    }
     
+    /**
+     * Returns the name of a Exercise 
+     */
+    public function getExerciseName($exerciseID) {
+        global $ilDB;
+        $query = "SELECT title FROM object_data WHERE obj_id = %s";
+        $result = $ilDB->queryF($query, 
+                        array('integer'),
+                        array($exerciseID));
+        $record = $ilDB->fetchAssoc($result);
+        return $record['title'];
+    }
+    /**
+     * 
+     * @global type $ilDB
+     * @return array with all userId that participated on Exercises in to object
+     */
+    protected function getUniqueExerciseUserID() {
+        
+        global $ilDB;
+        $uniqueIDs = array();
+        
+        $query = "SELECT DISTINCT
+                 (exc_mem_ass_status.usr_id)
+                 FROM
+                 rep_robj_xtov_e2o,
+                 exc_returned,
+                 exc_mem_ass_status
+                 JOIN
+                 usr_data ON (exc_mem_ass_status.usr_id = usr_data.usr_id)
+                 WHERE
+                 exc_returned.ass_id = exc_mem_ass_status.ass_id
+                 AND user_id = exc_mem_ass_status.usr_id
+                 AND obj_id_exercise = obj_id
+                 AND obj_id_overview = %s ";
+    
+        $result = $ilDB->queryF($query, 
+                               array('integer'),
+                               array($this->overviewID));
+        
+        while ($record = $ilDB->fetchAssoc($result)){
+            array_push($uniqueIDs, $record);
+        }
+        
+        return $uniqueIDs;
+    }
+    
+    /* Concatenate all Test and Exercise users */
+    public function concatUsers() {
+        $testUsers = $this->getUniqueTestUserID();
+        $exerciseUsers = $this->getUniqueExerciseUserID();
+        $allUsers = array_unique(array_merge($testUsers, $exerciseUsers));
+        
+        return $allUsers;
+    }
+    /* Returns all Assignments for a given excerciseID */
+    public function getAssignments($exerciseID){
+        global $ilDB;
+        $assignmentID = array();
+        
+        $query = "SELECT 
+                  id
+                  FROM
+                  exc_assignment
+                  WHERE
+                  exc_id = %s ";
+    
+        $result = $ilDB->queryF($query, 
+                               array('integer'),
+                               array($exerciseID));
+        
+        while ($record = $ilDB->fetchAssoc($result)){
+            array_push($assignmentID, $record);
+        }
+        
+        return $assignmentID;
+    }
+    /* Returns the exercise mark for a given userID and exerciseID  */
+    protected function getExerciseMark($userID, $exerciseID) {
+        global $ilDB;
+                                
+        $query = "SELECT mark FROM ut_lp_marks WHERE obj_id = %s AND usr_id = %s ";
+    
+        $result = $ilDB->queryF($query, 
+                               array('integer', 'integer'),
+                               array($exerciseID, $userID));
+        
+       $record = $ilDB->fetchAssoc($result);
+            
+        
+       return $record['mark'];
+    }
+    /* Returns the assignment mark for a given userID and assignmentID  */
+    protected function getAssignmentMark($userID, $assignmentID) {
+        global $ilDB;
+
+        
+        $query = "SELECT mark FROM exc_mem_ass_status WHERE ass_id = %s AND usr_id = %s";
+    
+        $result = $ilDB->queryF($query, 
+                               array('integer', 'integer'),
+                               array($assignmentID, $userID));
+        
+        $record = $ilDB->fetchAssoc($result);
+        
+        return $record['mark'];
+    }
 }
-    
 
  ?>

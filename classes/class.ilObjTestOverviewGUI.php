@@ -220,10 +220,12 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
             require_once 'Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview/classes/mapper/class.ilCsvExportMapper.php';
             $abc = new ilCsvExportMapper($export_type, $xtov_ID);
             $abc->buildExportFile();
-            //$abc->buildStudentMap();
+            
             ilUtil::sendSuccess('Exportfile created', true);
-            $ilCtrl->redirect('initExportForm');
+            
         }
+        $ilCtrl->redirect($this, 'Export');
+        
     }
 
     protected function initExportForm() {
