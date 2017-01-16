@@ -24,12 +24,12 @@ class ilCsvExportMapper {
     /**
      * Constructor
      */
-    public function __construct($type, $overviewID) {
+    public function __construct($parentObject, $type) {
         /**
          * instantiate the variables with form input
          */
         $this->type=$type;
-        $this->overviewID = $overviewID;
+        $this->overviewID = $parentObject->object->getID();
         $date = time();
         
         $this->testIDs = $this->getTestIDs();
@@ -39,7 +39,7 @@ class ilCsvExportMapper {
         
         $this->inst_id = IL_INST_ID;
         
-        $this->subdir = $date."__".$type."_extov";
+        $this->subdir = $date."_".$type."_extov";
 	$this->filename = $this->subdir.".csv";  
         
     }
@@ -280,7 +280,6 @@ class ilCsvExportMapper {
     /**
      * 
      * @global type $ilDB
-     * @param type $overviewID
      * @return array containing all testIDs associtated with the TO-Object
      */
     protected function getTestIDs() {

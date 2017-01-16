@@ -212,19 +212,18 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
     protected function triggerExport() {
         global $tpl, $lng, $ilCtrl;
         $this->initExportForm();
-        $xtov_ID = $this->object->getID();
         if ($this->form->checkInput()) {
 
             $export_type = $this->form->getInput("export_type");
 
             require_once 'Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview/classes/mapper/class.ilCsvExportMapper.php';
-            $abc = new ilCsvExportMapper($export_type, $xtov_ID);
+            $abc = new ilCsvExportMapper($this,$export_type);
             $abc->buildExportFile();
             
             ilUtil::sendSuccess('Exportfile created', true);
-            
+            $ilCtrl->redirect($this, 'Export');
         }
-        $ilCtrl->redirect($this, 'Export');
+        
         
     }
 
@@ -240,8 +239,8 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
 
         //radio group: Export type
         $checkbox_overview = new ilRadioGroupInputGUI("Type", "export_type");
-        $overview_op = new ilCheckboxOption("Reduced", "reduced", "Export the results for all tests ");
-        $overview_op2 = new ilCheckboxOption("Extended", "extended", "Export the results for all questions for every test");
+        $overview_op = new ilCheckboxOption("Reduced", "reduced", "Export the results for all tests and exercises linked to the TestOverview Object ");
+        $overview_op2 = new ilCheckboxOption("Extended", "extended", "Export the results for all questions for every test and for all assignments for all exercises");
 
         $checkbox_overview->addOption($overview_op);
         $checkbox_overview->addOption($overview_op2);
