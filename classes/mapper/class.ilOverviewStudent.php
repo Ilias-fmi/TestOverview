@@ -26,10 +26,17 @@ class studentMapper {
         $tpl = new ilTemplate("tpl.stud_view.html", true, true, "Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview");
         $lng->loadLanguageModule("assessment");
             $lng->loadLanguageModule("certificate"); 
+            $lng->loadLanguageModule("rating"); 
+            $lng->loadLanguageModule("trac"); 
+            $lng->loadLanguageModule("assessment"); 
             $tpl-> setCurrentBlock("head_row");
             $tpl-> setVariable("testTitle",$lng->txt("certificate_ph_testtitle"));
             $tpl-> setVariable("score",$lng->txt("toplist_col_score"));
             $tpl->parseCurrentBlock();
+            $tpl-> setVariable("average",$lng->txt("rating_average_rating"));
+            $tpl-> setVariable ("averagePercent",$lng->txt("trac_average"));
+            $tpl-> setVariable ("exerciseTitle",$lng->txt("certificate_ph_exercisetitle"));
+            $tpl-> setVariable ("mark",$lng->txt("tst_mark"));
         //Baut aus den Einzelnen Zeilen Objekte
         while ($testObj = $ilDB->fetchObject($result)) {
             array_push($data, $testObj);
