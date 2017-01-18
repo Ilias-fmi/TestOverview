@@ -156,8 +156,8 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
      * 	the plugin-specific tabs.
      */
     protected function setTabs() {
-      
-      
+
+
         /**
          * @var $ilTabs   ilTabsGUI
          * @var $ilCtrl   ilCtrl
@@ -221,12 +221,10 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
             require_once 'Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview/classes/mapper/class.ilCsvExportMapper.php';
             $abc = new ilCsvExportMapper($export_type, $xtov_ID);
             $abc->buildExportFile();
-            
+
             ilUtil::sendSuccess('Exportfile created', true);
-            
         }
         $ilCtrl->redirect($this, 'Export');
-        
     }
 
     protected function initExportForm() {
@@ -374,7 +372,7 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
     }
 
     protected function subTabTO() {
-        global $tpl, $ilTabs, $ilCtrl,$lng;
+        global $tpl, $ilTabs, $ilCtrl, $lng;
 
         $ilTabs->addSubTab('content', $this->txt("test_overview"), $this->ctrl->getLinkTarget($this, 'showContent'));
         $ilTabs->addSubTab('subTabTO', $this->txt("diagram"), $this->ctrl->getLinkTarget($this, 'subTabTO'));
@@ -442,7 +440,7 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
         $ilTabs->activateTab('ExerciseOverview');
         $ilTabs->activateSubTab('subTabEO1');
 
-        $tpl->setContent("<p> Ranking: 230. von 500 Mitgliedern</p>");
+        $ilCtrl->redirect($this, 'ExerciseOverview');
     }
 
     protected function subTabEO() {
@@ -457,7 +455,7 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
                         ->getDirectory() . '/classes/mapper/class.ilExerciseMapper.php';
 
         $Obj = new ilExerciseMapper();
-        $Obj-> setParent($this);
+        $Obj->setParent($this);
         $tpl->setContent($Obj->getHtml($this->object->getId()));
     }
 
@@ -494,28 +492,26 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
         $ilTabs->addSubTab('subTabEO1', $this->txt("diagram"), $ilCtrl->getLinkTarget($this, 'subTabEO1'));
         $ilTabs->addSubTab('subTabEO2', $this->txt("exercise_administration"), $ilCtrl->getLinkTarget($this, 'subTabEO2'));
         $ilTabs->activateSubTab('subTabEO1');
-        
+
         require_once 'Services/Form/classes/class.ilTextInputGUI.php';
         require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
                         ->getDirectory() . '/classes/mapper/class.ilBinDiagrammMapper.php';
-        
-        $attachment = new ilTextInputGUI("DiagramSize","diagramSize");
+
+        $attachment = new ilTextInputGUI("DiagramSize", "diagramSize");
         $ilToolbar->setFormAction($ilCtrl->getLinkTarget($this, 'ExerciseOverview'), true);
         $ilToolbar->addInputItem($attachment);
-        $ilToolbar->addFormButton("make my diagram","");
-        
+        $ilToolbar->addFormButton("make my diagram", "");
+
         //$chart = exerciseCharts ();
         //$tpl->setContent( $_POST["diagramSize"]);
         require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
                         ->getDirectory() . '/classes/mapper/class.ilExerciseMapper.php';
-        if ($_POST["diagramSize"]!= null){
-        $Obj = new exerciseCharts($_POST["diagramSize"],$this-> object->getId());
-        //$tpl->setContent (implode(";", $Obj->getHTML()));
-        $tpl->setContent ($Obj->getHTML());
+        if ($_POST["diagramSize"] != null) {
+            $Obj = new exerciseCharts($_POST["diagramSize"], $this->object->getId());
+            //$tpl->setContent (implode(";", $Obj->getHTML()));
+            $tpl->setContent($Obj->getHTML());
         }
     }
-    
-
 
     /**
      * 	Command for saving the updated Test Overview settings.

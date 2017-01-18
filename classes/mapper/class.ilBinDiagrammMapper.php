@@ -356,6 +356,10 @@ class PieAverageDiagramm extends AverageDiagramm {
     }
 
 }
+/**
+ * Creats a Bar diagramm for exercises.
+ * The Bucketsize is calculatet by a given value from the user 
+ */
 
 class exerciseCharts {
 
@@ -399,67 +403,65 @@ class exerciseCharts {
                 $this->buckets[7] ++;
             } else if ($value >= ($size * 8) && $value < ($size * 9)) {
                 $this->buckets[8] ++;
-            } else if ($value >= ($size * 9) && $value < ($size * 10)){
+            } else if ($value >= ($size * 9) && $value < ($size * 10)) {
                 $this->buckets[9] ++;
             }
         }
     }
 
     function getHTML() {
-       
-            require_once 'Services/Chart/classes/class.ilChartGrid.php';
-            require_once 'Services/Chart/classes/class.ilChartLegend.php';
-            require_once 'Services/Chart/classes/class.ilChartSpider.php';
-            require_once 'Services/Chart/classes/class.ilChartLegend.php';
-            require_once 'Services/Chart/classes/class.ilChartDataPie.php';
-            $chart = ilChart::getInstanceByType(ilChart::TYPE_GRID, 1);
-            $chart->setsize(900, 400);
-            $data = $chart->getDataInstance(ilChartGrid::DATA_BARS);
-            //$data->addPoint(1,1);
+
+        require_once 'Services/Chart/classes/class.ilChartGrid.php';
+        require_once 'Services/Chart/classes/class.ilChartLegend.php';
+        require_once 'Services/Chart/classes/class.ilChartSpider.php';
+        require_once 'Services/Chart/classes/class.ilChartLegend.php';
+        require_once 'Services/Chart/classes/class.ilChartDataPie.php';
+        $chart = ilChart::getInstanceByType(ilChart::TYPE_GRID, 1);
+        $chart->setsize(900, 400);
+        $data = $chart->getDataInstance(ilChartGrid::DATA_BARS);
 
 
 
-            /* Creation of the Legend */
-            /* $legend = new ilChartLegend();
-              $legend->setOpacity(50);
-              $chart->setLegend($legend);
-              $legend = $this->legend(); */
-            if ($this->buckets[0] > 0) {
-                $data->addPoint(10, $this->buckets[0]);
-            }
-            if ($this->buckets[1] > 0) {
-                $data->addPoint(20, $this->buckets[1]);
-            }
-            if ($this->buckets[2] > 0) {
-                $data->addPoint(30, $this->buckets[2]);
-            }
-            if ($this->buckets[3] > 0) {
-                $data->addPoint(40, $this->buckets[3]);
-            }
-            if ($this->buckets[4] > 0) {
-                $data->addPoint(50, $this->buckets[4]);
-            }
-            if ($this->buckets[5] > 0) {
-                $data->addPoint(60, $this->buckets[5]);
-            }
-            if ($this->buckets[6] > 0) {
-                $data->addPoint(70, $this->buckets[6]);
-            }
-            if ($this->buckets[7] > 0) {
-                $data->addPoint(80, $this->buckets[7]);
-            }
-            if ($this->buckets[8] > 0) {
-                $data->addPoint(90, $this->buckets[8]);
-            }
-            if ($this->buckets[9] > 0) {
-                $data->addPoint(100, $this->buckets[9]);
-            }
-            $chart->addData($data);
-            return $chart->getHTML();
-            // return $this-> buckets;
-  
+        $data->setBarOptions(2, "center");
+        /* Creation of the Legend */
+        $legend = new ilChartLegend();
+        $legend->setOpacity(50);
+        $chart->setLegend($legend);
+
+        if ($this->buckets[0] > 0) {
+            $data->addPoint(10, $this->buckets[0]);
+        }
+        if ($this->buckets[1] > 0) {
+            $data->addPoint(20, $this->buckets[1]);
+        }
+        if ($this->buckets[2] > 0) {
+            $data->addPoint(30, $this->buckets[2]);
+        }
+        if ($this->buckets[3] > 0) {
+            $data->addPoint(40, $this->buckets[3]);
+        }
+        if ($this->buckets[4] > 0) {
+            $data->addPoint(50, $this->buckets[4]);
+        }
+        if ($this->buckets[5] > 0) {
+            $data->addPoint(60, $this->buckets[5]);
+        }
+        if ($this->buckets[6] > 0) {
+            $data->addPoint(70, $this->buckets[6]);
+        }
+        if ($this->buckets[7] > 0) {
+            $data->addPoint(80, $this->buckets[7]);
+        }
+        if ($this->buckets[8] > 0) {
+            $data->addPoint(90, $this->buckets[8]);
+        }
+        if ($this->buckets[9] > 0) {
+            $data->addPoint(100, $this->buckets[9]);
+        }
+        $chart->addData($data);
+        return $chart->getHTML();
+        // return $this-> buckets;
     }
-    
 
 }
 
