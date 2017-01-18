@@ -383,23 +383,23 @@ class exerciseCharts {
         foreach ($this->data as $value) {
             if ($value < ($size / 10)) {
                 $this->buckets[0] ++;
-            } else if ($value > $size && $value < ($size * 2)) {
+            } else if ($value >= $size && $value < ($size * 2)) {
                 $this->buckets[1] ++;
-            } else if ($value > ($size * 2) && $value < ($size * 3)) {
+            } else if ($value >= ($size * 2) && $value < ($size * 3)) {
                 $this->buckets[2] ++;
-            } else if ($value > ($size * 3) && $value < ($size * 4)) {
+            } else if ($value >= ($size * 3) && $value < ($size * 4)) {
                 $this->buckets[3] ++;
-            } else if ($value > ($size * 4) && $value < ($size * 5)) {
+            } else if ($value >= ($size * 4) && $value < ($size * 5)) {
                 $this->buckets[4] ++;
-            } else if ($value > ($size * 5) && $value < ($size * 6)) {
+            } else if ($value >= ($size * 5) && $value < ($size * 6)) {
                 $this->buckets[5] ++;
-            } else if ($value > ($size * 6) && $value < ($size * 7)) {
+            } else if ($value >= ($size * 6) && $value < ($size * 7)) {
                 $this->buckets[6] ++;
-            } else if ($value > ($size * 7) && $value < ($size * 8)) {
+            } else if ($value >= ($size * 7) && $value < ($size * 8)) {
                 $this->buckets[7] ++;
-            } else if ($value > ($size * 8) && $value < ($size * 9)) {
+            } else if ($value >= ($size * 8) && $value < ($size * 9)) {
                 $this->buckets[8] ++;
-            } else {
+            } else if ($value >= ($size * 9) && $value < ($size * 10)){
                 $this->buckets[9] ++;
             }
         }
