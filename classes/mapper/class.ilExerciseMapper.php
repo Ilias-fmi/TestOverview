@@ -4,9 +4,11 @@ require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'T
                 ->getDirectory() . '/classes/mapper/class.ilDataMapper.php';
 
 class ilExerciseMapper extends ilDataMapper {
+
     public $lng;
-    public function setParent($lng){
-        $this-> lng = $lng;
+
+    public function setParent($lng) {
+        $this->lng = $lng;
     }
 
     protected $tableName = "rep_robj_xtov_e2o";
@@ -33,14 +35,14 @@ class ilExerciseMapper extends ilDataMapper {
 
         $query = "select ut_lp_marks.usr_id as user_id, firstname ,lastname ,obj_id ,mark from  rep_robj_xtov_e2o join ut_lp_marks join usr_data on 
                     (rep_robj_xtov_e2o.obj_id_exercise = ut_lp_marks.obj_id and ut_lp_marks.usr_id = usr_data.usr_id) 
-                    where obj_id_overview = '".$overviewID.
-                    "' ORDER BY obj_id DESC";
-       
+                    where obj_id_overview = '" . $overviewID .
+                "' ORDER BY obj_id DESC";
+
         $result = $ilDB->query($query);
         while ($record = $ilDB->fetchObject($result)) {
             array_push($DbObject, $record);
         }
-        
+
         return $DbObject;
     }
 
@@ -73,14 +75,14 @@ class ilExerciseMapper extends ilDataMapper {
      * Renders the HTML code into the Given Template
      */
     public function getHtml($overviewID) {
-       
+
         global $lng;
         $matrix = $this->buildMatrix($overviewID);
         $tests = $this->getUniqueExerciseId($overviewID);
         $tpl = new ilTemplate("tpl.exercise_view.html", true, true, "Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview");
         $lng->loadLanguageModule("assessment");
-        $tpl-> setCurrentBlock("user_colum");
-        $tpl-> setVariable("user",$lng->txt("eval_search_users"));
+        $tpl->setCurrentBlock("user_colum");
+        $tpl->setVariable("user", $lng->txt("eval_search_users"));
         $tpl->parseCurrentBlock();
         foreach ($tests as $test) {
             $txt = "<th> " . $this->getExerciseName($test) . "</th>";
@@ -88,8 +90,8 @@ class ilExerciseMapper extends ilDataMapper {
             $tpl->setVariable("colum", $txt);
             $tpl->parseCurrentBlock();
         }
-        $tpl-> setCurrentBlock("score_colum");
-        $tpl-> setVariable("score",$lng->txt("toplist_col_score"));
+        $tpl->setCurrentBlock("score_colum");
+        $tpl->setVariable("score", $lng->txt("toplist_col_score"));
         $tpl->parseCurrentBlock();
         foreach ($matrix as $row) {
             $txt = "<tr>";
@@ -134,7 +136,7 @@ class ilExerciseMapper extends ilDataMapper {
                 $mark = $this->getMark($users[$i], $tests[$j], $DbObject);
                 if ($mark > 0) {
                     //array_push($innerArray, $mark);
-                    array_push($innerArray,$mark);
+                    array_push($innerArray, $mark);
                 } else {
                     array_push($innerArray, $mark);
                 }
@@ -199,6 +201,21 @@ class ilExerciseMapper extends ilDataMapper {
             array_push($UniqueIDs, $record->usr_id);
         }
         return $UniqueIDs;
+    }
+
+    public function getTotalScores($overviewID) {
+        $data = array();
+        $results = $this->buildMatrix($overviewID);
+        if (!empty($results)) {
+            foreach ($results as $row) {
+                $totalScore = 0;
+                foreach ($row as $colum) {
+                    $totalScore += $colum;
+                }
+                array_push($data, $totalScore);
+            }
+            return $data;
+        }
     }
 
 }

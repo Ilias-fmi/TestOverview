@@ -357,4 +357,221 @@ class PieAverageDiagramm extends AverageDiagramm {
 
 }
 
+class exerciseCharts {
+
+    private $buckets = array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    private $data = null;
+    private $diagramSize = 0;
+    private $overviewId;
+    private $error = false;
+
+    function __construct($diagramSize, $overviewId) {
+        $this->diagramSize = $diagramSize;
+        $this->overviewId = $overviewId;
+
+        require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
+                        ->getDirectory() . '/classes/mapper/class.ilExerciseMapper.php';
+        $excMapper = new ilExerciseMapper();
+        $this->data = $excMapper->getTotalScores($overviewId);
+        if ($this->diagramSize > 0 && !empty($this->data)) {
+            $this->fillBuckets();
+        }
+    }
+
+    function fillBuckets() {
+        $size = $this->diagramSize / 10;
+        foreach ($this->data as $value) {
+            if ($value < ($size / 10)) {
+                $this->buckets[0] ++;
+            } else if ($value > $size && $value < ($size * 2)) {
+                $this->buckets[1] ++;
+            } else if ($value > ($size * 2) && $value < ($size * 3)) {
+                $this->buckets[2] ++;
+            } else if ($value > ($size * 3) && $value < ($size * 4)) {
+                $this->buckets[3] ++;
+            } else if ($value > ($size * 4) && $value < ($size * 5)) {
+                $this->buckets[4] ++;
+            } else if ($value > ($size * 5) && $value < ($size * 6)) {
+                $this->buckets[5] ++;
+            } else if ($value > ($size * 6) && $value < ($size * 7)) {
+                $this->buckets[6] ++;
+            } else if ($value > ($size * 7) && $value < ($size * 8)) {
+                $this->buckets[7] ++;
+            } else if ($value > ($size * 8) && $value < ($size * 9)) {
+                $this->buckets[8] ++;
+            } else {
+                $this->buckets[9] ++;
+            }
+        }
+    }
+
+    function getHTML() {
+       
+            require_once 'Services/Chart/classes/class.ilChartGrid.php';
+            require_once 'Services/Chart/classes/class.ilChartLegend.php';
+            require_once 'Services/Chart/classes/class.ilChartSpider.php';
+            require_once 'Services/Chart/classes/class.ilChartLegend.php';
+            require_once 'Services/Chart/classes/class.ilChartDataPie.php';
+            $chart = ilChart::getInstanceByType(ilChart::TYPE_GRID, 1);
+            $chart->setsize(900, 400);
+            $data = $chart->getDataInstance(ilChartGrid::DATA_BARS);
+            //$data->addPoint(1,1);
+
+
+
+            /* Creation of the Legend */
+            /* $legend = new ilChartLegend();
+              $legend->setOpacity(50);
+              $chart->setLegend($legend);
+              $legend = $this->legend(); */
+            if ($this->buckets[0] > 0) {
+                $data->addPoint(10, $this->buckets[0]);
+            }
+            if ($this->buckets[1] > 0) {
+                $data->addPoint(20, $this->buckets[1]);
+            }
+            if ($this->buckets[2] > 0) {
+                $data->addPoint(30, $this->buckets[2]);
+            }
+            if ($this->buckets[3] > 0) {
+                $data->addPoint(40, $this->buckets[3]);
+            }
+            if ($this->buckets[4] > 0) {
+                $data->addPoint(50, $this->buckets[4]);
+            }
+            if ($this->buckets[5] > 0) {
+                $data->addPoint(60, $this->buckets[5]);
+            }
+            if ($this->buckets[6] > 0) {
+                $data->addPoint(70, $this->buckets[6]);
+            }
+            if ($this->buckets[7] > 0) {
+                $data->addPoint(80, $this->buckets[7]);
+            }
+            if ($this->buckets[8] > 0) {
+                $data->addPoint(90, $this->buckets[8]);
+            }
+            if ($this->buckets[9] > 0) {
+                $data->addPoint(100, $this->buckets[9]);
+            }
+            $chart->addData($data);
+            return $chart->getHTML();
+            // return $this-> buckets;
+  
+    }
+    
+
+}
+
+/*
+  class exerciseCharts {
+
+  private $excMapper = null;
+  private $overviewId;
+  private $results = null;
+  private $data = array();
+  private $bucketBorder = array();
+  private $bucketNum = array();
+
+  function __construct($overviewId) {
+  require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
+  ->getDirectory() . '/classes/mapper/class.ilExerciseMapper.php';
+  $this->excMapper = new ilExerciseMapper();
+  $this->overviewId = $overviewId;
+  $this->results = $this->excMapper->buildMatrix($overviewId);
+  $this->getData();
+  $this->calcBuckets();
+  $this->fillBuckets();
+  }
+
+  function getData() {
+  foreach ($this->result as $row) {
+  array_push($this->data, array_pop($row));
+  }
+  }
+
+  function calcBuckets() {
+  $maxValue = 0;
+  foreach ($this->data as $value) {
+  if ($value > $maxValue) {
+  $maxValue = $value;
+  }
+  }
+  for ($i = 1; $i <= 10; $i++) {
+  $this->bucketBorder[i] = (i / 10) * $maxValue;
+  }
+  }
+
+  function fillBuckets() {
+  foreach ($data as $value) {
+  if ($value < $this->bucketBorder[1]) {
+  $this->bucketNum[1] ++;
+  } else if ($value > $this->bucketBorder[1] && $value < $this->bucketBorder[2]) {
+  $this->bucketNum[2] ++;
+  } else if ($value > $this->bucketBorder[2] && $value < $this->bucketBorder[3]) {
+  $this->bucketNum[3] ++;
+  } else if ($value > $this->bucketBorder[3] && $value < $this->bucketBorder[4]) {
+  $this->bucketNum[4] ++;
+  } else if ($value > $this->bucketBorder[4] && $value < $this->bucketBorder[5]) {
+  $this->bucketNum[5] ++;
+  } else if ($value > $this->bucketBorder[5] && $value < $this->bucketBorder[6]) {
+  $this->bucketNum[6] ++;
+  } else if ($value > $this->bucketBorder[6] && $value < $this->bucketBorder[7]) {
+  $this->bucketNum[7] ++;
+  } else if ($value > $this->bucketBorder[7] && $value < $this->bucketBorder[8]) {
+  $this->bucketNum[8] ++;
+  } else if ($value > $this->bucketBorder[8] && $value < $this->bucketBorder[9]) {
+  $this->bucketNum[9] ++;
+  } else {
+  $this->bucketNum[10] ++;
+  }
+  }
+
+  function initDia() {
+  require_once 'Services/Chart/classes/class.ilChartGrid.php';
+  require_once 'Services/Chart/classes/class.ilChartLegend.php';
+  require_once 'Services/Chart/classes/class.ilChartSpider.php';
+  require_once 'Services/Chart/classes/class.ilChartLegend.php';
+  require_once 'Services/Chart/classes/class.ilChartDataPie.php';
+  $chart = ilChart::getInstanceByType(ilChart::TYPE_PIE, $a_id);
+  $chart->setsize(900, 400);
+  $data = $chart->getDataInstance();
+  if ($this->buckets[0] > 0) {
+  $data->addPoint(10, $this->bucketNum[1]);
+  }
+  if ($this->buckets[1] > 0) {
+  $data->addPoint(20, $this->bucketNum[2]);
+  }
+  if ($this->buckets[2] > 0) {
+  $data->addPoint(30, $this->bucketNum[3]);
+  }
+  if ($this->buckets[3] > 0) {
+  $data->addPoint(40, $this->bucketNum[4]);
+  }
+  if ($this->buckets[4] > 0) {
+  $data->addPoint(50, $this->bucketNum[5]);
+  }
+  if ($this->buckets[5] > 0) {
+  $data->addPoint(60, $this->bucketNum[6]);
+  }
+  if ($this->buckets[6] > 0) {
+  $data->addPoint(70, $this->bucketNum[7]);
+  }
+  if ($this->buckets[7] > 0) {
+  $data->addPoint(80, $this->bucketNum[8]);
+  }
+  if ($this->buckets[8] > 0) {
+  $data->addPoint(90, $this->bucketNum[9]);
+  }
+  if ($this->buckets[9] > 0) {
+  $data->addPoint(100, $this->bucketNum[10]);
+  }
+  $chart->addData($data);
+  return $chart->getHTML();
+  }
+
+  }
+
+  }
+ */
 ?>

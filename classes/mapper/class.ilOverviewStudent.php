@@ -13,7 +13,7 @@ class studentMapper {
      * @return string
      */
     public function getResults($studId, $overviewId) {
-        global $ilDB,$lng;
+        global $ilDB, $lng;
         $average;
         $maxPoints;
 
@@ -24,19 +24,20 @@ class studentMapper {
                 where obj_id_overview ='" . $overviewId . "'AND tst_active.user_fi = '" . $studId . "'";
         $result = $ilDB->query($query);
         $tpl = new ilTemplate("tpl.stud_view.html", true, true, "Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview");
+        //Internationalization
         $lng->loadLanguageModule("assessment");
-            $lng->loadLanguageModule("certificate"); 
-            $lng->loadLanguageModule("rating"); 
-            $lng->loadLanguageModule("trac"); 
-            $lng->loadLanguageModule("assessment"); 
-            $tpl-> setCurrentBlock("head_row");
-            $tpl-> setVariable("testTitle",$lng->txt("certificate_ph_testtitle"));
-            $tpl-> setVariable("score",$lng->txt("toplist_col_score"));
-            $tpl->parseCurrentBlock();
-            $tpl-> setVariable("average",$lng->txt("rating_average_rating"));
-            $tpl-> setVariable ("averagePercent",$lng->txt("trac_average"));
-            $tpl-> setVariable ("exerciseTitle",$lng->txt("certificate_ph_exercisetitle"));
-            $tpl-> setVariable ("mark",$lng->txt("tst_mark"));
+        $lng->loadLanguageModule("certificate");
+        $lng->loadLanguageModule("rating");
+        $lng->loadLanguageModule("trac");
+        $lng->loadLanguageModule("assessment");
+        $tpl->setCurrentBlock("head_row");
+        $tpl->setVariable("testTitle", $lng->txt("certificate_ph_testtitle"));
+        $tpl->setVariable("score", $lng->txt("toplist_col_score"));
+        $tpl->parseCurrentBlock();
+        $tpl->setVariable("average", $lng->txt("rating_average_rating"));
+        $tpl->setVariable("averagePercent", $lng->txt("trac_average"));
+        $tpl->setVariable("exerciseTitle", $lng->txt("certificate_ph_exercisetitle"));
+        $tpl->setVariable("mark", $lng->txt("tst_mark"));
         //Baut aus den Einzelnen Zeilen Objekte
         while ($testObj = $ilDB->fetchObject($result)) {
             array_push($data, $testObj);
@@ -46,8 +47,8 @@ class studentMapper {
             $timestamp = time();
             $datum = (float) date("YmdHis", $timestamp);
             $testTime = (float) $set->ending_time;
-            
-            
+
+
             /* Checks if the test has been finished or if no end time is given */
             if (($testTime - $datum) < 0 || $set->timeded == 1) {
                 $tpl->setCurrentBlock("test_results");
@@ -81,7 +82,7 @@ class studentMapper {
         if ($this->numOfTests($overviewId) == 0) {
             $averageNum = 0;
         } else {
-            $averageNum = round($average / $this->numOfTests($overviewId),2);
+            $averageNum = round($average / $this->numOfTests($overviewId), 2);
         }
         $tpl->setVariable("AveragePoints", $averageNum);
         if ($maxPoints == 0) {
@@ -157,7 +158,7 @@ class studentMapper {
         $grades = array();
         $query = "select ut_lp_marks.usr_id as user_id,obj_id ,mark from  rep_robj_xtov_e2o join ut_lp_marks join usr_data on 
                     (rep_robj_xtov_e2o.obj_id_exercise = ut_lp_marks.obj_id and ut_lp_marks.usr_id = usr_data.usr_id) 
-                    where obj_id_overview = '".$overviewId . "' And ut_lp_marks.usr_id='" .$studId ."'";
+                    where obj_id_overview = '" . $overviewId . "' And ut_lp_marks.usr_id='" . $studId . "'";
         $result = $ilDB->query($query);
         while ($exercise = $ilDB->fetchObject($result)) {
             array_push($grades, $exercise);

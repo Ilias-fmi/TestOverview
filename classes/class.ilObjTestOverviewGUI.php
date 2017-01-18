@@ -102,6 +102,7 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
                     case 'removeMemberships':
                     case 'TestOverview':
                     case 'ExerciseOverview':
+                    case 'excDiagramm':
                     case 'editSettings':
                         $this->checkPermission('write');
                         $this->$cmd();
@@ -492,10 +493,29 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
         $ilTabs->addSubTab('subTabEO', $this->txt("exercise_overview"), $ilCtrl->getLinkTarget($this, 'subTabEO'));
         $ilTabs->addSubTab('subTabEO1', $this->txt("diagram"), $ilCtrl->getLinkTarget($this, 'subTabEO1'));
         $ilTabs->addSubTab('subTabEO2', $this->txt("exercise_administration"), $ilCtrl->getLinkTarget($this, 'subTabEO2'));
-
         $ilTabs->activateSubTab('subTabEO1');
-        $tpl->setContent("<p> Ranking: 230. von 500 Mitgliedern</p>");
+        
+        require_once 'Services/Form/classes/class.ilTextInputGUI.php';
+        require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
+                        ->getDirectory() . '/classes/mapper/class.ilBinDiagrammMapper.php';
+        
+        $attachment = new ilTextInputGUI("DiagramSize","diagramSize");
+        $ilToolbar->setFormAction($ilCtrl->getLinkTarget($this, 'ExerciseOverview'), true);
+        $ilToolbar->addInputItem($attachment);
+        $ilToolbar->addFormButton("make my diagram","");
+        
+        //$chart = exerciseCharts ();
+        //$tpl->setContent( $_POST["diagramSize"]);
+        require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
+                        ->getDirectory() . '/classes/mapper/class.ilExerciseMapper.php';
+        if ($_POST["diagramSize"]!= null){
+        $Obj = new exerciseCharts($_POST["diagramSize"],$this-> object->getId());
+        //$tpl->setContent (implode(";", $Obj->getHTML()));
+        $tpl->setContent ($Obj->getHTML());
+        }
     }
+    
+
 
     /**
      * 	Command for saving the updated Test Overview settings.
