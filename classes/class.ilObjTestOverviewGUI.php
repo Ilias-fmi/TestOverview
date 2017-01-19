@@ -87,7 +87,6 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
                 $gui = ilCommonActionDispatcherGUI::getInstanceFromAjaxCall();
                 $this->ctrl->forwardCommand($gui);
                 break;
-
             default:
                 switch ($cmd) {
                     case 'updateSettings':
@@ -200,13 +199,15 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
      */
     protected function Export() {
         global $tpl, $ilTabs;
-
+        
         $ilTabs->activateTab('export');
         /* initialize Export form */
         $this->initExportForm();
 
         /* Populate template */
         $tpl->setContent($this->form->getHTML());
+        
+        
     }
 
     protected function triggerExport() {
@@ -219,11 +220,12 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
             require_once 'Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview/classes/mapper/class.ilCsvExportMapper.php';
             $abc = new ilCsvExportMapper($this,$export_type);
             $abc->buildExportFile();
-            
+            $this->object->update();
             ilUtil::sendSuccess('Exportfile created', true);
-            $ilCtrl->redirect($this, 'Export');
+            $ilCtrl->redirect($this, 'showContent');
         }
-        
+       $this->form->setValuesByPost();
+       $tpl->setContent($this->form->getHTML());
         
     }
 
@@ -231,7 +233,7 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
 
         global $ilCtrl, $tpl;
         include_once("./Services/Form/classes/class.ilPropertyFormGUI.php");
-
+        
 
         $this->form = new ilPropertyFormGUI();
         $this->form->setTitle("Export " . $this->lng->txt("properties"));
@@ -251,7 +253,7 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
 
         $this->form->addCommandButton("triggerExport", "Export");
 
-        $tpl->setContent($this->form->getHTML());
+        //$tpl->setContent($this->form->getHTML());
     }
 
     /**
@@ -259,7 +261,7 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
      *
      * 	This command displays a test overview entry
      * 	and its data. This method is called by
-     * 	@see self::performComma nd().
+     * 	@see self::performCommand().
      */
     protected function showContent() {
         /**
