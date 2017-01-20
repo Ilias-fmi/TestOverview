@@ -385,7 +385,7 @@ class exerciseCharts {
     function fillBuckets() {
         $size = $this->diagramSize / 10;
         foreach ($this->data as $value) {
-            if ($value < ($size / 10)) {
+            if ($value < $size ) {
                 $this->buckets[0] ++;
             } else if ($value >= $size && $value < ($size * 2)) {
                 $this->buckets[1] ++;
