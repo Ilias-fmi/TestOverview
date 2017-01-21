@@ -1,9 +1,6 @@
 <?php
-
-/**
- * The class creates a CSV file from the User Data that can be downloaded 
- */
-class ilCsvExportMapper {
+class ilTestOverviewExport
+{
     
     /** @var type extended/reduced (TestQuestions) */
     var $type;
@@ -21,15 +18,10 @@ class ilCsvExportMapper {
     
     var $assoc;
     
-    /**
-     * Constructor
-     */
-    public function __construct($parentObject, $type) {
-        /**
-         * instantiate the variables with form input
-         */
+public function __construct($id, $type= "reduced"){
+        
         $this->type=$type;
-        $this->overviewID = $parentObject->object->getID();
+        $this->overviewID = $id;
         $date = time();
         
         $this->testIDs = $this->getTestIDs();
@@ -42,10 +34,8 @@ class ilCsvExportMapper {
         $this->subdir = $date."_".$type."_extov";
 	$this->filename = $this->subdir.".csv";  
         
-    }
-    
-
-    function buildExportFile()
+}   
+function buildExportFile()
     {       
                 if(empty($this->users))
                 ilUtil::sendFailure("No user-results to export.", true);
@@ -56,9 +46,17 @@ class ilCsvExportMapper {
                 switch ($this->type)
 		{
 			case "reduced":
-				return $this->buildReducedFile();
+                                if(empty($this->users)){
+                                    ilUtil::sendFailure("No users to export.", true);
+                                    break;
+                                }
+                                return $this->buildReducedFile();
 				break;
                         case "extended":
+                                if(empty($this->users)){
+                                    ilUtil::sendFailure("No users to export.", true);
+                                    break;
+                                }
                                 return $this->buildExtendedFile();
                                 break;
                         
@@ -75,6 +73,7 @@ class ilCsvExportMapper {
         global $lng;
         $rows= array();
         $datarow = array();
+        var_dump($this->users);
         //build headrow
         array_push($datarow, "name");
         array_push($datarow,"matriculation");
@@ -91,7 +90,6 @@ class ilCsvExportMapper {
             $exerciseID = $exvalue['obj_id'];
             
             $exName = $this->getExerciseName($exerciseID);
-            echo $exName;
             array_push($datarow, $exName);
         }
         
@@ -132,7 +130,7 @@ class ilCsvExportMapper {
 		$csv .= join($csvrow, $separator) . "\n";
                 //var_dump($evalrow);
 	}
-        ilUtil::deliverData($csv, ilUtil::getASCIIFilename($this->filename));
+        //ilUtil::deliverData($csv, ilUtil::getASCIIFilename($this->filename));
         
         
     }
@@ -648,7 +646,7 @@ class ilCsvExportMapper {
     public function concatUsers() {
         $testUsers = $this->getUniqueTestUserID();
         $exerciseUsers = $this->getUniqueExerciseUserID();
-        $allUsers = array_unique(array_merge($testUsers, $exerciseUsers));
+        $allUsers = (array_merge($testUsers, $exerciseUsers));
         
         return $allUsers;
     }
@@ -706,4 +704,4 @@ class ilCsvExportMapper {
     }
 }
 
- ?>
+
