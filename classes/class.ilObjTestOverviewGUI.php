@@ -500,16 +500,18 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
         $attachment = new ilTextInputGUI("DiagramSize", "diagramSize");
         $ilToolbar->setFormAction($ilCtrl->getLinkTarget($this, 'ExerciseOverview'), true);
         $ilToolbar->addInputItem($attachment);
-        $ilToolbar->addFormButton("make my diagram", "");
+        $ilToolbar->addFormButton($this->txt("make_diagram"), "");
 
-        //$chart = exerciseCharts ();
-        //$tpl->setContent( $_POST["diagramSize"]);
         require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
                         ->getDirectory() . '/classes/mapper/class.ilExerciseMapper.php';
         if ($_POST["diagramSize"] != null) {
             $Obj = new exerciseCharts($_POST["diagramSize"], $this->object->getId());
             //$tpl->setContent (implode(";", $Obj->getHTML()));
+
+
             $tpl->setContent($Obj->getHTML());
+        } else {
+            $tpl->setContent($this->txt("max_diagram_value"));
         }
     }
 
