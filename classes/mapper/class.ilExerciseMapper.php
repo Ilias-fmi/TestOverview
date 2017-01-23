@@ -85,7 +85,7 @@ class ilExerciseMapper extends ilDataMapper {
         $tpl->setVariable("user", $lng->txt("eval_search_users"));
         $tpl->parseCurrentBlock();
         foreach ($tests as $test) {
-            $txt = "<th> " . $this->getExerciseName($test) . "</th>";
+            $txt = "<th> <a href='ilias.php?ref_id=". $this->getRefId($test)."&cmd=showSummary&cmdClass=ilinfoscreengui&cmdNode=bb:au:7f&baseClass=ilExerciseHandlerGUI'>" . $this->getExerciseName($test) . "</th>";
             $tpl->setCurrentBlock("exercise_colum");
             $tpl->setVariable("colum", $txt);
             $tpl->parseCurrentBlock();
@@ -216,6 +216,16 @@ class ilExerciseMapper extends ilDataMapper {
             }
             return $data;
         }
+    }
+
+    public function getRefId($ObjId) {
+        global $ilDB;
+        $query = "SELECT ref_id FROM object_reference WHERE obj_id = %s";
+        $result = $ilDB->queryF($query, array('integer'), array($ObjId));
+
+        $record = $ilDB->fetchAssoc($result);
+
+        return $record['ref_id'];
     }
 
 }
