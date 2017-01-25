@@ -61,6 +61,11 @@ class ilTestOverviewTableGUI
 		$overview = $this->getParentObject()->object;
 
 		$this->addColumn($this->lng->txt('rep_robj_xtov_test_overview_hdr_user'));
+                
+                //get Object_reference mapper from Exercise Overview
+                require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
+                ->getDirectory() . '/classes/mapper/class.ilExerciseMapper.php';
+                $excMapper = new ilExerciseMapper();
 		
 		foreach( $overview->getUniqueTests() as $obj_id => $refs )
 		{
@@ -78,7 +83,9 @@ class ilTestOverviewTableGUI
 				}
 			}
 			$ilCtrl->setParameterByClass("ilobjtestgui", 'ref_id', $valid_ref_id);
-			$this->addTestColumn( $overview->getTest($obj_id)->getTitle(), $ilCtrl->getLinkTargetByClass('ilobjtestgui', 'infoScreen'));
+                        $statisticLink = "<br> <a href='ilias.php?ref_id=".$excMapper->getRefId($obj_id)."&cmd=outEvaluation&cmdClass=iltestevaluationgui&cmdNode=1z:mi:mf&baseClass=ilrepositorygui'> statistic";
+			$this->addTestColumn( $overview->getTest($obj_id)->getTitle(). $statisticLink , $ilCtrl->getLinkTargetByClass('ilobjtestgui', 'infoScreen'));
+                        
 			$ilCtrl->setParameterByClass("ilobjtestgui", 'ref_id', '');
 		}
 		
