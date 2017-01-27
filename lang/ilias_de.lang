@@ -75,3 +75,6 @@ mail#:#Email Adresse
 gend#:#Geschlecht
 qteil#:#Frage 
 assign#:#Übungseinheit 
+make_diagram#:#Erstelle mein Diagramm
+max_diagram_value#:#Bitte geben Sie hier die Maximalpunktzahl für ihr Diagramm ein
+

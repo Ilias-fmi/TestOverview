@@ -75,3 +75,6 @@ mail#:#mail address
 gend#:#gender
 qteil#:#Question 
 assign#:#Assignment 
+make_diagram#:#Make my Diagramm
+max_diagram_value#:#Please Enter the Maximal Diagramm Value
+
