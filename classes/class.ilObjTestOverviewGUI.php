@@ -88,7 +88,7 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
                 $this->ctrl->forwardCommand($gui);
                 break;
             case 'iltestoverviewexportgui':
-                require_once 'Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview/classes/mapper/class.ilTestOverviewExportGUI.php';
+                require_once 'Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview/classes/GUI/class.ilTestOverviewExportGUI.php';
                 $csvMapper = new ilTestOverviewExportGUI($this, $this->object->getId());
                 $ilTabs->setTabActive('export');
                 $this->ctrl->forwardCommand($csvMapper);

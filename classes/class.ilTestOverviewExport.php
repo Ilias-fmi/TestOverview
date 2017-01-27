@@ -158,7 +158,7 @@ function buildExportFile()
             foreach ($questionIDs as $key => $questionInfo) {
                 $questionID = $questionInfo['question_fi'];
                 //$questionName = $this->getQuestionTitle($questionID);
-                $questionName = "Teilaufgabe ".$qCounter;
+                $questionName = $this->txt("qteil").$qCounter;
                 array_push($datarow, $questionName);
                 $qCounter++;
             }
@@ -173,7 +173,7 @@ function buildExportFile()
             //push a name for every assignments a exercise has into the headrow
             foreach ($assignmentIDs as $key => $assignmentInfo) {
                 $assignmentIDs = $assignmentInfo['id'];
-                $assignmentName = "Assignment ".$aCounter;
+                $assignmentName = $this->txt("assign").$aCounter;
                 array_push($datarow, $assignmentName);
                 $aCounter++;
             }

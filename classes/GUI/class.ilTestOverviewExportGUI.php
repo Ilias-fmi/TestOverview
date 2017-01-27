@@ -60,7 +60,7 @@ class ilTestOverviewExportGUI extends ilObjTestOverviewGUI {
         global $tpl, $lng, $ilCtrl;
         if ($this->form->checkInput()) {
             $export_type = $this->form->getInput("export_type");
-            require_once 'Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview/classes/GUI/class.ilTestOverviewExport.php';
+            require_once 'Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview/classes/class.ilTestOverviewExport.php';
             $to_exp = new ilTestOverviewExport($this->parent, $this->id, $export_type);
             $to_exp->buildExportFile();
         }
