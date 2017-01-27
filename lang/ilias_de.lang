@@ -64,3 +64,14 @@ diagram#:#Diagramm
 test_administration#:#Test Verwaltung
 exercise_overview#:#Aufgaben Übersicht
 exercise_administration#:#Aufgaben Verwaltung
+Export#:#Export
+reduced#:#Reduziertes Format
+extended#:#Erweitertes Format
+reduced_exp#:#Ergebnisse von allen Tests und Exercises die mit dem TestOverview Objekt assoziiert sind exportieren
+extended_exp#:#Ergebnisse von allen Tests und Exercises die mit dem TestOverview Objekt assoziiert sind, inkl. derer Teilfragen und Assignments exportieren
+name#:#Name
+mat#:#Matrikelnummer
+mail#:#Email Adresse
+gend#:#Geschlecht
+qteil#:#Frage 
+assign#:#Übungseinheit 

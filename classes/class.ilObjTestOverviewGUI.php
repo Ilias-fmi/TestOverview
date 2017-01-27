@@ -19,7 +19,7 @@ include_once 'Services/jQuery/classes/class.iljQueryUtil.php';
 /**
  * @ilCtrl_isCalledBy ilObjTestOverviewGUI: ilRepositoryGUI, ilAdministrationGUI, ilObjPluginDispatchGUI
  * @ilCtrl_Calls      ilObjTestOverviewGUI: ilPermissionGUI, ilInfoScreenGUI, ilObjectCopyGUI, ilRepositorySearchGUI, ilPublicUserProfileGUI, ilCommonActionDispatcherGUI
- * @ilCtrl_Calls      ilObjTestOverviewGUI: ilTestEvaluationGUI, ilMDEditorGUI
+ * @ilCtrl_Calls      ilObjTestOverviewGUI: ilTestEvaluationGUI, ilMDEditorGUI, ilTestOverviewExportGUI
  */
 class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHandling {
 
@@ -87,7 +87,12 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
                 $gui = ilCommonActionDispatcherGUI::getInstanceFromAjaxCall();
                 $this->ctrl->forwardCommand($gui);
                 break;
-
+            case 'iltestoverviewexportgui':
+                require_once 'Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview/classes/GUI/class.ilTestOverviewExportGUI.php';
+                $csvMapper = new ilTestOverviewExportGUI($this, $this->object->getId());
+                $ilTabs->setTabActive('export');
+                $this->ctrl->forwardCommand($csvMapper);
+                break;
             default:
                 switch ($cmd) {
                     case 'updateSettings':
@@ -100,6 +105,7 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
                     case 'removeTests':
                     case 'addMemberships':
                     case 'removeMemberships':
+                    case 'exportRedirect':    
                     case 'TestOverview':
                     case 'ExerciseOverview':
                     case 'excDiagramm':
@@ -117,14 +123,12 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
                     case 'subTabEO':
                     case 'subTabEO1':
                     case 'subTabEO2':
-
                     case 'rights':
                     case 'applyGroupsFilter':
                     case 'resetOverviewFilter':
                     case 'resetTestsFilter':
                     case 'resetGroupsFilter':
                     case 'addToDesk':
-                    case 'Export':
                     case 'deleteExercises':
                     case 'triggerExport':
                     case 'allLocalTests':
@@ -188,78 +192,19 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
             }
             // export
             if ($ilAccess->checkAccess('write', '', $this->object->getRefId())) {
-                $ilTabs->addTab("export", "Export", $this->ctrl->getLinkTarget($this, "Export"));
+                $ilTabs->addTarget('export', $this->ctrl->getLinkTargetByClass('iltestoverviewexportgui',''), '', 'iltestoverviewexportgui');
             }
             $this->addPermissionTab();
         }
     }
 
-    /**
-     * 
-     * Command for initialising the Export GUI
-     * 
-     */
-    protected function Export() {
-        global $tpl, $ilTabs;
-
-        $ilTabs->activateTab('export');
-        /* initialize Export form */
-        $this->initExportForm();
-
-        /* Populate template */
-        $tpl->setContent($this->form->getHTML());
-    }
-
-    protected function triggerExport() {
-        global $tpl, $lng, $ilCtrl;
-        $this->initExportForm();
-        $xtov_ID = $this->object->getID();
-        if ($this->form->checkInput()) {
-
-            $export_type = $this->form->getInput("export_type");
-
-            require_once 'Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview/classes/mapper/class.ilCsvExportMapper.php';
-            $abc = new ilCsvExportMapper($export_type, $xtov_ID);
-            $abc->buildExportFile();
-
-            ilUtil::sendSuccess('Exportfile created', true);
-        }
-        $ilCtrl->redirect($this, 'Export');
-    }
-
-    protected function initExportForm() {
-
-        global $ilCtrl, $tpl;
-        include_once("./Services/Form/classes/class.ilPropertyFormGUI.php");
-
-
-        $this->form = new ilPropertyFormGUI();
-        $this->form->setTitle("Export " . $this->lng->txt("properties"));
-        $this->form->setFormAction($ilCtrl->getFormAction($this, 'triggerExport'));
-
-        //radio group: Export type
-        $checkbox_overview = new ilRadioGroupInputGUI("Type", "export_type");
-        $overview_op = new ilCheckboxOption("Reduced", "reduced", "Export the results for all tests ");
-        $overview_op2 = new ilCheckboxOption("Extended", "extended", "Export the results for all questions for every test");
-
-        $checkbox_overview->addOption($overview_op);
-        $checkbox_overview->addOption($overview_op2);
-        $checkbox_overview->setRequired(true);
-
-
-        $this->form->addItem($checkbox_overview);
-
-        $this->form->addCommandButton("triggerExport", "Export");
-
-        $tpl->setContent($this->form->getHTML());
-    }
 
     /**
      * 	Command for rendering a Test Overview.
      *
      * 	This command displays a test overview entry
      * 	and its data. This method is called by
-     * 	@see self::performComma nd().
+     * 	@see self::performCommand().
      */
     protected function showContent() {
         /**
