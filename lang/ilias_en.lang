@@ -64,3 +64,14 @@ diagram#:#Diagram
 test_administration#:#Test administration
 exercise_overview#:#Exerciseoverview
 exercise_administration#:#Exercise administration
+Export#:#Export
+reduced#:#Reduced Format
+extended#:#Extended Format
+reduced_exp#:#Export the results for all tests and exercises linked to the TestOverview Object
+extended_exp#:#Export the results for all questions for every test and for all assignments for all exercises linked to the TestOverview Object
+name#:#name
+mat#:#matriculation
+mail#:#mail address
+gend#:#gender
+qteil#:#Question 
+assign#:#Assignment 

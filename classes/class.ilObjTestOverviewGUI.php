@@ -90,7 +90,7 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
             case 'iltestoverviewexportgui':
                 require_once 'Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview/classes/mapper/class.ilTestOverviewExportGUI.php';
                 $csvMapper = new ilTestOverviewExportGUI($this, $this->object->getId());
-                $ilTabs->setTabActive('Export');
+                $ilTabs->setTabActive('export');
                 $this->ctrl->forwardCommand($csvMapper);
                 break;
             default:
@@ -105,6 +105,7 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
                     case 'removeTests':
                     case 'addMemberships':
                     case 'removeMemberships':
+                    case 'exportRedirect':    
                     case 'TestOverview':
                     case 'ExerciseOverview':
                     case 'editSettings':
@@ -190,7 +191,7 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
             }
             // export
             if ($ilAccess->checkAccess('write', '', $this->object->getRefId())) {
-                $ilTabs->addTarget("Export", $this->ctrl->getLinkTargetByClass('iltestoverviewexportgui',''), '', 'iltestoverviewexportgui');
+                $ilTabs->addTarget('export', $this->ctrl->getLinkTargetByClass('iltestoverviewexportgui',''), '', 'iltestoverviewexportgui');
             }
             $this->addPermissionTab();
         }
