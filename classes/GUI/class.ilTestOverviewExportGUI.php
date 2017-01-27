@@ -70,11 +70,10 @@ class ilTestOverviewExportGUI extends ilObjTestOverviewGUI {
 
         global $ilCtrl, $tpl, $lng;
         include_once("./Services/Form/classes/class.ilPropertyFormGUI.php");
-
-
+        
         $this->form = new ilPropertyFormGUI();
         $this->form->setTitle("Export " . $this->txt("properties"));
-        $this->form->setFormAction($ilCtrl->getFormAction($this, 'triggerExport'));
+        $this->form->setFormAction($ilCtrl->getFormAction($this));
 
         //radio group: Export type
         $checkbox_overview = new ilRadioGroupInputGUI("Type", "export_type");

@@ -57,13 +57,13 @@ membership_count_members#:#Mitglieder
 copy#:#Kopieren
 overview_test_no_permission#:#(Kein Zugriff)
 add_tsts_to_overview#:#Tests hinzufügen
-pie_chart#:#Kuchen Diagramm
-bar_chart#:#Säulen Diagramm
-test_overview#:#Test Übersicht
+pie_chart#:#Kuchendiagramm
+bar_chart#:#Säulendiagramm
+test_overview#:#TestOverview
 diagram#:#Diagramm
-test_administration#:#Test Verwaltung
-exercise_overview#:#Aufgaben Übersicht
-exercise_administration#:#Aufgaben Verwaltung
+test_administration#:#Testverwaltung
+exercise_overview#:#ExerciseOverview
+exercise_administration#:#Aufgabenverwaltung
 Export#:#Export
 reduced#:#Reduziertes Format
 extended#:#Erweitertes Format
@@ -76,5 +76,5 @@ gend#:#Geschlecht
 qteil#:#Frage 
 assign#:#Übungseinheit 
 make_diagram#:#Erstelle mein Diagramm
-max_diagram_value#:#Bitte geben Sie hier die Maximalpunktzahl für ihr Diagramm ein
-
+max_diagram_value#:#Bitte geben Sie hier die Maximalpunktzahl für Ihr Diagramm ein
+userResults#:#Ihre Leistung

@@ -59,22 +59,22 @@ copy#:#Copy
 overview_test_no_permission#:#(No Permission)
 add_tsts_to_overview#:#Add Tests to Overview
 bar_chart#:#Bar Chart
-test_overview#:#Testoverview
+test_overview#:#TestOverview
 diagram#:#Diagram
-test_administration#:#Test administration
-exercise_overview#:#Exerciseoverview
-exercise_administration#:#Exercise administration
+test_administration#:#Test Administration
+exercise_overview#:#ExerciseOverview
+exercise_administration#:#Exercise Administration
 Export#:#Export
 reduced#:#Reduced Format
 extended#:#Extended Format
 reduced_exp#:#Export the results for all tests and exercises linked to the TestOverview Object
 extended_exp#:#Export the results for all questions for every test and for all assignments for all exercises linked to the TestOverview Object
-name#:#name
-mat#:#matriculation
-mail#:#mail address
-gend#:#gender
+name#:#Name
+mat#:#Matriculation
+mail#:#Mail Address
+gend#:#Gender
 qteil#:#Question 
 assign#:#Assignment 
 make_diagram#:#Make my Diagramm
-max_diagram_value#:#Please Enter the Maximal Diagramm Value
-
+max_diagram_value#:#Please enter the maximal diagramm value
+userResults#:#Your Results
