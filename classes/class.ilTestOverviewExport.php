@@ -514,7 +514,8 @@ function buildExportFile()
         global $ilDB;
         $uniqueIDs = array();
         
-        $query = "SELECT DISTINCT(user_fi) 
+        $query = "SELECT usr_id AS user_fi FROM (
+                SELECT DISTINCT(user_fi) 
                   FROM tst_active 
                   JOIN 
                  (SELECT 
@@ -541,7 +542,8 @@ function buildExportFile()
                  exc_returned.ass_id = exc_mem_ass_status.ass_id
                  AND user_id = exc_mem_ass_status.usr_id
                  AND obj_id_exercise = obj_id
-                 AND obj_id_overview = %s";
+                 AND obj_id_overview = %s) t1
+                 INNER JOIN usr_data ON t1.user_fi= usr_data.usr_id";
         $result= $ilDB->queryF($query, 
                                array('integer', 'integer'),
                                array($this->overviewID, $this->overviewID));
