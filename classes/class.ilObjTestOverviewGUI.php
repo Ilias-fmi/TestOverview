@@ -509,14 +509,14 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
                 $_SESSION['select_exercise'][] = $node_id;
             }
         }
-        $this->selectExercises();
+        $this->selectExercises((int)$_GET['select_exercise']);
     }
 
     /**
      * Creats the Exercise Select GUI with the given Notes 
      *
      */
-    public function selectExercises() {
+    public function selectExercises($expandTarget) {
 
         global $tpl, $lng, $ilCtrl, $ilToolbar;
 
@@ -525,7 +525,7 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
         require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
                         ->getDirectory() . '/classes/class.ilTestOverviewExerciseSelectionExplorer.php';
         $exp = new ilTestOverviewExerciseSelectionExplorer('select_exercise');
-        $exp->setExpandTarget($ilCtrl->getLinkTarget($this, 'selectExercises'));
+        $exp->setExpandTarget($ilCtrl->getLinkTarget($this, 'initSelectExercise'));
         $exp->setTargetGet('ref_id');
         $exp->setPostVar('nodes[]');
         $exp->highlightNode((int) $_GET['ref_id']);
@@ -533,13 +533,14 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
                 is_array($_POST['nodes']) ? (array) $_POST['nodes'] : array()
         );
         $tpl->setVariable('FORM_TARGET', '_top');
-        $tpl->setVariable('FORM_ACTION', $ilCtrl->getFormAction($this, 'performAddTests'));
-        $exp->setExpand(
+        $tpl->setVariable('FORM_ACTION', $ilCtrl->getFormAction($this, 'performAddExercise'));
+        /*$exp->setExpand(
                 isset($_GET['select_exercise']) && (int) $_GET['select_exercise'] ?
                         (int) $_GET['select_exercise'] :
                         $this->tree->readRootId()
-        );
-        //$exp->setDefaultHiddenObjects($this->object->getUniqueTests(true));
+        );*/
+        $exp-> setExpand($expandTarget);
+        $exp->setDefaultHiddenObjects($this->object->getUniqueTests(true));
         $exp->setOutput(0);
         $tpl->setVariable('OBJECT_TREE', $exp->getOutput());
         $tpl->setVariable('CMD_SUBMIT', 'performAddExcercise');

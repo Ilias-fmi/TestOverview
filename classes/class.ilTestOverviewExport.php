@@ -124,8 +124,7 @@ function buildExportFile()
 		$csvrow = $this->processCSVRow($evalrow, TRUE, $separator);
 		$csv .= join($csvrow, $separator) . "\n";
                 //var_dump($evalrow);
-	}
-        
+        }
         ilUtil::deliverData($csv, ilUtil::getASCIIFilename($this->filename));
 
     }
