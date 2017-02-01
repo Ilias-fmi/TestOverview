@@ -181,7 +181,7 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
         }
 
         if ($ilAccess->checkAccess('read', '', $this->object->getRefId())) {
-            $ilTabs->addTab('UserResults', "Ergebnisse", $ilCtrl->getLinkTarget($this, 'UserResults'));
+            $ilTabs->addTab('UserResults', $this->txt('userResults'), $ilCtrl->getLinkTarget($this, 'UserResults'));
             $ilTabs->addTab('TestOverview', $this->txt('TestOverview'), $this->ctrl->getLinkTarget($this, 'TestOverview'));
             $ilTabs->addTab('ExerciseOverview', $this->txt('ExerciseOverview'), $this->ctrl->getLinkTarget($this, 'ExerciseOverview'));
 
