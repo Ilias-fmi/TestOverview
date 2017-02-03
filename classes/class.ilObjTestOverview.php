@@ -19,6 +19,8 @@ class ilObjTestOverview extends ilObjectPlugin
 	private $test_objects = array();
 	private $test_obj_id_by_ref_id = null;
 	private $test_ref_ids_by_obj_id = null;
+        
+        private $exercise_ref = null;
 
 	/**
 	 *	@var array
@@ -403,7 +405,7 @@ class ilObjTestOverview extends ilObjectPlugin
 
 		return $this->test_obj_id_by_ref_id;
 	}
-
+        
 	public function getTest($obj_id)
 	{
 		if( !isset($this->test_objects[$obj_id]) )
@@ -413,7 +415,7 @@ class ilObjTestOverview extends ilObjectPlugin
 
 		return $this->test_objects[$obj_id];
 	}
-
+        
 	/**
 	 *    Retrieve the list of participants groups.
 	 *
@@ -458,5 +460,25 @@ class ilObjTestOverview extends ilObjectPlugin
 
 		return $this->groups;
 	}
+        
+        /**
+	 *    Retrieve the list of exercises.
+	 *
+	 *    The getTests() method is used to retrieve
+	 *    the list of tests registered with the overview.
+	 *
+	 * @params    boolean    $fromDB        Wether to fetch from database.
+	 *
+	 * @param bool $fromDB
+	 * @return array
+	 */
+	public function getUniqueExercises( $fromDB = false )
+	{
+		if ( $fromDB || !$this->isTestDataLoaded() )
+		{
+			$this->loadExerciseData();
+		}
 
+		return $this->exercise_ref;
+	}
 }

@@ -534,19 +534,19 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
         );
         $tpl->setVariable('FORM_TARGET', '_top');
         $tpl->setVariable('FORM_ACTION', $ilCtrl->getFormAction($this, 'performAddExercise'));
-        /*$exp->setExpand(
+        $exp->setExpand(
                 isset($_GET['select_exercise']) && (int) $_GET['select_exercise'] ?
                         (int) $_GET['select_exercise'] :
                         $this->tree->readRootId()
-        );*/
+        );
         $exp-> setExpand($expandTarget);
-        $exp->setDefaultHiddenObjects($this->object->getUniqueTests(true));
+        $exp->setDefaultHiddenObjects($this->object->getUniqueExercises(true));
         $exp->setOutput(0);
         $tpl->setVariable('OBJECT_TREE', $exp->getOutput());
         $tpl->setVariable('CMD_SUBMIT', 'performAddExcercise');
         $tpl->setVariable('TXT_SUBMIT', $lng->txt('select'));
 
-        return;
+
     }
 
     public function initSelectTests() {
@@ -607,21 +607,32 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
 
         global $tpl, $lng, $ilCtrl, $ilAccess;
 
-        include_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
-                        ->getDirectory() . "/classes/mapper/class.ilExerciseImport.php";
+        //include_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
+        //               ->getDirectory() . "/classes/mapper/class.ilExerciseImport.php";
+        $this->includePluginClasses(array('ilExerciseImport.php'));
         $mapper = new ExerciseImport ();
         $overviewId = $this->object->getId();
-        $txt = "";
+        
+        if (!isset($_POST['nodes']) || !is_array($_POST['nodes']) || !$_POST['nodes']) {
+            ilUtil::sendFailure($lng->txt('select_one'));
+            $this->selectExercises();
+            return;
+        }
+        $num_nodes = 0;
         if ($_POST['nodes'] != null) {
             foreach ($_POST['nodes'] as $ref_id) {
                 $mapper->createEntry($overviewId, $ref_id);
-                $this->editSettings();
+                //$this->editSettings();
+                ++$num_nodes;
             }
-        } else {
+        } 
+        if (!$num_nodes) {
             ilUtil::sendFailure($lng->txt('select_one'));
-            $this->initSelectExercise();
+            $this->selectExercises();
+            return;
         }
         $ilCtrl->redirect($this, 'subTabEO2');
+        
     }
 
     public function performAddTests() {

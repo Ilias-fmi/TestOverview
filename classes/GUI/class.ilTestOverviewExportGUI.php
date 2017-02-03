@@ -87,9 +87,8 @@ class ilTestOverviewExportGUI extends ilObjTestOverviewGUI {
 
 
         $this->form->addItem($checkbox_overview);
-
+        
         $this->form->addCommandButton("triggerExport", "Export");
-
         return $this->form;
     }
 
