@@ -540,7 +540,7 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
                         $this->tree->readRootId()
         );
         
-        //$exp->setDefaultHiddenObjects($this->object->getUniqueExercises(true));
+        $exp->setDefaultHiddenObjects($this->object->getUniqueExercises(true));
         $exp->setOutput(0);
         $tpl->setVariable('OBJECT_TREE', $exp->getOutput());
         $tpl->setVariable('CMD_SUBMIT', 'performAddExcercise');

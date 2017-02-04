@@ -20,7 +20,7 @@ class ilObjTestOverview extends ilObjectPlugin
 	private $test_obj_id_by_ref_id = null;
 	private $test_ref_ids_by_obj_id = null;
         
-        private $exercise_ref = null;
+        private $exercise_ref_ids_by_obj_id = null;
 
 	/**
 	 *	@var array
@@ -384,7 +384,7 @@ class ilObjTestOverview extends ilObjectPlugin
 		return $this->test_ref_ids_by_obj_id;
 	}
 
-
+        
 	/**
 	 *    Retrieve the list of tests.
 	 *
@@ -479,6 +479,43 @@ class ilObjTestOverview extends ilObjectPlugin
 			$this->loadExerciseData();
 		}
 
-		return $this->exercise_ref;
+		return $this->exercise_ref_ids_by_obj_id;
+	}
+        /**
+         *  Load exercise data into array 
+         * 
+         * @global type $ilDB
+         */
+        private function loadExerciseData()
+	{
+		global $ilDB;
+
+		$res = $ilDB->queryF("
+			SELECT DISTINCT
+                            (obj_id), ref_id
+                        FROM
+                            rep_robj_xtov_e2o e2o
+                        JOIN object_reference ref 
+                            ON (ref.obj_id = e2o.obj_id_exercise)
+                        WHERE
+                            obj_id_overview = %s
+                            AND ref.deleted IS NULL",
+			array( 'integer'),
+			array( $this->getId()));
+
+		/* Fetch objects into $this->tests. */
+
+		$this->exercise_ref_ids_by_obj_id = array();
+
+		while ($row = $ilDB->fetchAssoc( $res ))
+		{
+			if( !isset($this->exercise_ref_ids_by_obj_id [ $row['obj_id'] ]) )
+			{
+				$this->exercise_ref_ids_by_obj_id [ $row['obj_id'] ] = array();
+			}
+
+			//$this->test_obj_id_by_ref_id[$row['ref_id']] = $row['obj_id'];
+			$this->exercise_ref_ids_by_obj_id [$row['obj_id']][] = $row['ref_id'];
+		}
 	}
 }
