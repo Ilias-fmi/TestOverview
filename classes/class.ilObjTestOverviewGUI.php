@@ -215,24 +215,18 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
         $this->includePluginClasses(array(
             "ilTestOverviewTableGUI",
             "ilOverviewMapper"));
-        //$ilTabs->activateTab("content");
 
         global $tpl, $lng, $ilTabs, $ilToolbar, $ilCtrl;
 
-        $ilTabs->addSubTab('content', $this->txt("test_overview"), $this->ctrl->getLinkTarget($this, 'showContent'));
-        $ilTabs->addSubTab('subTabTO', $this->txt("diagram"), $this->ctrl->getLinkTarget($this, 'subTabTO'));
-        $ilTabs->addSubTab('subTabTO2', $this->txt("test_administration"), $this->ctrl->getLinkTarget($this, 'subTabTO2'));
+        $this->subTabs("Test");
         $ilTabs->activateSubTab('content');
         $ilTabs->activateTab('TestOverview');
-
 
 
         $this->includePluginClasses(array(
             "ilTestOverviewTableGUI",
             "ilOverviewMapper"));
         // Button um Graphiken der Ãœbersicht zu erstellen
-
-        $ilTabs->activateSubTab('showContent');
 
 
         /* Configure content UI */
@@ -296,9 +290,7 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
 
     protected function TestOverview() {
         global $tpl, $ilTabs, $ilCtrl;
-        $ilTabs->addSubTab('content', $this->txt("test_overview"), $this->ctrl->getLinkTarget($this, 'showContent'));
-        $ilTabs->addSubTab('subTabTO', $this->txt("diagram"), $this->ctrl->getLinkTarget($this, 'subTabTO'));
-        $ilTabs->addSubTab('subTabTO2', $this->txt("test_administration"), $this->ctrl->getLinkTarget($this, 'subTabTO2'));
+        $this->subTabs("Test");
         $ilTabs->activateTab('TestOverview');
         $ilTabs->activateSubTab('subTabTO');
         $ilTabs->activateSubTab('showContent');
@@ -317,17 +309,12 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
     }
 
     protected function subTabTO() {
-        global $tpl, $ilTabs, $ilCtrl, $lng;
+        global $tpl, $ilTabs, $ilCtrl, $lng, $ilToolbar, $ilDB;
 
-        $ilTabs->addSubTab('content', $this->txt("test_overview"), $this->ctrl->getLinkTarget($this, 'showContent'));
-        $ilTabs->addSubTab('subTabTO', $this->txt("diagram"), $this->ctrl->getLinkTarget($this, 'subTabTO'));
-        $ilTabs->addSubTab('subTabTO2', $this->txt("test_administration"), $this->ctrl->getLinkTarget($this, 'subTabTO2'));
+        $this->subTabs("Test");
         $ilTabs->activateTab('TestOverview');
         $ilTabs->activateSubTab('subTabTO');
 
-
-        global $tpl, $ilTabs, $ilToolbar, $ilDB;
-        $ilTabs->activateSubTab('subTabTO2');
         require_once 'Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview/classes/mapper/class.ilBinDiagrammMapper.php';
         try {
             $Obj = new BinDiagrammMapper($this, 'showContent');
@@ -342,9 +329,7 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
     protected function testPieChart() {
         global $tpl, $ilTabs, $ilCtrl;
 
-        $ilTabs->addSubTab('content', $this->txt("test_overview"), $this->ctrl->getLinkTarget($this, 'showContent'));
-        $ilTabs->addSubTab('subTabTO', $this->txt("diagram"), $this->ctrl->getLinkTarget($this, 'subTabTO'));
-        $ilTabs->addSubTab('subTabTO2', $this->txt("test_administration"), $this->ctrl->getLinkTarget($this, 'subTabTO2'));
+        $this->subTabs("Test");
         $ilTabs->activateTab('TestOverview');
         $ilTabs->activateSubTab('subTabTO');
 
@@ -367,33 +352,17 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
 
         global $tpl, $ilTabs, $ilCtrl, $ilToolbar;
 
-        $ilTabs->addSubTab('content', $this->txt("test_overview"), $this->ctrl->getLinkTarget($this, 'showContent'));
-        $ilTabs->addSubTab('subTabTO', $this->txt("diagram"), $this->ctrl->getLinkTarget($this, 'subTabTO'));
-        $ilTabs->addSubTab('subTabTO2', $this->txt("test_administration"), $this->ctrl->getLinkTarget($this, 'subTabTO2'));
+        $this->subTabs("Test");
         $ilTabs->activateTab('TestOverview');
         $ilTabs->activateSubTab('subTabTO2');
 
         $tpl->setContent($this->getTestList()->getHTML() . $this->getMembershipList()->getHTML());
     }
 
-    protected function subTabEO1() {
-        global $tpl, $ilTabs, $ilCtrl, $ilToolbar;
-
-        $ilTabs->addSubTab('subTabEO', $this->txt("exercise_overview"), $ilCtrl->getLinkTarget($this, 'subTabEO'));
-        $ilTabs->addSubTab('subTabEO1', $this->txt("diagram"), $ilCtrl->getLinkTarget($this, 'subTabEO1'));
-        $ilTabs->addSubTab('subTabEO2', $this->txt("exercise_administration"), $ilCtrl->getLinkTarget($this, 'subTabEO2'));
-        $ilTabs->activateTab('ExerciseOverview');
-        $ilTabs->activateSubTab('subTabEO1');
-
-        $ilCtrl->redirect($this, 'ExerciseOverview');
-    }
-
     protected function subTabEO() {
         global $tpl, $ilUser, $ilTabs, $ilCtrl, $ilToolbar;
 
-        $ilTabs->addSubTab('subTabEO', $this->txt("exercise_overview"), $ilCtrl->getLinkTarget($this, 'subTabEO'));
-        $ilTabs->addSubTab('subTabEO1', $this->txt("diagram"), $ilCtrl->getLinkTarget($this, 'subTabEO1'));
-        $ilTabs->addSubTab('subTabEO2', $this->txt("exercise_administration"), $ilCtrl->getLinkTarget($this, 'subTabEO2'));
+        $this->subTabs("Exercise");
         $ilTabs->activateTab('ExerciseOverview');
         $ilTabs->activateSubTab('subTabEO');
         require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
@@ -404,15 +373,26 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
         $tpl->setContent($Obj->getHtml($this->object->getId()));
     }
 
+    protected function subTabEO1() {
+        global $tpl, $ilTabs, $ilCtrl, $ilToolbar;
+
+        $this->subTabs("Exercise");
+        $ilTabs->activateTab('ExerciseOverview');
+        $ilTabs->activateSubTab('subTabEO1');
+
+        $ilCtrl->redirect($this, 'ExerciseOverview');
+    }
+    
     /**
      * Renders the Tab for Exercise Settings
      */
     protected function subTabEO2() {
         global $tpl, $ilTabs, $ilCtrl, $ilToolbar;
 
-        $ilTabs->addSubTab('subTabEO', $this->txt("exercise_overview"), $ilCtrl->getLinkTarget($this, 'subTabEO'));
-        $ilTabs->addSubTab('subTabEO1', $this->txt("diagram"), $ilCtrl->getLinkTarget($this, 'subTabEO1'));
-        $ilTabs->addSubTab('subTabEO2', $this->txt("exercise_administration"), $ilCtrl->getLinkTarget($this, 'subTabEO2'));
+        //$ilTabs->addSubTab('subTabEO', $this->txt("exercise_overview"), $ilCtrl->getLinkTarget($this, 'subTabEO'));
+        //$ilTabs->addSubTab('subTabEO1', $this->txt("diagram"), $ilCtrl->getLinkTarget($this, 'subTabEO1'));
+        //$ilTabs->addSubTab('subTabEO2', $this->txt("exercise_administration"), $ilCtrl->getLinkTarget($this, 'subTabEO2'));
+        $this->subTabs("Exercise");
         $ilTabs->activateTab('ExerciseOverview');
         $ilTabs->activateSubTab('subTabEO2');
         global $tpl;
@@ -425,7 +405,23 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
         $Obj = new ExerciseListTableGUI($this, 'editSettings');
         $tpl->setContent($Obj->getHTML($this->object->getId()));
     }
+    protected function subTabs($type) {
+        global $ilTabs, $ilCtrl;
+        switch ($type) {
+            case 'Exercise':
+                $ilTabs->addSubTab('subTabEO', $this->txt("exercise_overview"), $ilCtrl->getLinkTarget($this, 'subTabEO'));
+                $ilTabs->addSubTab('subTabEO1', $this->txt("diagram"), $ilCtrl->getLinkTarget($this, 'subTabEO1'));
+                $ilTabs->addSubTab('subTabEO2', $this->txt("exercise_administration"), $ilCtrl->getLinkTarget($this, 'subTabEO2'));
 
+                break;
+
+            case 'Test':
+                $ilTabs->addSubTab('content', $this->txt("test_overview"), $this->ctrl->getLinkTarget($this, 'showContent'));
+                $ilTabs->addSubTab('subTabTO2', $this->txt("test_administration"), $this->ctrl->getLinkTarget($this, 'subTabTO2'));
+                $ilTabs->addSubTab('subTabTO', $this->txt("diagram"), $this->ctrl->getLinkTarget($this, 'subTabTO'));
+                break;
+        }
+    }
     /**
      * Render the Exercise Diagramms
      * TO-DO Just a MockUp
@@ -621,7 +617,6 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
         if ($_POST['nodes'] != null) {
             foreach ($_POST['nodes'] as $ref_id) {
                 $mapper->createEntry($overviewId, $ref_id);
-                //$this->editSettings();
                 ++$num_nodes;
             }
         } 
