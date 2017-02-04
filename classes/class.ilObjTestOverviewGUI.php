@@ -516,7 +516,7 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
      * Creats the Exercise Select GUI with the given Notes 
      *
      */
-    public function selectExercises($expandTarget) {
+    public function selectExercises() {
 
         global $tpl, $lng, $ilCtrl, $ilToolbar;
 
@@ -539,8 +539,8 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
                         (int) $_GET['select_exercise'] :
                         $this->tree->readRootId()
         );
-        $exp-> setExpand($expandTarget);
-        $exp->setDefaultHiddenObjects($this->object->getUniqueExercises(true));
+        
+        //$exp->setDefaultHiddenObjects($this->object->getUniqueExercises(true));
         $exp->setOutput(0);
         $tpl->setVariable('OBJECT_TREE', $exp->getOutput());
         $tpl->setVariable('CMD_SUBMIT', 'performAddExcercise');
@@ -607,9 +607,8 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
 
         global $tpl, $lng, $ilCtrl, $ilAccess;
 
-        //include_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
-        //               ->getDirectory() . "/classes/mapper/class.ilExerciseImport.php";
-        $this->includePluginClasses(array('ilExerciseImport.php'));
+        include_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
+                       ->getDirectory() . "/classes/mapper/class.ilExerciseImport.php";
         $mapper = new ExerciseImport ();
         $overviewId = $this->object->getId();
         
