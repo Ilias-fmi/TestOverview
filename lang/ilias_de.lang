@@ -19,8 +19,8 @@ content#:#Inhalt
 properties#:#Einstellungen
 edit_properties#:#Einstellungen Bearbeiten
 title#:#Titel
-TestOverview#:#Testübersicht
-ExerciseOverview#:#Übungsübersicht
+TestOverview#:#TestOverview
+ExerciseOverview#:#ExerciseOverview
 description#:#Beschreibung
 save#:#Speichern
 cancel#:#Abbrechen
