@@ -83,7 +83,7 @@ class ilTestOverviewTableGUI
 				}
 			}
 			$ilCtrl->setParameterByClass("ilobjtestgui", 'ref_id', $valid_ref_id);
-                        $statisticLink = "<br> <a href='ilias.php?ref_id=".$excMapper->getRefId($obj_id)."&cmd=outEvaluation&cmdClass=iltestevaluationgui&cmdNode=1z:mi:mf&baseClass=ilrepositorygui'> statistic";
+                        $statisticLink = "<br> <a href='ilias.php?ref_id=".$excMapper->getRefId($obj_id)."&cmd=outEvaluation&cmdClass=iltestevaluationgui&cmdNode=1z:mi:mf&baseClass=ilrepositorygui'> Statistics";
 			$this->addTestColumn( $overview->getTest($obj_id)->getTitle(). $statisticLink , $ilCtrl->getLinkTargetByClass('ilobjtestgui', 'infoScreen'));
                         
 			$ilCtrl->setParameterByClass("ilobjtestgui", 'ref_id', '');
@@ -430,7 +430,7 @@ class ilTestOverviewTableGUI
 	 * @param string $link
 	 */
 	public function addTestColumn($a_text, $link)
-	{
+	{       
 		$this->addColumn($a_text, '');
 		$this->column[count($this->column) - 1]['link'] = $link;
 	}

@@ -23,10 +23,6 @@ include_once 'Services/jQuery/classes/class.iljQueryUtil.php';
  */
 class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHandling {
 
-    /**
-     * 	@var ilPropertyFormGUI
-     */
-    protected $form;
 
     /**
      * 
@@ -192,7 +188,7 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
             }
             // export
             if ($ilAccess->checkAccess('write', '', $this->object->getRefId())) {
-                $ilTabs->addTarget('export', $this->ctrl->getLinkTargetByClass('iltestoverviewexportgui',''), '', 'iltestoverviewexportgui');
+                $ilTabs->addTarget('export', $this->ctrl->getLinkTargetByClass('iltestoverviewexportgui','export'), '', 'iltestoverviewexportgui');
             }
             $this->addPermissionTab();
         }
@@ -417,8 +413,8 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
 
             case 'Test':
                 $ilTabs->addSubTab('content', $this->txt("test_overview"), $this->ctrl->getLinkTarget($this, 'showContent'));
-                $ilTabs->addSubTab('subTabTO2', $this->txt("test_administration"), $this->ctrl->getLinkTarget($this, 'subTabTO2'));
                 $ilTabs->addSubTab('subTabTO', $this->txt("diagram"), $this->ctrl->getLinkTarget($this, 'subTabTO'));
+                $ilTabs->addSubTab('subTabTO2', $this->txt("test_administration"), $this->ctrl->getLinkTarget($this, 'subTabTO2'));
                 break;
         }
     }
@@ -514,8 +510,8 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
      */
     public function selectExercises() {
 
-        global $tpl, $lng, $ilCtrl, $ilToolbar;
-
+        global $tpl, $lng, $ilCtrl, $ilTabs, $ilToolbar;
+        $ilTabs->activateTab('ExerciseOverview');
         $ilToolbar->addButton($this->lng->txt('cancel'), $ilCtrl->getLinkTarget($this, 'subTabEO2'));
         $tpl->addBlockfile('ADM_CONTENT', 'adm_content', 'tpl.paste_into_multiple_objects.html', 'Services/Object');
         require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')

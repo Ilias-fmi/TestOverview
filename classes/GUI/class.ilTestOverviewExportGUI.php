@@ -26,10 +26,9 @@ class ilTestOverviewExportGUI extends ilObjTestOverviewGUI {
         $this->parent = $a_parent_gui;
         $this->id = $id;
         $this->ref_id = $this->object->getRefId();
-        $this->export();
     }
 
-    function &performCommand() {
+    function &executeCommand() {
         global $ilCtrl;
         $next_class = $ilCtrl->getNextClass($this);
         $cmd = $ilCtrl->getCmd();
@@ -37,28 +36,27 @@ class ilTestOverviewExportGUI extends ilObjTestOverviewGUI {
             default :
                 switch ($cmd) {
 
-                    case 'deliverData':
-                    case 'triggerExport':
-                    case 'export': $this->$cmd();
+                    default: $this->$cmd();
                         break;
                 }
         }
     }
 
     public function export() {
-        global $tpl, $ilCtrl;
 
 
         /* initialize Export form */
-        $form = $this->initExportForm();
+        $this->initExportForm();
 
         /* Populate template */
-        $tpl->setContent($form->getHTML());
+        $this->tpl->setContent($this->form->getHTML());
     }
 
     protected function triggerExport() {
         global $tpl, $lng, $ilCtrl;
+        $this->initExportForm();
         if ($this->form->checkInput()) {
+            
             $export_type = $this->form->getInput("export_type");
             
             require_once 'Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview/classes/class.ilTestOverviewExport.php';
@@ -67,7 +65,7 @@ class ilTestOverviewExportGUI extends ilObjTestOverviewGUI {
         }
     }
 
-    protected function initExportForm() {
+    public function initExportForm() {
 
         global $ilCtrl, $tpl, $lng;
         include_once("./Services/Form/classes/class.ilPropertyFormGUI.php");
@@ -89,7 +87,6 @@ class ilTestOverviewExportGUI extends ilObjTestOverviewGUI {
         $this->form->addItem($checkbox_overview);
         
         $this->form->addCommandButton("triggerExport", "Export");
-        return $this->form;
     }
 
 }
