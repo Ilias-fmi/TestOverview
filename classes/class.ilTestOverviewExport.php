@@ -93,7 +93,6 @@ function buildExportFile()
         //push user specific info into every row (userInfo)
         foreach ($this->users as $num => $preValue) {
             $userID = $preValue['user_fi'];
-            $datarow = $headrow;
             $datarow2 = array();
             $userInfo = $this->getInfo($userID);
             array_push($datarow2, $userInfo['lastname'].', '.$userInfo['firstname']); 
@@ -172,12 +171,14 @@ function buildExportFile()
             //push a name for every assignments a exercise has into the headrow
             foreach ($assignmentIDs as $key => $assignmentInfo) {
                 $assignmentIDs = $assignmentInfo['id'];
-                $assignmentName = $this->txt("assign").$aCounter;
+                $assignmentName = $this->txt("assign")." ".$aCounter;
                 array_push($datarow, $assignmentName);
                 $aCounter++;
             }
         }
-        
+        /*
+         * need to implement a smart way to show the subquestion names + enumerated tests and assignments
+         */
         $headrow= $datarow;
         array_push($rows, $headrow);
         //push user specific info into every row (userInfo)

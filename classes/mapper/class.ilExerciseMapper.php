@@ -91,7 +91,7 @@ class ilExerciseMapper extends ilDataMapper {
             $tpl->parseCurrentBlock();
         }
         $tpl->setCurrentBlock("score_colum");
-        $tpl->setVariable("score", $lng->txt("toplist_col_score"));
+        $tpl->setVariable("score", $lng->txt("tst_mark"));
         $tpl->parseCurrentBlock();
         foreach ($matrix as $row) {
             $txt = "<tr>";

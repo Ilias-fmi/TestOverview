@@ -29,12 +29,12 @@ class studentMapper {
         $lng->loadLanguageModule("certificate");
         $lng->loadLanguageModule("rating");
         $lng->loadLanguageModule("trac");
-        $lng->loadLanguageModule("assessment");
         $tpl->setCurrentBlock("head_row");
         $tpl->setVariable("testTitle", $lng->txt("certificate_ph_testtitle"));
         $tpl->setVariable("score", $lng->txt("toplist_col_score"));
         $tpl->parseCurrentBlock();
-        $tpl->setVariable("average", $lng->txt("rating_average_rating"));
+        /* PLS INTERNATIONALIZE */
+        $tpl->setVariable("average", "Durschnittliche !Punktzahl!/ Average Points");
         $tpl->setVariable("averagePercent", $lng->txt("trac_average"));
         $tpl->setVariable("exerciseTitle", $lng->txt("certificate_ph_exercisetitle"));
         $tpl->setVariable("mark", $lng->txt("tst_mark"));
