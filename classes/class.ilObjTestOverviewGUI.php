@@ -129,6 +129,7 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
                     case 'triggerExport':
                     case 'allLocalTests':
                     case 'UserResults':
+                    case 'showRanking':  
                         $this->checkPermission('read');
                         $this->UserResults();
                     case 'removeFromDesk':
@@ -196,44 +197,77 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
 
 
     /**
-     * 	Command for rendering a Test Overview.
-     *
-     * 	This command displays a test overview entry
-     * 	and its data. This method is called by
-     * 	@see self::performCommand().
-     */
-    protected function showContent() {
-        /**
-         * @var $tpl ilTemplate
-         * @var $ilTabs ilTabsGUI
-         */
-        global $tpl, $ilTabs;
-        $this->includePluginClasses(array(
-            "ilTestOverviewTableGUI",
-            "ilOverviewMapper"));
+	 *	Command for rendering a Test Overview.
+	 *
+	 *	This command displays a test overview entry
+	 *	and its data. This method is called by
+	 *	@see self::performCommand().
+	 */
 
-        global $tpl, $lng, $ilTabs, $ilToolbar, $ilCtrl;
-
-        $this->subTabs("Test");
-        $ilTabs->activateSubTab('content');
-        $ilTabs->activateTab('TestOverview');
-
-
-        $this->includePluginClasses(array(
-            "ilTestOverviewTableGUI",
-            "ilOverviewMapper"));
-        // Button um Graphiken der Ãœbersicht zu erstellen
-
-
-        /* Configure content UI */
-        $table = new ilTestOverviewTableGUI($this, 'showContent');
-        $table->setMapper(new ilOverviewMapper)
-                ->populate();
-        /* Populate template */
-        $tpl->setDescription($this->object->getDescription());
-        $data = array_slice($table->getData(), $table->getOffset(), $table->getLimit());
-        $tpl->setContent($table->getHTML());
-    }
+protected function showContent()
+	{
+				/**
+		 * @var $tpl ilTemplate
+		 * @var $ilTabs ilTabsGUI
+		 */
+                global $tpl,$lng, $ilTabs,$ilToolbar,$ilCtrl;
+                $this->includePluginClasses(array(
+			"ilTestOverviewTableGUI",
+			"ilOverviewMapper"));
+                /*Darstellung der Tabs*/
+                $ilTabs->addSubTab('content',"Test Übersicht", $this->ctrl->getLinkTarget($this,  'showContent'));
+                $ilTabs->addSubTab('subTabTO',"Diagramme", $this->ctrl->getLinkTarget($this,'subTabTO'));
+		$ilTabs->addSubTab( 'subTabTO2',"Test Verwaltung",$this->ctrl->getLinkTarget($this,  'subTabTO2'));
+                $ilTabs->activateSubTab('content');
+                $ilTabs->activateTab('TestOverview');                             
+		$this->includePluginClasses(array(
+			"ilTestOverviewTableGUI",
+			"ilOverviewMapper"));		
+		/* Configure content UI */
+                $ilMapper =new ilOverviewMapper;
+                $ilMapper->resetRanks($this->object->getid());
+		$table = new ilTestOverviewTableGUI( $this, 'showContent' );
+		$table->setMapper($ilMapper)
+			  ->populate();
+		/* Populate template */
+		$tpl->setDescription($this->object->getDescription());
+                $data = array_slice($table-> getData(), $table->getOffset(), $table->getLimit());
+		$tpl->setContent( $table->getHTML());
+                $ilToolbar->addButton("Ordne nach Ranking", $ilCtrl->getLinkTarget($this,'showRanking'));
+	}
+        protected function showRanking()
+	{		/**
+		 * @var $tpl ilTemplate
+		 * @var $ilTabs ilTabsGUI
+		 */
+                global $tpl,$lng, $ilTabs,$ilToolbar,$ilCtrl;
+		$this->includePluginClasses(array(
+			"ilTestOverviewTableGUI",
+			"ilOverviewMapper"));
+                /*Darstellung der Tabs*/
+                $ilTabs->addSubTab('content',"Test Übersicht", $this->ctrl->getLinkTarget($this,  'showContent'));
+                $ilTabs->addSubTab('subTabTO',"Diagramme", $this->ctrl->getLinkTarget($this,'subTabTO'));
+		$ilTabs->addSubTab( 'subTabTO2',"Test Verwaltung",$this->ctrl->getLinkTarget($this,  'subTabTO2'));
+                $ilTabs->activateSubTab('content');
+                $ilTabs->activateTab('TestOverview');        
+		$this->includePluginClasses(array(
+			"ilTestOverviewTableGUI",
+			"ilOverviewMapper"));	
+                              
+		/* Get data to populate table */
+                $ilMapper =new ilOverviewMapper;                
+		$table = new ilTestOverviewTableGUI( $this, 'showRanking' );
+		$table->setMapper($ilMapper)
+			  ->populateR(true);
+		/* Populate template */
+		$tpl->setDescription($this->object->getDescription());
+                $data = array_slice($table-> getData(), $table->getOffset(), $table->getLimit());
+		$tpl->setContent( $table->getHTML());
+                $table->getData();
+                $ilToolbar->addButton("Ordne nach Namen", $ilCtrl->getLinkTarget($this,'showContent'));
+                }
+        
+	
 
     /**
      * 	Render the settings page.
@@ -289,7 +323,7 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
     
     
     protected function TestOverview() {
-        global $tpl, $ilTabs, $ilCtrl;
+        global $tpl, $ilTabs, $ilCtrl,$ilToolbar;
         $this->subTabs('Test');
         $ilTabs->activateTab('TestOverview');
         //$ilTabs->activateSubTab('subTabTO');
@@ -306,7 +340,8 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
         $tpl->setDescription($this->object->getDescription());
         $data = array_slice($table->getData(), $table->getOffset(), $table->getLimit());
         $tpl->setContent($table->getHTML());
-    }
+        $ilToolbar->addButton("Ordne nach Ranking", $ilCtrl->getLinkTarget($this,'showRanking'));
+   }
 
     protected function subTabTO() {
         global $tpl, $ilTabs, $ilCtrl, $lng, $ilToolbar, $ilDB;
@@ -560,6 +595,7 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
         foreach ((array) $path as $node_id) {
             if (!in_array($node_id, $_SESSION['select_tovr_expanded']))
                 $_SESSION['select_tovr_expanded'][] = $node_id;
+
         }
         $this->selectTests();
         return;

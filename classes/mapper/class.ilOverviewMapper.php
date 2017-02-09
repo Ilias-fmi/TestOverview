@@ -81,6 +81,7 @@ class ilOverviewMapper
 	}
 
 	/**
+         * 
 	 * @param array $obj_ids
 	 * @return array
 	 */
@@ -88,7 +89,6 @@ class ilOverviewMapper
 	{
 		$in_tst_std   = $this->db->in('tst_std.obj_fi', $obj_ids, false, 'integer');
 		$in_tst_fixed = $this->db->in('tst_fixed.obj_fi', $obj_ids, false, 'integer');
-
 		$query   = "
 			(SELECT act.user_fi
 			FROM tst_tests tst_std
@@ -96,7 +96,7 @@ class ilOverviewMapper
 			INNER JOIN tst_active act
 				ON act.test_fi = tst_std.test_id
 			INNER JOIN usr_data ud_std
-				ON ud_std.usr_id = act.user_fi
+			ON ud_std.usr_id = act.user_fi
 			WHERE $in_tst_std)
 			UNION
 			(SELECT inv.user_fi
@@ -114,7 +114,6 @@ class ilOverviewMapper
 		{
 			$usr_ids[] = (int)$row['user_fi'];
 		}
-
 		$data        = array('items' => array_unique($usr_ids));
 		$data['cnt'] = 0;
 
@@ -123,4 +122,74 @@ class ilOverviewMapper
         function getVirtuellTableName(){
             return "rep_robj_xtov_overview_virtual";
         }
+        /**
+         * This method is used to edit the ranking in the database 
+         * @param type $average
+         * @param type $studid
+         * @param type $toId
+         */
+        public function setData2Rank($average,$studid,$toId)
+        {       	  $query=
+                            "REPLACE INTO 
+                                    rep_robj_xtov_torank (stud_id, rank, to_id)
+                            Values
+                                    ($studid,$average,$toId);";
+                      $this->db->query($query); 
+                        
+        }
+        /**
+         * Delete all rankings for a TestOverview Object
+         * @param type $id
+         */
+        public function resetRanks($id)
+        {$query=
+                 "DELETE FROM `rep_robj_xtov_torank` WHERE to_id=$id" ;
+            $this->db->query($query); 
+        }       
+        /**
+         * Gets a list of students which is sorted by ranking
+         * @param type $id
+         * @return type
+         */
+        public function getRankedList($id)
+        {
+            $query=
+                 "SELECT stud_id FROM `rep_robj_xtov_torank` WHERE to_id=358 ORDER BY rank ASC "
+			   ;
+            
+            $result= $this->db->query($query);
+            echo("<script>console.log('PHP: q ');</script>");
+             return  $result; 
+                        
+        }
+        /**
+         * Gets the ranking of a student
+         * @global type $ilDB
+         * @param type $id
+         * @param type $stdID
+         * @return int
+         */
+        
+        public function getRankedStudent($id,$stdID)
+        {
+            global $ilDB;
+            $rank=0;
+            $query=
+                 "SELECT stud_id FROM `rep_robj_xtov_torank` WHERE to_id=$id ORDER BY rank DESC "
+			   ;
+            
+            $result= $this->db->query($query);
+            $index=1;
+             while($student= $ilDB ->fetchAssoc ($result) ) 
+       {      
+                   if($student[stud_id]===$stdID){
+                   $rank=$index;
+               }
+               $index++;            
+            
+        }
+             return  $rank; 
+                        
+        }
+                
 }

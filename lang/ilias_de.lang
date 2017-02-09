@@ -49,6 +49,7 @@ test_overview_description#:#Diese Tabelle zeigt Teilnehmerergebnisse von vorgege
 overview_test_not_passed#:#Nicht teilgenommen
 overview_avg_not_available#:#Nicht verfügbar
 overview_flt_participant_name#:#Teilnehmer
+overview_flt_participant_gender#:#Gender
 overview_flt_group_name#:#Mitgliedschaft
 test_list_flt_tst_name#:#Name
 membership_list_flt_grp_name#:#Name
