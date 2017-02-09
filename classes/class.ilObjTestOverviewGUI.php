@@ -209,9 +209,7 @@ protected function showContent()
 		 * @var $ilTabs ilTabsGUI
 		 */
                 global $tpl,$lng, $ilTabs,$ilToolbar,$ilCtrl;
-                echo("<script>console.log('PHP: wdesfrdgtfzhgujhikjol');</script>");
-                echo("<script>console.log('PHP: wdesfrdgtfzhgujhikjol');</script>");
-		$this->includePluginClasses(array(
+                $this->includePluginClasses(array(
 			"ilTestOverviewTableGUI",
 			"ilOverviewMapper"));
                 /*Darstellung der Tabs*/
@@ -250,15 +248,14 @@ protected function showContent()
                 $ilTabs->addSubTab('subTabTO',"Diagramme", $this->ctrl->getLinkTarget($this,'subTabTO'));
 		$ilTabs->addSubTab( 'subTabTO2',"Test Verwaltung",$this->ctrl->getLinkTarget($this,  'subTabTO2'));
                 $ilTabs->activateSubTab('content');
-                $ilTabs->activateTab('TestOverview');
-                             
+                $ilTabs->activateTab('TestOverview');        
 		$this->includePluginClasses(array(
 			"ilTestOverviewTableGUI",
-			"ilOverviewMapper"));		
-		/* Configure content UI */
-                $ilMapper =new ilOverviewMapper;
-                $ilMapper->resetRanks($this->object->getid());
-		$table = new ilTestOverviewTableGUI( $this, 'showContent' );
+			"ilOverviewMapper"));	
+                              
+		/* Get data to populate table */
+                $ilMapper =new ilOverviewMapper;                
+		$table = new ilTestOverviewTableGUI( $this, 'showRanking' );
 		$table->setMapper($ilMapper)
 			  ->populateR(true);
 		/* Populate template */
@@ -316,6 +313,7 @@ protected function showContent()
             global $tpl, $ilTabs, $ilDB, $ilUser;
             $ilTabs->activateTab('UserResults');
             $dataMapper = new studentMapper ();
+            $OverviewMapper = new ilOverviewMapper();
             $tpl-> setContent ($dataMapper-> getResults($ilUser->getId(),$this-> object-> getId()));
                                         
        

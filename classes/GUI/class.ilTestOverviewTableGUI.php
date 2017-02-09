@@ -221,10 +221,13 @@ class ilTestOverviewTableGUI
 		
 		$this->tpl->setVariable( "AVERAGE_CLASS", "");
 		$this->tpl->setVariable( "AVERAGE_VALUE", $average . (is_numeric($average) ? "%" : ""));
-		/*Martins rank mapper*/
-                                        
-                $ilMapper = $this->getMapper();
-                $ilMapper->setData2Rank($average, $row['member_id'],$this->getParentObject()->object->getId());
+		/*Martins rank mapper veraltet das ranking hier abzugreifen hat zwar perfromance vorteile aber
+                 * erfasst nur die angezeigten studenten   
+                 * 
+                 * $ilMapper = $this->getMapper();
+                 * $ilMapper->setData2Rank($average, $row['member_id'],$this->getParentObject()->object->getId());
+                 *  */                                       
+                
 		$this->tpl->setVariable('TEST_PARTICIPANT', $row['member_fullname']);                        
     }
 	
@@ -475,34 +478,75 @@ class ilTestOverviewTableGUI
 	 */
         protected function sortByAveragePoints(array $data )
         {          
-            
-            echo("<script>console.log('PHP: wdesfrdgtfzhgujhikjol');</script>");
-            require('FirePHPCore/fb.php');
-            ob_start();
-            fb("Ausgabe", FirePHP::LOG);
             global $ilDB, $tpl;
-            //$toid = $this->object->getId();
-            $users = array(
+            echo("<script>console.log('PHP: rank aufruf');</script>");
+                $this->getStudentsRanked($data);
+            $overviewMapper= new ilOverviewMapper();           
+            $rankList = array();
+		$sorted = array(
 			'cnt'   => $data['cnt'],
 			'items' => array());
-            
-            $toid = $this->getParentObject()->object->getid();
-            
-           $query = "
-		SELECT stud_id FROM `rep_robj_xtov_torank` WHERE to_id= $toid ORDER BY rank ASC "
-			   ;
-		
-	  $res = $ilDB->query($query);
-          
-         while($row= $ilDB ->fetchAssoc ($res) ) 
-        {      $index=0;
-               $users[ $data[$row['stud_id'[$index]]]]=$data[$row['stud_id'[$index]]];
-               $index++;            
-               fb($index, FirePHP::LOG);
+                                     
+		/* Initialize partition array. */
+		for ($rank = '1'; $rank <= count($data['items']); $rank++)
+                     $rankList[$rank] = array();
+                
+		/* Partition data. */
+		foreach ($data['items'] as $userObj) {
+                  $stdID = $userObj->getId();                  
+                  $actualRank = $overviewMapper->getRankedStudent($this->getParentObject()->object->getId(),$stdID );
+                  $rankList[$actualRank ][] = $userObj;
+		}
+
+		/* Group all results. */
+		for ($rank = '1'; $rank <= count($data['items']); $rank++) {
+                    $userList=$rankList[$rank];
+			if (! empty($userList))
+                            
+				$sorted['items'] = array_merge($sorted['items'], $userList);
+		}
+
+		return $sorted;
+         }    
+         /**
+          * Function to rank all students and save the result in the database
+          */
+        public function getStudentsRanked(array $data)
+        {
+        
+         foreach ($data['items'] as $userObj) 
+         {   
+             $stdID = $userObj->getId();  
+            $overview= $this->getParentObject()->object;
+            $results = array();
+
+		foreach ($overview->getUniqueTests() as $obj_id => $refs)
+		{
+			$test = $overview->getTest($obj_id);
+			$activeId  = $test->getActiveIdOfUser($stdID);
+
+			$result = null;
+						
+			
+				$result    = $test->getTestResult($activeId);
+				$results[]  = $result;
+                                
+			
+				
+         
+         if (count($results))
+		{
+			$average = sprintf("%.2f", (array_sum($results) / count($results)));
+		}
+		else
+		{
+			$average = "";
+		}
+            $ilMapper = $this->getMapper();
+            $ilMapper->setData2Rank($average, $stdID,$this->getParentObject()->object->getId());    
+         }
         }
-          
-               return $users;  
-         }                                
+        }
 	/**
 	 * @param string $a_text
 	 * @param string $link

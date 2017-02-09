@@ -73,6 +73,8 @@ abstract class ilMappedTableGUI extends ilTable2GUI
 
         public function populateR($id)
         {  
+            
+                
 		if( $this->getExternalSegmentation() && $this->getExternalSorting() )
 		{
 			$this->determineOffsetAndOrder();
@@ -103,27 +105,26 @@ abstract class ilMappedTableGUI extends ilTable2GUI
 		$filters  = array("overview_id" => $overview->getId()) + $this->filter;
 
 		/* Execute query. */
-        $data = $this->getMapper()
-				     ->getList($params, $filters);
+        $data = $this->getMapper()->getList($params, $filters);
 
         if( !count($data['items']) && $this->getOffset() > 0) {
 			/* Query again, offset was incorrect. */
             $this->resetOffset();
-	        $data = $this->getMapper()
-					     ->getList($params, $filters);
+	        $data = $this->getMapper()->getList($params, $filters);
         }
 
 		/* Post-query logic. Implement custom sorting or display
 		   in formatData overload. */
 		$data = $this->formatData($data,true);
-
 		$this->setData( $this->buildTableRowsArray($data['items']) );
 		
  		if( $this->getExternalSegmentation() )
 		{
 			$this->setMaxCount($data['cnt']);
 		}
-		
+	
+     
+              
         return $this;
     }
         

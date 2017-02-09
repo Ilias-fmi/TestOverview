@@ -122,7 +122,12 @@ class ilOverviewMapper
         function getVirtuellTableName(){
             return "rep_robj_xtov_overview_virtual";
         }
-        
+        /**
+         * This method is used to edit the ranking in the database 
+         * @param type $average
+         * @param type $studid
+         * @param type $toId
+         */
         public function setData2Rank($average,$studid,$toId)
         {       	  $query=
                             "REPLACE INTO 
@@ -132,19 +137,58 @@ class ilOverviewMapper
                       $this->db->query($query); 
                         
         }
+        /**
+         * Delete all rankings for a TestOverview Object
+         * @param type $id
+         */
         public function resetRanks($id)
         {$query=
                  "DELETE FROM `rep_robj_xtov_torank` WHERE to_id=$id" ;
             $this->db->query($query); 
-        }        
+        }       
+        /**
+         * Gets a list of students which is sorted by ranking
+         * @param type $id
+         * @return type
+         */
         public function getRankedList($id)
         {
             $query=
-                 "SELECT stud_id FROM `rep_robj_xtov_torank` WHERE to_id=354 ORDER BY rank ASC "
+                 "SELECT stud_id FROM `rep_robj_xtov_torank` WHERE to_id=358 ORDER BY rank ASC "
 			   ;
             
             $result= $this->db->query($query);
+            echo("<script>console.log('PHP: q ');</script>");
              return  $result; 
+                        
+        }
+        /**
+         * Gets the ranking of a student
+         * @global type $ilDB
+         * @param type $id
+         * @param type $stdID
+         * @return int
+         */
+        
+        public function getRankedStudent($id,$stdID)
+        {
+            global $ilDB;
+            $rank=0;
+            $query=
+                 "SELECT stud_id FROM `rep_robj_xtov_torank` WHERE to_id=$id ORDER BY rank DESC "
+			   ;
+            
+            $result= $this->db->query($query);
+            $index=1;
+             while($student= $ilDB ->fetchAssoc ($result) ) 
+       {      
+                   if($student[stud_id]===$stdID){
+                   $rank=$index;
+               }
+               $index++;            
+            
+        }
+             return  $rank; 
                         
         }
                 
