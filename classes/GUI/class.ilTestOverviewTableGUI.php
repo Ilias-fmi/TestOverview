@@ -38,7 +38,8 @@ class ilTestOverviewTableGUI
 		/**
 		 *	@var ilCtrl	$ilCtrl
 		 */
-		global $ilCtrl, $tpl, $ilAccess;
+		global $ilCtrl, $tpl, $ilAccess,$lng;
+                $lng->loadLanguageModule("administration");
 
 		/* Pre-configure table */
 		$this->setId(sprintf(
@@ -83,7 +84,7 @@ class ilTestOverviewTableGUI
 				}
 			}
 			$ilCtrl->setParameterByClass("ilobjtestgui", 'ref_id', $valid_ref_id);
-                        $statisticLink = "<br> <a href='ilias.php?ref_id=".$excMapper->getRefId($obj_id)."&cmd=outEvaluation&cmdClass=iltestevaluationgui&cmdNode=1z:mi:mf&baseClass=ilrepositorygui'> Statistics";
+                        $statisticLink = "<br> <a href='ilias.php?ref_id=".$excMapper->getRefId($obj_id)."&cmd=outEvaluation&cmdClass=iltestevaluationgui&cmdNode=1z:mi:mf&baseClass=ilrepositorygui'> ". $lng->txt('language_statistics');
 			$this->addTestColumn( $overview->getTest($obj_id)->getTitle(). $statisticLink , $ilCtrl->getLinkTargetByClass('ilobjtestgui', 'infoScreen'));
                         
 			$ilCtrl->setParameterByClass("ilobjtestgui", 'ref_id', '');
