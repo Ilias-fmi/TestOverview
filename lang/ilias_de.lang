@@ -81,3 +81,6 @@ max_diagram_value#:#Bitte geben Sie hier die Maximalpunktzahl für Ihr Diagramm 
 userResults#:#Ihre Leistung
 order_ranking#:#Ordnen nach Ranking
 order_name#:#Ordnen nach Namen
+exercise_list_gui#:#Zu akkumulierende Exercises für die Exerciseübersicht '%s'
+exercise_list_hdr_exercise_info#:#Pfad zur Exercise
+exercise_list_description#:#Wählen Sie aus, welche Exercises in der Inhaltsansicht dieses Objekts akkumuliert werden sollen

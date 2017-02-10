@@ -315,7 +315,7 @@ protected function showContent()
     }
     
     
-    /*----------------------------TABS FOR TEST OVERVIEW ----------------------------*/
+    /*TABS FOR TEST OVERVIEW */
     
     
     protected function TestOverview() {
@@ -711,6 +711,27 @@ protected function showContent()
         ilUtil::sendFailure($lng->txt('rep_robj_xtov_min_one_check_test'), true);
         //$tpl->setContent($this->renderSettings());
         $ilCtrl->redirect($this, 'subTabTO2');
+    }
+    
+    public function removeExercises() {
+        /**
+         * @var $tpl    ilTemplate
+         * @var $lng    ilLanguage
+         * @var $ilCtrl ilCtrl
+         */
+        global $tpl, $lng, $ilCtrl;
+        $this->initExerciseSettingsForm(); // TODO
+        $this->populateSettings(); 
+        if (isset($_POST['exercise_ids'])) {
+            foreach ($_POST['Exercise_ids'] as $exerciseID) {
+                $this->removeExercises($exerciseID);
+            }
+            ilUtil::sendSuccess($lng->txt('rep_robj_xtov_tests_updated_success'), true);
+            $ilCtrl->redirect($this, 'subTabEO2');
+        }
+        ilUtil::sendFailure($lng->txt('rep_robj_xtov_min_one_check_test'), true);
+        //$tpl->setContent($this->renderSettings());
+        $ilCtrl->redirect($this, 'subTabEO2');
     }
 
     /**

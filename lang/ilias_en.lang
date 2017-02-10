@@ -81,3 +81,6 @@ max_diagram_value#:#Please enter the maximal diagramm value
 userResults#:#Your Results
 order_ranking#:#Order by rank
 order_name#:#Order by name
+exercise_list_gui#:#Exercises to accumulate in overview '%s'
+exercise_list_hdr_exercise_info#:#Path to exercise
+exercise_list_description#:#Please select the exercises you want to add to this overview.
