@@ -215,9 +215,7 @@ protected function showContent()
 			"ilTestOverviewTableGUI",
 			"ilOverviewMapper"));
                 /*Darstellung der Tabs*/
-                $ilTabs->addSubTab('content',"Test Übersicht", $this->ctrl->getLinkTarget($this,  'showContent'));
-                $ilTabs->addSubTab('subTabTO',"Diagramme", $this->ctrl->getLinkTarget($this,'subTabTO'));
-		$ilTabs->addSubTab( 'subTabTO2',"Test Verwaltung",$this->ctrl->getLinkTarget($this,  'subTabTO2'));
+                $this->subTabs("Test");
                 $ilTabs->activateSubTab('content');
                 $ilTabs->activateTab('TestOverview');                             
 		$this->includePluginClasses(array(
@@ -233,7 +231,7 @@ protected function showContent()
 		$tpl->setDescription($this->object->getDescription());
                 $data = array_slice($table-> getData(), $table->getOffset(), $table->getLimit());
 		$tpl->setContent( $table->getHTML());
-                $ilToolbar->addButton("Ordne nach Ranking", $ilCtrl->getLinkTarget($this,'showRanking'));
+                $ilToolbar->addButton($this->txt("order_ranking"), $ilCtrl->getLinkTarget($this,'showRanking'));
 	}
         protected function showRanking()
 	{		/**
@@ -245,9 +243,7 @@ protected function showContent()
 			"ilTestOverviewTableGUI",
 			"ilOverviewMapper"));
                 /*Darstellung der Tabs*/
-                $ilTabs->addSubTab('content',"Test Übersicht", $this->ctrl->getLinkTarget($this,  'showContent'));
-                $ilTabs->addSubTab('subTabTO',"Diagramme", $this->ctrl->getLinkTarget($this,'subTabTO'));
-		$ilTabs->addSubTab( 'subTabTO2',"Test Verwaltung",$this->ctrl->getLinkTarget($this,  'subTabTO2'));
+                $this->subTabs("Test");
                 $ilTabs->activateSubTab('content');
                 $ilTabs->activateTab('TestOverview');        
 		$this->includePluginClasses(array(
@@ -264,7 +260,7 @@ protected function showContent()
                 $data = array_slice($table-> getData(), $table->getOffset(), $table->getLimit());
 		$tpl->setContent( $table->getHTML());
                 $table->getData();
-                $ilToolbar->addButton("Ordne nach Namen", $ilCtrl->getLinkTarget($this,'showContent'));
+                $ilToolbar->addButton($this->txt("order_name"), $ilCtrl->getLinkTarget($this,'showContent'));
                 }
         
 	
@@ -340,7 +336,7 @@ protected function showContent()
         $tpl->setDescription($this->object->getDescription());
         $data = array_slice($table->getData(), $table->getOffset(), $table->getLimit());
         $tpl->setContent($table->getHTML());
-        $ilToolbar->addButton("Ordne nach Ranking", $ilCtrl->getLinkTarget($this,'showRanking'));
+        $ilToolbar->addButton($this->txt("order_ranking"), $ilCtrl->getLinkTarget($this,'showRanking'));
    }
 
     protected function subTabTO() {
@@ -458,9 +454,6 @@ protected function showContent()
     protected function subTabEO2() {
         global $tpl, $ilTabs, $ilCtrl, $ilToolbar;
 
-        //$ilTabs->addSubTab('subTabEO', $this->txt("exercise_overview"), $ilCtrl->getLinkTarget($this, 'subTabEO'));
-        //$ilTabs->addSubTab('subTabEO1', $this->txt("diagram"), $ilCtrl->getLinkTarget($this, 'subTabEO1'));
-        //$ilTabs->addSubTab('subTabEO2', $this->txt("exercise_administration"), $ilCtrl->getLinkTarget($this, 'subTabEO2'));
         $this->subTabs("Exercise");
         $ilTabs->activateTab('ExerciseOverview');
         $ilTabs->activateSubTab('subTabEO2');
