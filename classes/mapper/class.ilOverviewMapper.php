@@ -154,14 +154,16 @@ class ilOverviewMapper
         public function getRankedList($id)
         {
             $query=
-                 "SELECT stud_id FROM `rep_robj_xtov_torank` WHERE to_id=358 ORDER BY rank ASC "
+                 "SELECT stud_id FROM `rep_robj_xtov_torank` WHERE to_id=$id ORDER BY rank ASC "
 			   ;
             
             $result= $this->db->query($query);
-            echo("<script>console.log('PHP: q ');</script>");
+            //echo("<script>console.log('PHP: q ');</script>");
              return  $result; 
                         
         }
+              
+        
         /**
          * Gets the ranking of a student
          * @global type $ilDB
@@ -184,6 +186,7 @@ class ilOverviewMapper
        {      
                    if($student[stud_id]===$stdID){
                    $rank=$index;
+                   break;
                }
                $index++;            
             
@@ -191,5 +194,24 @@ class ilOverviewMapper
              return  $rank; 
                         
         }
+        
+         public function getCount($id)
+        {
+           
+             global $ilDB;
+            $count=0;
+            $query=
+                 "SELECT stud_id FROM `rep_robj_xtov_torank` WHERE to_id=$id "
+			   ;
+            
+            $result= $this->db->query($query);
+            while($data=$ilDB->fetchAssoc($result))
+            {
+                $count++;
+            }
+            //$count = count($data);
+             
+             return $count; 
+        } 
                 
 }

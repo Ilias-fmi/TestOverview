@@ -38,6 +38,7 @@ class studentMapper {
         $tpl->setVariable("averagePercent", $lng->txt("trac_average"));
         $tpl->setVariable("exerciseTitle", $lng->txt("certificate_ph_exercisetitle"));
         $tpl->setVariable("mark", $lng->txt("tst_mark"));
+        $tpl->setVariable("studentRanking", $lng->txt("toplist_your_result"));
         //Baut aus den Einzelnen Zeilen Objekte
         while ($testObj = $ilDB->fetchObject($result)) {
             array_push($data, $testObj);
@@ -92,7 +93,11 @@ class studentMapper {
         }
 
         $tpl->setVariable("Average", round($Prozentnum, 2));
-
+       /// ranking part /////
+        $ilOverviewMapper = new ilOverviewMapper();
+        $rank=$ilOverviewMapper->getRankedStudent($overviewId, $studId);
+        $count=$ilOverviewMapper->getCount($overviewId);
+        $tpl->setVariable("toRanking","Tests: Rank $rank out of $count");
         return $tpl->get();
     }
 

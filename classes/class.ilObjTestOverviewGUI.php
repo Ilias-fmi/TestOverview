@@ -224,8 +224,7 @@ protected function showContent()
 			"ilTestOverviewTableGUI",
 			"ilOverviewMapper"));		
 		/* Configure content UI */
-                $ilMapper =new ilOverviewMapper;
-                $ilMapper->resetRanks($this->object->getid());
+                $ilMapper =new ilOverviewMapper; 
 		$table = new ilTestOverviewTableGUI( $this, 'showContent' );
 		$table->setMapper($ilMapper)
 			  ->populate();

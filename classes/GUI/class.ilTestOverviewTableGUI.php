@@ -275,22 +275,19 @@ class ilTestOverviewTableGUI
 		$formatted = array(
 			'items' => array(),
 			'cnt'	=> 0);
-	/**	
-        *    Creates participants if no group is chosen. I can not see any sense in this method. 
-        *    Martin Dinkel
-        *  
-	*	if(!$data['items'])
-	*	{
-	*		$formatted = $this->getMapper()->getUniqueTestParticipants(array_keys($this->accessIndex));
-	*		$formatted['items'] = $this->fetchUserInformation($formatted['items']);
-	*		if($b==false)
-        *                 {                        
-	*	          return $this->sortByFullName($formatted);
-        *                 }else{
-        *                 return $this->sortByAveragePoints($formatted);
-        *               }
-	*	}
-	*/	
+		
+		if(!$data['items'])
+		{
+			$formatted = $this->getMapper()->getUniqueTestParticipants(array_keys($this->accessIndex));
+			$formatted['items'] = $this->fetchUserInformation($formatted['items']);
+			if($b==false)
+                         {                        
+		          return $this->sortByFullName($formatted);
+                         }else{
+                         return $this->sortByAveragePoints($formatted);
+                       }
+		}
+		
 		foreach ($data['items'] as $item)
 		{
 			$container = ilObjectFactory::getInstanceByObjId($item->obj_id, false);
@@ -523,36 +520,47 @@ class ilTestOverviewTableGUI
         
          foreach ($data['items'] as $userObj) 
          {   
-             $stdID = $userObj->getId();  
+            $stdID = $userObj->getId();  
             $overview= $this->getParentObject()->object;
             $results = array();
-
+               
+					
 		foreach ($overview->getUniqueTests() as $obj_id => $refs)
 		{
+                        
 			$test = $overview->getTest($obj_id);
-			$activeId  = $test->getActiveIdOfUser($stdID);
+			$activeId  = $test->getActiveIdOfUser($stdID);	
+                        $result=$progress = null;
+			$result = $test->getTestResult($activeId);
+                        //echo("<script>console.log('PHP:results get rank $result]]');</script>");
+		         
+                       $lpStatus = new ilLPStatus( $test->getId() );
+				$progress = $lpStatus->_lookupStatus($test->getId(), $stdID);
 
-			$result = null;
-						
-			
-				$result    = $test->getTestResult($activeId);
-				$results[]  = $result;
+				if ((bool) $progress)
+				{
+					$result		= sprintf("%.2f %%", (float) $result['pass']['percent'] * 100);
+					
+					$results[]  = $result;
+				}
+				else
+				{
+					
+					$results[]  = 0;
+				} 
                                 
-			
-				
-         
-         if (count($results))
-		{
-			$average = sprintf("%.2f", (array_sum($results) / count($results)));
-		}
-		else
-		{
-			$average = "";
-		}
-            $ilMapper = $this->getMapper();
-            $ilMapper->setData2Rank($average, $stdID,$this->getParentObject()->object->getId());    
-         }
-        }
+                     if (count($results))
+		    {
+			$average = (array_sum($results) / count($results));
+		    }
+		    else
+		    {
+			$average = 0;
+		    }
+                    $ilMapper = $this->getMapper();
+                    $ilMapper->setData2Rank($average, $stdID,$this->getParentObject()->object->getId());    
+                }
+            }
         }
 	/**
 	 * @param string $a_text
