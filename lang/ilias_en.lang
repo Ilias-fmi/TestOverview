@@ -79,4 +79,6 @@ assign#:#Assignment
 make_diagram#:#Make my Diagramm
 max_diagram_value#:#Please enter the maximal diagramm value
 userResults#:#Your Results
-to_ranking#:#Rank of test results
+order_ranking#:#Order by rank
+order_name#:#Order by name
+

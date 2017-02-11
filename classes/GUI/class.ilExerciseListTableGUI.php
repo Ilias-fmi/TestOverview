@@ -14,7 +14,8 @@ class ExerciseListTableGUI extends ilMappedTableGUI {
      * Select * from rep_robj_xtov_e2o join object_reference join exc_assignment on (obj_id_exercise = ref_id and object_reference.obj_id = exc_assignment.exc_id )
      */
     public function __construct(ilObjectGUI $a_parent_obj, $a_parent_cmd){
-        global $ilCtrl,$tpl;
+        global $ilCtrl,$tpl,$lng;
+        $lng->loadLanguageModule("common");
         
         
         $this->parent = $a_parent_obj;
@@ -46,12 +47,13 @@ class ExerciseListTableGUI extends ilMappedTableGUI {
     
     
     public function getHTML(){
-        global $ilCtrl;
+        global $ilCtrl,$lng;
         include_once 'Services/Form/classes/class.ilCheckboxGroupInputGUI.php';
         $this->parent->exerciseDeleteChecks = new ilPropertyFormGUI();
         $group = new ilCheckboxGroupInputGUI("Exercises","jo");
         $this->parent->exerciseDeleteChecks->setFormAction($ilCtrl->getFormAction($this->parent, 'deleteExercises'));
-        $this->parent->exerciseDeleteChecks->addCommandButton("initSelectExercise", "Insert Exercise");
+        $this->parent->exerciseDeleteChecks->addCommandButton("initSelectExercise", $lng->txt("exc_add"));
+        $this-> parent-> exerciseDeleteChecks->addCommandButton("deleteExercises", $lng->txt("delete_selected"));
         $exercises = $this->getSelectedExercises($this->parent->object-> getId());
         if ($exercises != null){
             foreach ($exercises as $exercise){
@@ -61,7 +63,7 @@ class ExerciseListTableGUI extends ilMappedTableGUI {
         }       
                 
                 $this->parent->exerciseDeleteChecks-> addItem($group);
-                $this-> parent-> exerciseDeleteChecks->addCommandButton("deleteExercises", "Delete Exercises");
+                
          return $this->parent->exerciseDeleteChecks -> getHTML();
     }
 }
