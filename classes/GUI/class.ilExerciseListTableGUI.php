@@ -15,7 +15,6 @@ class ilExerciseListTableGUI extends ilMappedTableGUI {
      */
     public function __construct(ilObjectGUI $a_parent_obj, $a_parent_cmd){
         global $ilCtrl, $lng;
-        $lng->loadLanguageModule("common");
         /* Pre-configure table */
         
         $this->setId(
@@ -131,26 +130,7 @@ class ilExerciseListTableGUI extends ilMappedTableGUI {
 		return $path_str;
 	}
     
-    /*public function getHTML(){
-        global $ilCtrl,$lng;
-        include_once 'Services/Form/classes/class.ilCheckboxGroupInputGUI.php';
-        $this->parent->exerciseDeleteChecks = new ilPropertyFormGUI();
-        $group = new ilCheckboxGroupInputGUI("Exercises","jo");
-        $this->parent->exerciseDeleteChecks->setFormAction($ilCtrl->getFormAction($this->parent, 'deleteExercises'));
-        
-
-        $exercises = $this->getSelectedExercises($this->parent->object-> getId());
-        if ($exercises != null){
-            foreach ($exercises as $exercise){
-                $exc_check = new ilCheckboxOption($exercise-> title, $exercise-> obj_id_exercise, "Bald wird hier ihr Pfad stehen ");
-                $group->addOption($exc_check);
-            }
-        }       
-                
-                $this->parent->exerciseDeleteChecks-> addItem($group);
-                
-         return $this->parent->exerciseDeleteChecks -> getHTML();
-    }*/
+    
 }
 
 

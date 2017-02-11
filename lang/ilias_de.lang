@@ -86,3 +86,4 @@ exercise_list_hdr_exercise_info#:#Pfad zur Exercise
 exercise_list_description#:#Wählen Sie aus, welche Exercises in der Inhaltsansicht dieses Objekts akkumuliert werden sollen
 min_one_check_exercise#:#Bitte wählen Sie mindestens eine Exercise.
 exc_add#:#Exercise hinzufügen
+exercises_updated_success#:#Die Einstellungen wurden erfolgreich aktualisiert.

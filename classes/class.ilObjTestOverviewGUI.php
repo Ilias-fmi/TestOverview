@@ -601,8 +601,8 @@ protected function showContent()
          * @var $ilToolbar ilToolbarGUI
          */
         global $tpl, $lng, $ilCtrl, $ilTabs, $ilToolbar;
-        $ilTabs->activateTab('properties');
-        $ilToolbar->addButton($this->lng->txt('cancel'), $ilCtrl->getLinkTarget($this, 'editSettings'));
+        $ilTabs->activateTab('TestOverview');
+        $ilToolbar->addButton($this->lng->txt('cancel'), $ilCtrl->getLinkTarget($this, 'subTabTO2'));
         $tpl->addBlockfile('ADM_CONTENT', 'adm_content', 'tpl.paste_into_multiple_objects.html', 'Services/Object');
         $this->includePluginClasses(array('ilTestOverviewTestSelectionExplorer'));
         $exp = new ilTestOverviewTestSelectionExplorer('select_tovr_expanded');
@@ -653,6 +653,7 @@ protected function showContent()
             $this->selectExercises();
             return;
         }
+        ilUtil::sendSuccess($this->txt('exercises_updated_success'), true);
         $ilCtrl->redirect($this, 'subTabEO2');
         
     }
@@ -686,8 +687,6 @@ protected function showContent()
 
         $ilCtrl->redirect($this, 'subTabTO2');
 
-        $this->editSettings();
-        return;
     }
 
     public function removeTests() {
@@ -718,12 +717,9 @@ protected function showContent()
          * @var $ilCtrl ilCtrl
          */
         global $tpl, $lng, $ilCtrl;
-        //$this->initSettingsForm(); // TODO
-        //$this->populateSettings(); 
         if (isset($_POST['exercise_ids'])) {
             foreach ($_POST['exercise_ids'] as $exerciseID) {
-                echo $exerciseID;
-                $this->deleteE2O($exerciseID);
+                $this->object->rmExercise($exerciseID);
             }
             ilUtil::sendSuccess($lng->txt('rep_robj_xtov_tests_updated_success'), true);
             $ilCtrl->redirect($this, 'subTabEO2');
@@ -777,7 +773,7 @@ protected function showContent()
                         ->addGroup($groupId);
             }
             ilUtil::sendSuccess($lng->txt('rep_robj_xtov_memberships_updated_success'), true);
-            /* redirect umgeleitet fÃƒÂ¼r neues to */
+            /* redirect umgeleitet für neues to */
             $ilCtrl->redirect($this, 'subTabTO2');
         }
         ilUtil::sendFailure($lng->txt('rep_robj_xtov_min_one_check_membership'), true);
@@ -1167,33 +1163,7 @@ protected function showContent()
         $this->showContent();
     }
 
-    /**
-     * Gives the Exercises that are Marked to deleteE2O
-     * @global type $tpl
-     
-    public function deleteExercises() {
-        global $tpl;
-        $this->subTabEO2();
 
-
-        
-        $toDelete = $_POST['exercise_ids'];
-        if ($toDelete != null) {
-                foreach ($toDelete as $exc) {
-                    $this->deleteE2O($exc);
-                }
-            }
-            $tpl->setContent($toDelete[0]);
-        
-    }*/
-
-    /**
-     * Deletes the Relation from the given Exercise with the Overview Object
-     */
-    public function deleteE2O($excId) {
-        global $ilDB, $ilCtrl;
-        $ilDB->manipulate("DELETE FROM rep_robj_xtov_e2o where obj_id_overview = '" . $this->object->getId() . "' and obj_id_exercise = '" . $excId . "'");
-        $ilCtrl->redirect($this, 'subTabEO2');
-    }
+    
 
 }

@@ -86,3 +86,4 @@ exercise_list_hdr_exercise_info#:#Path to exercise
 exercise_list_description#:#Please select the exercises you want to add to this overview.
 min_one_check_exercise#:#Please select at least one exercise
 exc_add#:#Add Exercise
+exercises_updated_success#:#Updated successfully.
