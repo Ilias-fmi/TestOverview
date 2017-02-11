@@ -124,8 +124,10 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
                     case 'resetOverviewFilter':
                     case 'resetTestsFilter':
                     case 'resetGroupsFilter':
+                    case 'applyExerciseFilter':    
+                    case 'resetExerciseFilter':
                     case 'addToDesk':
-                    case 'deleteExercises':
+                    case 'removeExercises':
                     case 'triggerExport':
                     case 'allLocalTests':
                     case 'UserResults':
@@ -180,7 +182,7 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
         if ($ilAccess->checkAccess('read', '', $this->object->getRefId())) {
             $ilTabs->addTab('UserResults', $this->txt('userResults'), $ilCtrl->getLinkTarget($this, 'UserResults'));
             $ilTabs->addTab('TestOverview', $this->txt('TestOverview'), $this->ctrl->getLinkTarget($this, 'TestOverview'));
-            $ilTabs->addTab('subTabEO', $this->txt('ExerciseOverview'), $this->ctrl->getLinkTarget($this, 'subTabEO'));
+            $ilTabs->addTab('ExerciseOverview', $this->txt('ExerciseOverview'), $this->ctrl->getLinkTarget($this, 'subTabEO'));
 
             /* Check for write access (editSettings available) */
             if ($ilAccess->checkAccess('write', '', $this->object->getRefId())) {
@@ -390,7 +392,7 @@ protected function showContent()
         $tpl->setContent($this->getTestList()->getHTML() . $this->getMembershipList()->getHTML());
     }
     
-    /*----------------------------TABS FOR EXERCISE OVERVIEW ----------------------------*/
+    /*TABS FOR EXERCISE OVERVIEW */
     
     /**
      * Render the Exercise Diagramms
@@ -457,15 +459,9 @@ protected function showContent()
         $this->subTabs("Exercise");
         $ilTabs->activateTab('ExerciseOverview');
         $ilTabs->activateSubTab('subTabEO2');
-        global $tpl;
-        require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
-                        ->getDirectory() . '/classes/class.ilTestOverviewExerciseSelectionExplorer.php';
-        require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
-                        ->getDirectory() . '/classes/GUI/class.ilExerciseListTableGUI.php';
-
-
-        $Obj = new ExerciseListTableGUI($this, 'editSettings');
-        $tpl->setContent($Obj->getHTML($this->object->getId()));
+      
+        $tpl->setContent($this->getExerciseList()->getHtml());
+        
     }
     protected function subTabs($type) {
         global $ilTabs, $ilCtrl;
@@ -534,7 +530,9 @@ protected function showContent()
                 $_SESSION['select_exercise'][] = $node_id;
             }
         }
-        $this->selectExercises((int)$_GET['select_exercise']);
+        $this->selectExercises();//(int)$_GET['select_exercise']);
+        return;
+        
     }
 
     /**
@@ -720,16 +718,17 @@ protected function showContent()
          * @var $ilCtrl ilCtrl
          */
         global $tpl, $lng, $ilCtrl;
-        $this->initExerciseSettingsForm(); // TODO
-        $this->populateSettings(); 
+        //$this->initSettingsForm(); // TODO
+        //$this->populateSettings(); 
         if (isset($_POST['exercise_ids'])) {
-            foreach ($_POST['Exercise_ids'] as $exerciseID) {
-                $this->removeExercises($exerciseID);
+            foreach ($_POST['exercise_ids'] as $exerciseID) {
+                echo $exerciseID;
+                $this->deleteE2O($exerciseID);
             }
             ilUtil::sendSuccess($lng->txt('rep_robj_xtov_tests_updated_success'), true);
             $ilCtrl->redirect($this, 'subTabEO2');
         }
-        ilUtil::sendFailure($lng->txt('rep_robj_xtov_min_one_check_test'), true);
+        ilUtil::sendFailure($lng->txt('rep_robj_xtov_min_one_check_exercise'), true);
         //$tpl->setContent($this->renderSettings());
         $ilCtrl->redirect($this, 'subTabEO2');
     }
@@ -778,7 +777,7 @@ protected function showContent()
                         ->addGroup($groupId);
             }
             ilUtil::sendSuccess($lng->txt('rep_robj_xtov_memberships_updated_success'), true);
-            /* redirect umgeleitet fÃ¼r neues to */
+            /* redirect umgeleitet fÃƒÂ¼r neues to */
             $ilCtrl->redirect($this, 'subTabTO2');
         }
         ilUtil::sendFailure($lng->txt('rep_robj_xtov_min_one_check_membership'), true);
@@ -930,10 +929,10 @@ protected function showContent()
     public function applyTestsFilter() {
         $this->includePluginClasses(array(
             "ilTestListTableGUI"));
-        $table = new ilTestListTableGUI($this, 'editSettings');
+        $table = new ilTestListTableGUI($this, 'subTabTO2');
         $table->resetOffset();
         $table->writeFilterToSession();
-        $this->editSettings();
+        $this->subTabTO2();
     }
 
     /**
@@ -975,12 +974,42 @@ protected function showContent()
     public function resetTestsFilter() {
         $this->includePluginClasses(array(
             "ilTestListTableGUI"));
-        $table = new ilTestListTableGUI($this, 'editSettings');
+        $table = new ilTestListTableGUI($this, 'subTabTO2');
         $table->resetOffset();
         $table->resetFilter();
-        $this->editSettings();
+        $this->subTabTO2();
     }
-
+    
+    /**
+     * 	Apply a filter to the exercise list table.
+     *
+     * 	The applyExerciseFilter() method is used as a command
+     * 	to apply (re-populate) and save the filters.
+     */
+    public function applyExerciseFilter() {
+        $this->includePluginClasses(
+                array("ilExerciseListTableGUI"));
+        $table = new ilExerciseListTableGUI($this, "subTabEO2");
+        $table->resetOffset();
+        $table->writeFilterToSession();
+        $this->subTabEO2();
+    }
+    
+    /**
+     * 	Reset the exercise list filters
+     *
+     * 	This method is used as a command (form submit handler)
+     * 	to reset the filters set on the exercise list table.
+     */
+    public function resetExerciseFilter() {
+        $this->includePluginClasses(
+                array("ilExerciseListTableGUI"));
+        $table = new ilExerciseListTableGUI($this, "subTabEO2");
+        $table->resetOffset();
+        $table->resetFilter();
+        $this->subTabEO2();
+    }
+    
     /**
      * 	Reset the groups list filters
      *
@@ -1009,12 +1038,30 @@ protected function showContent()
         $this->includePluginClasses(array(
             "ilTestListTableGUI",
             "ilTestMapper"));
-        $testList = new ilTestListTableGUI($this, 'editSettings');
+        $testList = new ilTestListTableGUI($this, 'subTabTO2');
         $testList->setMapper(new ilTestMapper)
                 ->populate();
         return $testList;
     }
-
+    
+    /**
+     * 	Retrieve the exercise list table.
+     *
+     * 	The getExerciseList() method should be used to
+     * 	retrieve the GUI object responsible for listing
+     * 	the exercises which can be added to the overview.
+     *
+     * 	@return ilTestListTableGUI
+     */
+    protected function getExerciseList() {
+        $this->includePluginClasses(array(
+            "ilExerciseListTableGUI",
+            "ilExerciseSettingsMapper"));
+        $Obj = new ilExerciseListTableGUI($this, 'subTabEO2');
+        $Obj->setMapper(new ilExerciseSettingsMapper())
+                ->populate();
+        return $Obj;
+    }
     /**
      * 	Retrieve the memberships list table.
      *
@@ -1123,22 +1170,22 @@ protected function showContent()
     /**
      * Gives the Exercises that are Marked to deleteE2O
      * @global type $tpl
-     */
+     
     public function deleteExercises() {
         global $tpl;
         $this->subTabEO2();
 
 
-        if ($this->exerciseDeleteChecks->checkInput()) {
-            $toDelete = $_POST['jo'];
-            if ($toDelete != null) {
+        
+        $toDelete = $_POST['exercise_ids'];
+        if ($toDelete != null) {
                 foreach ($toDelete as $exc) {
                     $this->deleteE2O($exc);
                 }
             }
             $tpl->setContent($toDelete[0]);
-        }
-    }
+        
+    }*/
 
     /**
      * Deletes the Relation from the given Exercise with the Overview Object

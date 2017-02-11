@@ -4,7 +4,7 @@
  */
 
 require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')->getDirectory() . '/classes/GUI/class.ilMappedTableGUI.php';
-class ExerciseListTableGUI extends ilMappedTableGUI {
+class ilExerciseListTableGUI extends ilMappedTableGUI {
     protected $parent;
     
 
@@ -14,36 +14,72 @@ class ExerciseListTableGUI extends ilMappedTableGUI {
      * Select * from rep_robj_xtov_e2o join object_reference join exc_assignment on (obj_id_exercise = ref_id and object_reference.obj_id = exc_assignment.exc_id )
      */
     public function __construct(ilObjectGUI $a_parent_obj, $a_parent_cmd){
-        global $ilCtrl,$tpl,$lng;
+        global $ilCtrl, $lng;
         $lng->loadLanguageModule("common");
+        /* Pre-configure table */
         
+        $this->setId(
+                sprintf(
+                        'test_overview_test_list_%d',
+                        $a_parent_obj->object->getId()
+                )
+        );
         
         $this->parent = $a_parent_obj;
 
 	parent::__construct($a_parent_obj, $a_parent_cmd);
-
+        
+        $this->setDefaultOrderDirection('ASC');
+        $this->setDefaultOrderField('title');
+        
 	$this->setTitle(
 		sprintf(
 			$this->lng->txt('rep_robj_xtov_exercise_list_gui'),
 			$a_parent_obj->object->getTitle()
 		)
 	);
-               
-		//$this->setRowTemplate('tpl.simple_object_row.html', $plugin->getDirectory());
+        
+        $this->setExternalSorting(true);
+        $this->setExternalSegmentation(true);
+        
+        
+        $plugin = ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview');
+        $this->setRowTemplate('tpl.simple_object_row.html', $plugin->getDirectory());
                 
         $this->addColumn($this->lng->txt(''), '', '1px', true);
         $this->addColumn($this->lng->txt('rep_robj_xtov_test_list_hdr_test_title'), 'title');
         $this->addColumn($this->lng->txt('rep_robj_xtov_exercise_list_hdr_exercise_info'), '');
                 
         $this->setDescription($this->lng->txt('rep_robj_xtov_exercise_list_description'));
-        $this->setFormAction($ilCtrl->getFormAction($this->getParentObject(), 'updateSettings'));
-        $this->addCommandButton("initSelectExercise", $lng->txt("exc_add"));
-        $this->addMultiCommand("deleteExercises", $lng->txt("delete_selected"));
+        $this->setFormAction($ilCtrl->getFormAction($this->getParentObject(), 'deleteExercises'));
+        $this->addCommandButton("initSelectExercise", $lng->txt("rep_robj_xtov_exc_add"));
+        $this->addMultiCommand("removeExercises", $lng->txt("rep_robj_xtov_remove_from_overview"));
         
         $this->setShowRowsSelector(true);
         $this->setSelectAllCheckbox('exercise_ids[]');
                 
+        $this->initFilter();
+        $this->setFilterCommand('applyExerciseFilter');
+        $this->setResetCommand('resetExerciseFilter');
+    }
+    
+    
+    /**
+     *	Initialize the table filters.
+     *
+     *	This method is called internally to initialize
+     *	the filters from present on the top of the table.
+     */
+    public function initFilter()
+    {
+        include_once 'Services/Form/classes/class.ilTextInputGUI.php';
+        $tname = new ilTextInputGUI($this->lng->txt('rep_robj_xtov_test_list_flt_tst_name'), 'flt_tst_name');
+        $tname->setSubmitFormOnEnter(true);
+        $this->addFilterItem($tname);
         
+                
+        $tname->readFromSession();
+        $this->filter['flt_tst_name'] = $tname->getValue();
     }
     
     	/**
@@ -57,22 +93,12 @@ class ExerciseListTableGUI extends ilMappedTableGUI {
     protected function fillRow(stdClass $item)
     {
 		/* Configure template rendering. */
-		$this->tpl->setVariable('VAL_CHECKBOX', ilUtil::formCheckbox(false, 'exercise_ids[]', $item->ref_id));
+		$this->tpl->setVariable('VAL_CHECKBOX', ilUtil::formCheckbox(false, 'exercise_ids[]', $item->obj_id));
 		$this->tpl->setVariable('OBJECT_TITLE', $item->title);
 		$this->tpl->setVariable('OBJECT_INFO', $this->getExercisePath($item));
     }
     
     
-    public function getSelectedExercises($overviewId){
-        global $ilDB;
-        $exercises = array ();
-        $query = "Select obj_id_exercise,title from rep_robj_xtov_e2o join exc_assignment on (rep_robj_xtov_e2o.obj_id_exercise = exc_assignment.exc_id) where obj_id_overview ='". $overviewId . "'" ;
-        $result = $ilDB->query($query);
-                while ($record = $ilDB->fetchObject($result)){
-                    array_push($exercises,$record);
-                }
-        return $exercises;           
-    }
     /**
 	 *    Retrieve the tree path to an ilObjExercise.
 	 *
@@ -105,14 +131,14 @@ class ExerciseListTableGUI extends ilMappedTableGUI {
 		return $path_str;
 	}
     
-    public function getHTML(){
+    /*public function getHTML(){
         global $ilCtrl,$lng;
         include_once 'Services/Form/classes/class.ilCheckboxGroupInputGUI.php';
         $this->parent->exerciseDeleteChecks = new ilPropertyFormGUI();
         $group = new ilCheckboxGroupInputGUI("Exercises","jo");
         $this->parent->exerciseDeleteChecks->setFormAction($ilCtrl->getFormAction($this->parent, 'deleteExercises'));
-        $this->parent->exerciseDeleteChecks->addCommandButton("initSelectExercise", $lng->txt("exc_add"));
-        $this-> parent-> exerciseDeleteChecks->addCommandButton("deleteExercises", $lng->txt("delete_selected"));
+        
+
         $exercises = $this->getSelectedExercises($this->parent->object-> getId());
         if ($exercises != null){
             foreach ($exercises as $exercise){
@@ -124,7 +150,7 @@ class ExerciseListTableGUI extends ilMappedTableGUI {
                 $this->parent->exerciseDeleteChecks-> addItem($group);
                 
          return $this->parent->exerciseDeleteChecks -> getHTML();
-    }
+    }*/
 }
 
 
