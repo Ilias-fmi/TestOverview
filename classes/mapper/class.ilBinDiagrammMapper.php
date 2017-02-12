@@ -18,10 +18,6 @@ require_once 'Customizing/global/plugins/Services/Repository/RepositoryObject/Te
 
 class BinDiagrammMapper extends ilTestOverviewTableGUI {
 
-    //Name+Results+Sum of Results for every Student as a String
-    private $result = null;
-    public $students = array();
-    private $rawData = array();
     public $average = array();
 
     public function createAverageDia($type) {
@@ -50,19 +46,10 @@ class BinDiagrammMapper extends ilTestOverviewTableGUI {
                 ->populate();
 
         $data = $this->getData();
-
-        //$this->tpl->addBlockFile("TBL_CONTENT", "tbl_content", 'tpl.test_overview_rows.html', $this->row_template_dir);
-        $jo = array ();
+        
         foreach ($data as $set) {
             array_push($this->average, $this->fillRow($set));
         }
-
-        /*try {
-            $this->splitStudent($this->tpl->get());
-        } catch (ilDiagrammExeption $e) {
-            throw new ilDiagrammException('Cannot split String');
-        }*/
-       // return $this->average;
     }
     /**
      * Gets 
@@ -81,9 +68,7 @@ class BinDiagrammMapper extends ilTestOverviewTableGUI {
 			$result = $test->getTestResult($activeId);
 			$result =  (float) $result['pass']['percent'] * 100;
                         $results[]  = $result;
-  
 		}
-
 		if (count($results))
 		{
 			$average = (array_sum($results) / count($results));
@@ -96,83 +81,9 @@ class BinDiagrammMapper extends ilTestOverviewTableGUI {
 
         return $result;
     }
-
-    /**
-     * Splits the String by the | so that seperate can Create an Obj. of every Student
-     * @param type $string
-     */
-    /*private function splitStudent($string) {
-        $this->rawData = explode("|", $string);
-    }
-
-    /*
-     * Splits the Sting into Name/Results/Average
-     * @return Students Object with Name/Results/Average set
-     */
-
-   /* private function seperate($string) {
-        $string = str_replace("Nicht teilgenommen", "00.00", $string);
-        $string = str_replace("|", "", $string);
-        $string = str_replace("%", "", $string);
-        $temp = explode("#", $string);
-        $name = $temp[0];
-        $ende = explode(" ", end($temp));
-        $average = $ende[1];
-        array_splice($temp, 0, 1);
-        array_splice($temp, count($temp) - 1);
-        array_push($temp, $ende[0]);
-        $student = new Student ();
-        $student->setName($name);
-        $student->setResults($temp);
-        $student->setAverage($average);
-        array_push($this->students, $student);
-    }*/
-
 }
 
-/*
- * Object for every Student with Name and Results
- * 
- * 
- */
 
-class Student {
-
-    private $name = "";
-    private $results = array();
-    private $average = 0.0;
-
-    /* Getter und Setter für Results und Average des Studenten */
-
-    public function getResults() {
-        return $this->results;
-    }
-
-    public function setResults($result) {
-        $temp = array();
-        foreach ($result as $part) {
-            array_push($temp, (float) $part);
-        }
-        $this->results = $temp;
-    }
-
-    public function getAverage() {
-        return $this->average;
-    }
-
-    public function setAverage($average) {
-        $this->average = (float) $average;
-    }
-
-    public function getName() {
-        return $this->name;
-    }
-
-    public function setName($name) {
-        $this->name = $name;
-    }
-
-}
 
 /**
  * Creats a Bar Diagramm that shows the number of students with there Points in a Range of 10 Percent
