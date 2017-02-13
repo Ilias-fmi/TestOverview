@@ -119,13 +119,18 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
                     case 'subTabEO':
                     case 'subTabEO1':
                     case 'subTabEO2':
+                    case 'subTabEORanking':    
                     case 'rights':
                     case 'applyGroupsFilter':
                     case 'resetOverviewFilter':
                     case 'resetTestsFilter':
                     case 'resetGroupsFilter':
+                    case 'applyExerciseFilter':    
+                    case 'resetExerciseFilter':
+                    case 'applyExerciseFilterRanking':    
+                    case 'resetExerciseFilterRanking':
                     case 'addToDesk':
-                    case 'deleteExercises':
+                    case 'removeExercises':
                     case 'triggerExport':
                     case 'allLocalTests':
                     case 'UserResults':
@@ -179,12 +184,11 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
 
         if ($ilAccess->checkAccess('read', '', $this->object->getRefId())) {
             $ilTabs->addTab('UserResults', $this->txt('userResults'), $ilCtrl->getLinkTarget($this, 'UserResults'));
-            $ilTabs->addTab('TestOverview', $this->txt('TestOverview'), $this->ctrl->getLinkTarget($this, 'TestOverview'));
-            $ilTabs->addTab('subTabEO', $this->txt('ExerciseOverview'), $this->ctrl->getLinkTarget($this, 'subTabEO'));
-
+            
             /* Check for write access (editSettings available) */
             if ($ilAccess->checkAccess('write', '', $this->object->getRefId())) {
-
+                $ilTabs->addTab('TestOverview', $this->txt('TestOverview'), $this->ctrl->getLinkTarget($this, 'TestOverview'));
+                $ilTabs->addTab('ExerciseOverview', $this->txt('ExerciseOverview'), $this->ctrl->getLinkTarget($this, 'subTabEO'));
                 $ilTabs->addTarget('meta_data', $this->ctrl->getLinkTargetByClass('ilmdeditorgui', ''), '', 'ilmdeditorgui');
             }
             // export
@@ -230,7 +234,7 @@ protected function showContent()
 		$tpl->setDescription($this->object->getDescription());
                 $data = array_slice($table-> getData(), $table->getOffset(), $table->getLimit());
 		$tpl->setContent( $table->getHTML());
-                $ilToolbar->addButton($this->txt("order_ranking"), $ilCtrl->getLinkTarget($this,'showRanking'));
+                $ilToolbar->addButton($this->txt('order_ranking'), $ilCtrl->getLinkTarget($this,'showRanking'));
 	}
         protected function showRanking()
 	{		/**
@@ -259,7 +263,7 @@ protected function showContent()
                 $data = array_slice($table-> getData(), $table->getOffset(), $table->getLimit());
 		$tpl->setContent( $table->getHTML());
                 $table->getData();
-                $ilToolbar->addButton($this->txt("order_name"), $ilCtrl->getLinkTarget($this,'showContent'));
+                $ilToolbar->addButton($this->txt('orderName'), $ilCtrl->getLinkTarget($this,'showContent'));
                 }
         
 	
@@ -314,7 +318,7 @@ protected function showContent()
     }
     
     
-    /*----------------------------TABS FOR TEST OVERVIEW ----------------------------*/
+    /*TABS FOR TEST OVERVIEW */
     
     
     protected function TestOverview() {
@@ -335,7 +339,7 @@ protected function showContent()
         $tpl->setDescription($this->object->getDescription());
         $data = array_slice($table->getData(), $table->getOffset(), $table->getLimit());
         $tpl->setContent($table->getHTML());
-        $ilToolbar->addButton($this->txt("order_ranking"), $ilCtrl->getLinkTarget($this,'showRanking'));
+        $ilToolbar->addButton($this->txt('order_ranking'), $ilCtrl->getLinkTarget($this,'showRanking'));
    }
 
     protected function subTabTO() {
@@ -389,7 +393,7 @@ protected function showContent()
         $tpl->setContent($this->getTestList()->getHTML() . $this->getMembershipList()->getHTML());
     }
     
-    /*----------------------------TABS FOR EXERCISE OVERVIEW ----------------------------*/
+    /*TABS FOR EXERCISE OVERVIEW */
     
     /**
      * Render the Exercise Diagramms
@@ -456,16 +460,35 @@ protected function showContent()
         $this->subTabs("Exercise");
         $ilTabs->activateTab('ExerciseOverview');
         $ilTabs->activateSubTab('subTabEO2');
-        global $tpl;
-        require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
-                        ->getDirectory() . '/classes/class.ilTestOverviewExerciseSelectionExplorer.php';
-        require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
-                        ->getDirectory() . '/classes/GUI/class.ilExerciseListTableGUI.php';
-
-
-        $Obj = new ExerciseListTableGUI($this, 'editSettings');
-        $tpl->setContent($Obj->getHTML($this->object->getId()));
+      
+        $tpl->setContent($this->getExerciseList()->getHtml());
+        
     }
+    protected function subTabEORanking()
+    {
+      global $tpl, $ilTabs, $ilCtrl, $ilToolbar;
+        $this->subTabs("Exercise");
+        $ilTabs->activateTab('ExerciseOverview');
+        $ilTabs->activateSubTab('subTabEORanking'); 
+        //$tpl->setContent("ranking stuff");
+        require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
+                        ->getDirectory() . '/classes/GUI/class.ilMappedTableGUI.php';
+        require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
+                        ->getDirectory() . '/classes/GUI/class.rankGui.php';
+        require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
+                        ->getDirectory() . '/classes/mapper/class.ilExerciseMapper.php';
+        $ilExerciseMapper =new ilExerciseMapper;                
+		$table = new rankGUI( $this, 'subTabEORanking' );
+		$table->setMapper($ilExerciseMapper)->populateE();
+		/* Populate template */
+		$tpl->setDescription($this->object->getDescription());
+                
+                $data = array_slice($table-> getData(), $table->getOffset(), $table->getLimit());
+		$tpl->setContent( $table->getHTML());
+                
+        
+    }
+    
     protected function subTabs($type) {
         global $ilTabs, $ilCtrl;
         switch ($type) {
@@ -473,7 +496,7 @@ protected function showContent()
                 $ilTabs->addSubTab('subTabEO', $this->txt("exercise_overview"), $ilCtrl->getLinkTarget($this, 'subTabEO'));
                 $ilTabs->addSubTab('subTabEO1', $this->txt("diagram"), $ilCtrl->getLinkTarget($this, 'subTabEO1'));
                 $ilTabs->addSubTab('subTabEO2', $this->txt("exercise_administration"), $ilCtrl->getLinkTarget($this, 'subTabEO2'));
-
+                $ilTabs->addSubTab('subTabEORanking',$this->txt('ranking'),$ilCtrl->getLinkTarget($this,'subTabEORanking'));                
                 break;
 
             case 'Test':
@@ -533,7 +556,9 @@ protected function showContent()
                 $_SESSION['select_exercise'][] = $node_id;
             }
         }
-        $this->selectExercises((int)$_GET['select_exercise']);
+        $this->selectExercises();//(int)$_GET['select_exercise']);
+        return;
+        
     }
 
     /**
@@ -602,8 +627,8 @@ protected function showContent()
          * @var $ilToolbar ilToolbarGUI
          */
         global $tpl, $lng, $ilCtrl, $ilTabs, $ilToolbar;
-        $ilTabs->activateTab('properties');
-        $ilToolbar->addButton($this->lng->txt('cancel'), $ilCtrl->getLinkTarget($this, 'editSettings'));
+        $ilTabs->activateTab('TestOverview');
+        $ilToolbar->addButton($this->lng->txt('cancel'), $ilCtrl->getLinkTarget($this, 'subTabTO2'));
         $tpl->addBlockfile('ADM_CONTENT', 'adm_content', 'tpl.paste_into_multiple_objects.html', 'Services/Object');
         $this->includePluginClasses(array('ilTestOverviewTestSelectionExplorer'));
         $exp = new ilTestOverviewTestSelectionExplorer('select_tovr_expanded');
@@ -654,6 +679,7 @@ protected function showContent()
             $this->selectExercises();
             return;
         }
+        ilUtil::sendSuccess($this->txt('exercises_updated_success'), true);
         $ilCtrl->redirect($this, 'subTabEO2');
         
     }
@@ -687,8 +713,6 @@ protected function showContent()
 
         $ilCtrl->redirect($this, 'subTabTO2');
 
-        $this->editSettings();
-        return;
     }
 
     public function removeTests() {
@@ -710,6 +734,25 @@ protected function showContent()
         ilUtil::sendFailure($lng->txt('rep_robj_xtov_min_one_check_test'), true);
         //$tpl->setContent($this->renderSettings());
         $ilCtrl->redirect($this, 'subTabTO2');
+    }
+    
+    public function removeExercises() {
+        /**
+         * @var $tpl    ilTemplate
+         * @var $lng    ilLanguage
+         * @var $ilCtrl ilCtrl
+         */
+        global $tpl, $lng, $ilCtrl;
+        if (isset($_POST['exercise_ids'])) {
+            foreach ($_POST['exercise_ids'] as $exerciseID) {
+                $this->object->rmExercise($exerciseID);
+            }
+            ilUtil::sendSuccess($lng->txt('rep_robj_xtov_tests_updated_success'), true);
+            $ilCtrl->redirect($this, 'subTabEO2');
+        }
+        ilUtil::sendFailure($lng->txt('rep_robj_xtov_min_one_check_exercise'), true);
+        //$tpl->setContent($this->renderSettings());
+        $ilCtrl->redirect($this, 'subTabEO2');
     }
 
     /**
@@ -756,7 +799,7 @@ protected function showContent()
                         ->addGroup($groupId);
             }
             ilUtil::sendSuccess($lng->txt('rep_robj_xtov_memberships_updated_success'), true);
-            /* redirect umgeleitet fÃ¼r neues to */
+            /* redirect umgeleitet für neues to */
             $ilCtrl->redirect($this, 'subTabTO2');
         }
         ilUtil::sendFailure($lng->txt('rep_robj_xtov_min_one_check_membership'), true);
@@ -908,10 +951,10 @@ protected function showContent()
     public function applyTestsFilter() {
         $this->includePluginClasses(array(
             "ilTestListTableGUI"));
-        $table = new ilTestListTableGUI($this, 'editSettings');
+        $table = new ilTestListTableGUI($this, 'subTabTO2');
         $table->resetOffset();
         $table->writeFilterToSession();
-        $this->editSettings();
+        $this->subTabTO2();
     }
 
     /**
@@ -953,12 +996,78 @@ protected function showContent()
     public function resetTestsFilter() {
         $this->includePluginClasses(array(
             "ilTestListTableGUI"));
-        $table = new ilTestListTableGUI($this, 'editSettings');
+        $table = new ilTestListTableGUI($this, 'subTabTO2');
         $table->resetOffset();
         $table->resetFilter();
-        $this->editSettings();
+        $this->subTabTO2();
     }
-
+     /**
+     * 	Reset the tests list filters
+     *
+     * 	This method is used as a command (form submit handler)
+     * 	to reset the filters set on the tests list table.
+     */
+    public function resetExerciseFilterRanking() {
+         require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
+                        ->getDirectory() . '/classes/GUI/class.ilMappedTableGUI.php';
+        require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
+                        ->getDirectory() . '/classes/GUI/class.rankGui.php';
+        
+        $table = new rankGui($this, 'subTabTORanking');
+        $table->resetOffset();
+        $table->resetFilter();
+        $this->subTabEORanking();
+    }
+    
+    
+    /**
+     * 	Apply a filter to the exercise list table.
+     *
+     * 	The applyExerciseFilter() method is used as a command
+     * 	to apply (re-populate) and save the filters.
+     */
+    public function applyExerciseFilterRanking() {
+        require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
+                        ->getDirectory() . '/classes/GUI/class.ilMappedTableGUI.php';
+        require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
+                        ->getDirectory() . '/classes/GUI/class.rankGui.php';
+        
+        $table = new rankGUI($this, 'subTabTORanking');
+        $table->resetOffset();
+        $table->writeFilterToSession();
+        $this->subTabEORanking();
+    }
+    
+    /**
+     * 	Apply a filter to the exercise list table.
+     *
+     * 	The applyExerciseFilter() method is used as a command
+     * 	to apply (re-populate) and save the filters.
+     */
+    public function applyExerciseFilter() {
+        $this->includePluginClasses(
+                array("ilExerciseListTableGUI"));
+        $table = new ilExerciseListTableGUI($this, "subTabEO2");
+        $table->resetOffset();
+        $table->writeFilterToSession();
+        $this->subTabEO2();
+    }
+    
+    /**
+     * 	Reset the exercise list filters
+     *
+     * 	This method is used as a command (form submit handler)
+     * 	to reset the filters set on the exercise list table.
+     */
+    public function resetExerciseFilter() {
+        $this->includePluginClasses(
+                array("ilExerciseListTableGUI"));
+        $table = new ilExerciseListTableGUI($this, "subTabEO2");
+        $table->resetOffset();
+        $table->resetFilter();
+        $this->subTabEO2();
+    }
+    
     /**
      * 	Reset the groups list filters
      *
@@ -987,12 +1096,30 @@ protected function showContent()
         $this->includePluginClasses(array(
             "ilTestListTableGUI",
             "ilTestMapper"));
-        $testList = new ilTestListTableGUI($this, 'editSettings');
+        $testList = new ilTestListTableGUI($this, 'subTabTO2');
         $testList->setMapper(new ilTestMapper)
                 ->populate();
         return $testList;
     }
-
+    
+    /**
+     * 	Retrieve the exercise list table.
+     *
+     * 	The getExerciseList() method should be used to
+     * 	retrieve the GUI object responsible for listing
+     * 	the exercises which can be added to the overview.
+     *
+     * 	@return ilTestListTableGUI
+     */
+    protected function getExerciseList() {
+        $this->includePluginClasses(array(
+            "ilExerciseListTableGUI",
+            "ilExerciseSettingsMapper"));
+        $Obj = new ilExerciseListTableGUI($this, 'subTabEO2');
+        $Obj->setMapper(new ilExerciseSettingsMapper())
+                ->populate();
+        return $Obj;
+    }
     /**
      * 	Retrieve the memberships list table.
      *
@@ -1098,33 +1225,7 @@ protected function showContent()
         $this->showContent();
     }
 
-    /**
-     * Gives the Exercises that are Marked to deleteE2O
-     * @global type $tpl
-     */
-    public function deleteExercises() {
-        global $tpl;
-        $this->subTabEO2();
 
-
-        if ($this->exerciseDeleteChecks->checkInput()) {
-            $toDelete = $_POST['jo'];
-            if ($toDelete != null) {
-                foreach ($toDelete as $exc) {
-                    $this->deleteE2O($exc);
-                }
-            }
-            $tpl->setContent($toDelete[0]);
-        }
-    }
-
-    /**
-     * Deletes the Relation from the given Exercise with the Overview Object
-     */
-    public function deleteE2O($excId) {
-        global $ilDB, $ilCtrl;
-        $ilDB->manipulate("DELETE FROM rep_robj_xtov_e2o where obj_id_overview = '" . $this->object->getId() . "' and obj_id_exercise = '" . $excId . "'");
-        $ilCtrl->redirect($this, 'subTabEO2');
-    }
+    
 
 }

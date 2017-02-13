@@ -98,6 +98,11 @@ class studentMapper {
         $rank=$ilOverviewMapper->getRankedStudent($overviewId, $studId);
         $count=$ilOverviewMapper->getCount($overviewId);
         $tpl->setVariable("toRanking","Tests: Rank $rank out of $count");
+        
+        $ilExerciseMapper= new ilExerciseMapper();
+        $ilExerciseMapper->getRankedStudent($overviewId, $studId);
+        $ilExerciseMapper->getCount($overviewId);
+        $tpl->setVariable("eoRanking","Exercises: Rank $rank out of $count");
         return $tpl->get();
     }
 

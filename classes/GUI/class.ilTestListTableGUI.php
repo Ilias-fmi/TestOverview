@@ -89,10 +89,6 @@ class ilTestListTableGUI extends ilMappedTableGUI
         $this->addFilterItem($tname);
         
         
-        $lname = new ilTextInputGUI($this->lng->txt('rep_robj_xtov_test_list_flt_tst_name'), 'flt_tst_name');
-        $lname->setSubmitFormOnEnter(true);
-        $this->addFilterItem($lname);
-        
         $tname->readFromSession();
         $this->filter['flt_tst_name'] = $tname->getValue();
     }

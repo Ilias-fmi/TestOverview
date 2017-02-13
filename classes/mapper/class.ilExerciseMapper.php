@@ -227,6 +227,98 @@ class ilExerciseMapper extends ilDataMapper {
 
         return $record['ref_id'];
     }
+    
+     /**
+         * This method is used to edit the ranking in the database 
+         * @param type $average
+         * @param type $studid
+         * @param type $toId
+         */
+        public function setData2Rank($average,$studid,$eoId)
+        {       	  $query=
+                            "REPLACE INTO 
+                                    rep_robj_xtov_eorank(stud_id, rank, eo_id)
+                            Values
+                                    ($studid,$average,$eoId);";
+                      $this->db->query($query); 
+                        
+        }
+        /**
+         * Delete all rankings for a TestOverview Object
+         * @param type $id
+         */
+        public function resetRanks($id)
+        {$query=
+                 "DELETE FROM `rep_robj_xtov_eorank` WHERE to_id=$id" ;
+            $this->db->query($query); 
+        }       
+        /**
+         * Gets a list of students which is sorted by ranking
+         * @param type $id
+         * @return type
+         */
+        public function getRankedList($id)
+        {
+            $query=
+                 "SELECT stud_id FROM `rep_robj_xtov_eorank` WHERE eo_id=$id ORDER BY rank ASC "
+			   ;
+            
+            $result= $this->db->query($query);
+            //echo("<script>console.log('PHP: q ');</script>");
+             return  $result; 
+                        
+        }
+              
+        
+        /**
+         * Gets the ranking of a student
+         * @global type $ilDB
+         * @param type $id
+         * @param type $stdID
+         * @return int
+         */
+        
+        public function getRankedStudent($id,$stdID)
+        {
+            global $ilDB;
+            $rank=0;
+            $query=
+                 "SELECT stud_id FROM `rep_robj_xtov_eorank` WHERE eo_id=$id ORDER BY rank DESC "
+			   ;
+            
+            $result= $this->db->query($query);
+            $index=1;
+             while($student= $ilDB ->fetchAssoc ($result) ) 
+       {      
+                   if($student[stud_id]===$stdID){
+                   $rank=$index;
+                   break;
+               }
+               $index++;            
+            
+        }
+             return  $rank; 
+                        
+        }
+        
+         public function getCount($id)
+        {
+           
+             global $ilDB;
+            $count=0;
+            $query=
+                 "SELECT stud_id FROM `rep_robj_xtov_eorank` WHERE eo_id=$id "
+			   ;
+            
+            $result= $this->db->query($query);
+            while($data=$ilDB->fetchAssoc($result))
+            {
+                $count++;
+            }
+            //$count = count($data);
+             
+             return $count; 
+        } 
 
 }
 ?> 

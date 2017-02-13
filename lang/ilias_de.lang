@@ -56,6 +56,7 @@ membership_list_flt_grp_name#:#Name
 overview_result_not_authorized#:#Keine Berechtigung
 membership_count_members#:#Mitglieder
 copy#:#Kopieren
+ranking#:#Ranking
 overview_test_no_permission#:#(Kein Zugriff)
 add_tsts_to_overview#:#Tests hinzufügen
 pie_chart#:#Kuchendiagramm
@@ -80,5 +81,11 @@ make_diagram#:#Erstelle mein Diagramm
 max_diagram_value#:#Bitte geben Sie hier die Maximalpunktzahl für Ihr Diagramm ein
 userResults#:#Ihre Leistung
 order_ranking#:#Ordnen nach Ranking
-order_name#:#Ordnen nach Namen
+orderName#:#Ordnen nach Namen
+exercise_list_gui#:#Zu akkumulierende Exercises für die Exerciseübersicht '%s'
+exercise_list_hdr_exercise_info#:#Pfad zur Exercise
+exercise_list_description#:#Wählen Sie aus, welche Exercises in der Inhaltsansicht dieses Objekts akkumuliert werden sollen
+min_one_check_exercise#:#Bitte wählen Sie mindestens eine Exercise.
+exc_add#:#Exercise hinzufügen
+exercises_updated_success#:#Die Einstellungen wurden erfolgreich aktualisiert.
 

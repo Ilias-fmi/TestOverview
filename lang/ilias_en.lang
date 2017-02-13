@@ -16,6 +16,7 @@ fold_create_xtov#:#Create Test Overview
 root_create_xtov#:#Create Test Overview
 cat_create_xtov#:#Create Test Overview
 content#:#Content
+ranking#:#Ranking
 properties#:#Settings
 edit_properties#:#Edit Settings
 TestOverview#:#TestOverview
@@ -75,10 +76,16 @@ mat#:#Matriculation
 mail#:#Mail Address
 gend#:#Gender
 qteil#:#Question 
-assign#:#Assignment 
+assign#:#Assignment
 make_diagram#:#Make my Diagramm
 max_diagram_value#:#Please enter the maximal diagramm value
 userResults#:#Your Results
 order_ranking#:#Order by rank
-order_name#:#Order by name
+orderName#:#Order by name
+exercise_list_gui#:#Exercises to accumulate in overview '%s'
+exercise_list_hdr_exercise_info#:#Path to exercise
+exercise_list_description#:#Please select the exercises you want to add to this overview.
+min_one_check_exercise#:#Please select at least one exercise
+exc_add#:#Add Exercise
+exercises_updated_success#:#Updated successfully.
 

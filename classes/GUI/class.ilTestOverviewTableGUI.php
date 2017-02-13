@@ -197,7 +197,7 @@ class ilTestOverviewTableGUI
 				if( $activeId > 0 )
 				{
 					$resultLink = $this->buildMemberResultLinkTarget($this->accessIndex[$obj_id], $activeId);
-
+                                        echo("<script>console.log('PHP: progreesss $progress');</script>");
 					$this->populateLinkedCell($resultLink, $result, $this->getCSSByProgress($progress));
 				}
 				else

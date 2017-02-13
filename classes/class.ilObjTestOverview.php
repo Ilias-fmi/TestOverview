@@ -518,4 +518,17 @@ class ilObjTestOverview extends ilObjectPlugin
 			$this->exercise_ref_ids_by_obj_id [$row['obj_id']][] = $row['ref_id'];
 		}
 	}
+        
+        public function rmExercise($exerciseID) {
+            global $ilDB;
+
+				
+
+            /* Remove t2o entry (test 2 overview) */
+            $ilDB->manipulateF("
+                    DELETE FROM rep_robj_xtov_e2o 
+                    WHERE obj_id_overview = %s AND obj_id_exercise = %s",
+                    array('integer', 'integer'),
+                    array($this->getId(), $exerciseID));
+        }
 }
