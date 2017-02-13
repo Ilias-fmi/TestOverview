@@ -18,23 +18,16 @@ require_once 'Customizing/global/plugins/Services/Repository/RepositoryObject/Te
 
 class BinDiagrammMapper extends ilTestOverviewTableGUI {
 
-    //Name+Results+Sum of Results for every Student as a String
-    private $result = null;
-    public $students = array();
-    private $rawData = array();
+    public $average = array();
 
     public function createAverageDia($type) {
         $this->data();
-
-        foreach ($this->rawData as $student) {
-            $this->seperate($student);
-        }
         switch ($type) {
             case "BARS":
-                $averageObj = new AverageDiagramm($this->students);
+                $averageObj = new AverageDiagramm($this->average);
                 return $averageObj->initDia();
             case "PIE":
-                $averageObj = new PieAverageDiagramm($this->students);
+                $averageObj = new PieAverageDiagramm($this->average);
                 return $averageObj->initDia();
         }
     }
@@ -53,115 +46,56 @@ class BinDiagrammMapper extends ilTestOverviewTableGUI {
                 ->populate();
 
         $data = $this->getData();
-
-        $this->tpl->addBlockFile("TBL_CONTENT", "tbl_content", 'tpl.test_overview_rows.html', $this->row_template_dir);
-
+        
         foreach ($data as $set) {
-            $this->fillRow($set);
-            $this->tpl->setCurrentBlock("tbl_content");
-            $this->tpl->parseCurrentBlock();
+            array_push($this->average, $this->fillRow($set));
         }
+    }
+    /**
+     * Gets 
+     * @param type $row
+     * @return type
+     */
+    public function fillRow($row){
+        $overview = $this->getParentObject()->object;
 
-        try {
-            $this->splitStudent($this->tpl->get());
-        } catch (ilDiagrammExeption $e) {
-            throw new ilDiagrammException('Cannot split String');
-        }
+		$results = array();
+		foreach ($overview->getUniqueTests() as $obj_id => $refs)
+		{
+			$test = $overview->getTest($obj_id);
+			$activeId  = $test->getActiveIdOfUser($row['member_id']);
+			$result = $progress = null;
+			$result = $test->getTestResult($activeId);
+			$result =  (float) $result['pass']['percent'] * 100;
+                        $results[]  = $result;
+		}
+		if (count($results))
+		{
+			$average = (array_sum($results) / count($results));
+		}
+                return $average;
+        
     }
 
     public function getResult() {
 
         return $result;
     }
-
-    /**
-     * Splits the String by the | so that seperate can Create an Obj. of every Student
-     * @param type $string
-     */
-    private function splitStudent($string) {
-        $this->rawData = explode("|", $string);
-    }
-
-    /*
-     * Splits the Sting into Name/Results/Average
-     * @return Students Object with Name/Results/Average set
-     */
-
-    private function seperate($string) {
-        $string = str_replace("Nicht teilgenommen", "00.00", $string);
-        $string = str_replace("|", "", $string);
-        $string = str_replace("%", "", $string);
-        $temp = explode("#", $string);
-        $name = $temp[0];
-        $ende = explode(" ", end($temp));
-        $average = $ende[1];
-        array_splice($temp, 0, 1);
-        array_splice($temp, count($temp) - 1);
-        array_push($temp, $ende[0]);
-        $student = new Student ();
-        $student->setName($name);
-        $student->setResults($temp);
-        $student->setAverage($average);
-        array_push($this->students, $student);
-    }
-
 }
 
-/*
- * Object for every Student with Name and Results
- * 
- * 
- */
 
-class Student {
-
-    private $name = "";
-    private $results = array();
-    private $average = 0.0;
-
-    /* Getter und Setter für Results und Average des Studenten */
-
-    public function getResults() {
-        return $this->results;
-    }
-
-    public function setResults($result) {
-        $temp = array();
-        foreach ($result as $part) {
-            array_push($temp, (float) $part);
-        }
-        $this->results = $temp;
-    }
-
-    public function getAverage() {
-        return $this->average;
-    }
-
-    public function setAverage($average) {
-        $this->average = (float) $average;
-    }
-
-    public function getName() {
-        return $this->name;
-    }
-
-    public function setName($name) {
-        $this->name = $name;
-    }
-
-}
 
 /**
  * Creats a Bar Diagramm that shows the number of students with there Points in a Range of 10 Percent
  */
 class AverageDiagramm {
 
-    private $studentObject;
+    private $average;
     public $diaPoints = array();
     private $buckets = array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
     function __construct($Obj) {
-        $this->studentObject = $Obj;
+        $this->average = $Obj;
         $this->getAverage();
     }
 
@@ -220,13 +154,13 @@ class AverageDiagramm {
     }
 
     function getAverage() {
-        foreach ($this->studentObject as $student) {
-            $this->fillBuckets($student->getAverage());
+        foreach ($this->average as $student) {
+            $this->fillBuckets($student);
         }
     }
 
     function fillBuckets($average) {
-        if ($average > 0.0 && $average <= 10.00) {
+        if ($average <= 10.00) {
             $this->buckets[0] ++;
         } else if ($average > 10.00 && $average <= 20.00) {
             $this->buckets[1] ++;
@@ -259,12 +193,12 @@ class AverageDiagramm {
  */
 class PieAverageDiagramm extends AverageDiagramm {
 
-    private $studentObject;
+    private $average;
     public $diaPoints = array();
     private $buckets = array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
     function __construct($Obj) {
-        $this->studentObject = $Obj;
+        $this->average = $Obj;
         $this->getAverage();
     }
 
@@ -350,8 +284,8 @@ class PieAverageDiagramm extends AverageDiagramm {
     }
 
     function getAverage() {
-        foreach ($this->studentObject as $student) {
-            $this->fillBuckets($student->getAverage());
+        foreach ($this->average as $student) {
+            $this->fillBuckets($student);
         }
     }
 
