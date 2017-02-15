@@ -519,6 +519,16 @@ class ilObjTestOverview extends ilObjectPlugin
 		}
 	}
         
+        public function getParentId() {
+            global $ilDB;
+            $query = "SELECT parent FROM tree WHERE child = %s";
+            $result = $ilDB->queryF($query, 
+                               array('integer'),
+                               array($this->getRefId()));
+            $record = $ilDB->fetchAssoc($result);
+            return $record['parent'];
+        }
+        
         public function rmExercise($exerciseID) {
             global $ilDB;
 

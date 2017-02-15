@@ -72,6 +72,7 @@ reduced_exp#:#Ergebnisse von allen Tests und Exercises die mit dem TestOverview 
 extended_exp#:#Ergebnisse von allen Tests und Exercises die mit dem TestOverview Objekt assoziiert sind, inkl. derer Teilfragen und Assignments exportieren
 name#:#Name
 mat#:#Matrikelnummer
+group#:#Gruppe
 mail#:#Email Adresse
 gend#:#Geschlecht
 qteil#:#Frage 

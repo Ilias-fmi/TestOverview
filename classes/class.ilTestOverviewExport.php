@@ -7,6 +7,7 @@ class ilTestOverviewExport extends ilObjTestOverviewGUI
     /** @var integer ID of current TestOverview  */
     var $overviewID;
     
+    var $parentID;
     
     var $filename;
       
@@ -18,11 +19,13 @@ class ilTestOverviewExport extends ilObjTestOverviewGUI
     
     var $assoc;
     
-public function __construct($parent,$id, $type, $a_main_object = null){
+public function __construct($parent, $id ,$type, $a_main_object= null){
       
         parent::__construct($parent, $a_main_object);
         $this->type=$type;
         $this->overviewID = $id;
+        $this->ref_id = $parent->object->getRefId();
+        $this->parentID = $parent->object->getParentId();
         
         $this->testIDs = $this->getTestIDs();
         $this->exerciseIDs = $this->getUniqueExerciseIDs();
@@ -66,12 +69,14 @@ function buildExportFile()
      */
     private function buildReducedExportFile() {
         global $lng, $ilCtrl;
+        
         $rows= array();
         $datarow = array();
         //var_dump($this->users);
-        //build headrow
+        //Build the headrow
         array_push($datarow, $this->txt("name"));
         array_push($datarow,$this->txt("mat"));
+        array_push($datarow,$this->txt("group"));
         array_push($datarow,$this->txt("mail"));
         array_push($datarow,$this->txt("gend"));
         //push all TestNames into the headrow
@@ -93,10 +98,12 @@ function buildExportFile()
         //push user specific info into every row (userInfo)
         foreach ($this->users as $num => $preValue) {
             $userID = $preValue['user_fi'];
+            $userGroup = $this->participatedGroups($userID);
             $datarow2 = array();
             $userInfo = $this->getInfo($userID);
             array_push($datarow2, $userInfo['lastname'].', '.$userInfo['firstname']); 
             array_push($datarow2, $userInfo['matriculation']);
+            array_push($datarow2, $userGroup);
             array_push($datarow2, $userInfo['email']);
             array_push($datarow2, $userInfo['gender']);
             //push test results into user row
@@ -143,6 +150,7 @@ function buildExportFile()
         //build headrow        
         array_push($datarow, $this->txt("name"));
         array_push($datarow, $this->txt("mat"));
+        array_push($datarow, $this->txt("group"));
         array_push($datarow, $this->txt("mail"));
         array_push($datarow, $this->txt("gend"));
         //push all TestNames into the headrow
@@ -184,11 +192,13 @@ function buildExportFile()
         //push user specific info into every row (userInfo)
         foreach ($this->users as $num => $preValue) {
             $userID = $preValue['user_fi'];
+            $userGroup = $this->participatedGroups($userID);
             $datarow = $headrow;
             $datarow2 = array();
             $userInfo = $this->getInfo($userID);
             array_push($datarow2, $userInfo['lastname'].', '.$userInfo['firstname']);    
             array_push($datarow2, $userInfo['matriculation']);
+            array_push($datarow2, $userGroup);
             array_push($datarow2, $userInfo['email']);
             array_push($datarow2, $userInfo['gender']);
             //push test results into user row
@@ -295,6 +305,37 @@ function buildExportFile()
         return $testIDs;
     }
     
+    
+    
+    protected function participatedGroups($userID) {
+        global $ilDB;
+        $groups = array();
+        $query = "SELECT 
+                    obd.title
+                  FROM
+                    rbac_ua ua
+                  JOIN
+                    rbac_fa fa ON ua.rol_id = fa.rol_id
+                  JOIN 
+                    tree t1 ON t1.child = fa.parent
+                  JOIN
+                    object_reference obr ON t1.child = obr.ref_id
+                  JOIN
+                    object_data obd ON obr.obj_id = obd.obj_id
+                  WHERE
+                 obr.deleted IS NULL AND ua.usr_id = %s AND fa.assign = 'y' AND obd.type in ('grp') and t1.parent = %s";
+        $result = $ilDB->queryF($query,
+                                array('integer', 'integer'),
+                                array($userID, $this->parentID));
+        while($record = $ilDB->fetchAssoc($result)){
+            array_push($groups, $record);
+            
+        }
+        foreach ($groups as $key => $group) {
+            $blabla .=  $group['title']." ";
+        }
+        return $blabla;
+    }
     /**
      * 
      * @global type $ilDB
@@ -419,7 +460,15 @@ function buildExportFile()
 	return $row['reached_points'];
 		
     }
-    
+    //public function getParentId() {
+      //      global $ilDB;
+        //    $query = "SELECT parent FROM tree WHERE child = %s";
+          //  $result = $ilDB->queryF($query, 
+            //                   array('integer'),
+              //                 array($this->ref_id));
+          //  $record = $ilDB->fetchAssoc($result);
+           // return $record['parent'];
+        //}
     
     /**
      * 
@@ -581,6 +630,7 @@ function buildExportFile()
             }
             return 0;
     }
+    
     
     
     /**
