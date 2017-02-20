@@ -417,7 +417,7 @@ protected function showContent()
         require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
                         ->getDirectory() . '/classes/mapper/class.ilExerciseMapper.php';
         if ($_POST["sizeBucket"] != null) {
-            $Obj = new exerciseCharts(100, $this->object->getId(),$_POST["sizeBucket"]);
+            $Obj = new exerciseCharts(30000, $this->object->getId(),$_POST["sizeBucket"]);
             //$tpl->setContent (implode(";", $Obj->getHTML()));
 
 

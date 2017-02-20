@@ -297,7 +297,7 @@ class PieAverageDiagramm extends AverageDiagramm {
 
 class exerciseCharts {
 
-    private $buckets = array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+    private $buckets = array();
     private $bucketSize = array ("","","","","","","","","","");
     private $data = null;
     private $diagramSize = 0;
@@ -314,39 +314,23 @@ class exerciseCharts {
                         ->getDirectory() . '/classes/mapper/class.ilExerciseMapper.php';
         $excMapper = new ilExerciseMapper();
         $this->data = $excMapper->getTotalScores($overviewId);
+        sort($this->data); 
+        $this->fillArray();
         if ($this->diagramSize > 0 && !empty($this->data)) {
             $this->fillBuckets();
         }
+        
     }
-
-    /*function fillBuckets() {
-        $size = $this->diagramSize / 10;
-        foreach ($this->data as $value) {
-            if ($value < $size ) {
-                $this->buckets[0] ++;
-            } else if ($value >= $size && $value < ($size * 2)) {
-                $this->buckets[1] ++;
-            } else if ($value >= ($size * 2) && $value < ($size * 3)) {
-                $this->buckets[2] ++;
-            } else if ($value >= ($size * 3) && $value < ($size * 4)) {
-                $this->buckets[3] ++;
-            } else if ($value >= ($size * 4) && $value < ($size * 5)) {
-                $this->buckets[4] ++;
-            } else if ($value >= ($size * 5) && $value < ($size * 6)) {
-                $this->buckets[5] ++;
-            } else if ($value >= ($size * 6) && $value < ($size * 7)) {
-                $this->buckets[6] ++;
-            } else if ($value >= ($size * 7) && $value < ($size * 8)) {
-                $this->buckets[7] ++;
-            } else if ($value >= ($size * 8) && $value < ($size * 9)) {
-                $this->buckets[8] ++;
-            } else if ($value >= ($size * 9) && $value < ($size * 10)) {
-                $this->buckets[9] ++;
-            }
+    function getMaxValue(){
+        return end($this->data);
+    }
+    function fillArray(){
+        for ($i = 1; $i <= $this->getMaxValue()/$this->sizeOfBucket; $i++){ 
+        array_push($this->buckets,0);
         }
-    }*/
+    }
+    
     function fillBuckets(){
-        sort($this->data); 
        foreach ($this->data as $value){
            $this->buckets[(ceil($value/$this->sizeOfBucket))-1]++;
        }
@@ -397,7 +381,7 @@ class exerciseCharts {
         $chart->addData($data);
         $tpl->setVariable("diagram",$chart->getHTML());
         return $tpl-> get();
-        // return $this-> buckets;
+       // return implode(";",$this-> buckets);
     }
     
     function calcBuckets(){
