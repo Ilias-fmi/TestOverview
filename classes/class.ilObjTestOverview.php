@@ -518,15 +518,33 @@ class ilObjTestOverview extends ilObjectPlugin
 			$this->exercise_ref_ids_by_obj_id [$row['obj_id']][] = $row['ref_id'];
 		}
 	}
-        
-        public function getParentId() {
+        /*
+         * Retrieve the ID from the parent object the TestOverview Object lies in
+         */
+        public function getParentId($refID) {
             global $ilDB;
-            $query = "SELECT parent FROM tree WHERE child = %s";
+            $query = "SELECT 
+                        t1.parent, od.type
+                    FROM  
+                        tree t1
+                    JOIN
+                        object_reference ref ON ref.ref_id = t1.parent
+                    JOIN
+                        object_data od ON ref.obj_id = od.obj_id
+                    WHERE t1.child =  %s";
             $result = $ilDB->queryF($query, 
                                array('integer'),
-                               array($this->getRefId()));
-            $record = $ilDB->fetchAssoc($result);
-            return $record['parent'];
+                               array($refID));
+            $record = $ilDB->fetchObject($result);            
+                
+            if ($record->type == 'crs') {
+                return $record->parent;
+            }
+            if ($record->type == 'root') {
+                return null;
+            }else{
+                return $this->getParentId($record->parent);
+            }
         }
         
         public function rmExercise($exerciseID) {
