@@ -47,7 +47,11 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
      * 	@return string
      */
     public function getStandardCmd() {
-        return 'showContent';
+        global $ilAccess;
+        if($ilAccess->checkAccess('write', '', $this->object->getRefId())){
+        return 'TestOverview';}
+        else{
+        return 'UserResults';}
     }
 
     /**
@@ -974,10 +978,10 @@ protected function showContent()
     public function applyGroupsFilter() {
         $this->includePluginClasses(array(
             "ilMembershipListTableGUI"));
-        $table = new ilMembershipListTableGUI($this, 'editSettings');
+        $table = new ilMembershipListTableGUI($this, 'subTabTO2');
         $table->resetOffset();
         $table->writeFilterToSession();
-        $this->editSettings();
+        $this->subTabTO2();
     }
 
     /**
@@ -1085,10 +1089,10 @@ protected function showContent()
     public function resetGroupsFilter() {
         $this->includePluginClasses(array(
             "ilMembershipListTableGUI"));
-        $table = new ilMembershipListTableGUI($this, 'editSettings');
+        $table = new ilMembershipListTableGUI($this, 'subTabTO2');
         $table->resetOffset();
         $table->resetFilter();
-        $this->editSettings();
+        $this->subTabTO2();
     }
 
     /**
@@ -1142,7 +1146,7 @@ protected function showContent()
         $this->includePluginClasses(array(
             "ilMembershipListTableGUI",
             "ilMembershipMapper"));
-        $testList = new ilMembershipListTableGUI($this, 'editSettings');
+        $testList = new ilMembershipListTableGUI($this, 'subTabTo2');
         $testList->setMapper(new ilMembershipMapper)
                 ->populate();
         return $testList;
