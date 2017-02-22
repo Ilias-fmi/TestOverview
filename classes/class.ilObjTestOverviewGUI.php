@@ -470,7 +470,7 @@ protected function showContent()
         $ilTabs->activateTab('ExerciseOverview');
         $ilTabs->activateSubTab('subTabEO2');
       
-        $tpl->setContent($this->getExerciseList()->getHtml());
+        $tpl->setContent($this->getExerciseList()->getHtml().$this->getMembershipList()->getHTML());
         
     }
     protected function subTabEORanking()

@@ -40,7 +40,20 @@
 
 
   </style>
-  <div style="width:33.33%;float: left;">
+  <div style="width:33.33%;float:right ">
+  <table>
+    <tr> <td> {exerciseTitle} </td> <td> {mark} </td> </tr>
+
+      <!-- BEGIN exercise_results -->
+      <tr>
+        <td class=""> {Exercise} </td>  <td> {Mark} </td> 
+      </tr>
+      <!-- END exercise_results -->
+  </table>
+ </div>
+
+  
+  <div style="width:33.33%; float: right ;">
       <table >
         <!-- BEGIN head_row -->
         <tr> <td >{testTitle}</td> <td>{score}</td> </tr>
@@ -56,19 +69,8 @@
 
 
 
-<div style="width:33.33%;float:right ">
-  <table>
-    <tr> <td> {exerciseTitle} </td> <td> {mark} </td> </tr>
 
-      <!-- BEGIN exercise_results -->
-      <tr>
-        <td class=""> {Exercise} </td>  <td> {Mark} </td> 
-      </tr>
-      <!-- END exercise_results -->
-  </table>
- </div>
-</div>
-<div style="width: 33%; float: right;">
+<div style="width: 29%; float: left; margin-left: 4%;">
 <p> {average} : {AveragePoints} </p>
 <p> {averagePercent} : {Average} % </p>
 <p> {studentRanking} :</p>
