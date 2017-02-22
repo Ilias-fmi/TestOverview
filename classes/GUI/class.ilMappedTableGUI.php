@@ -71,7 +71,7 @@ abstract class ilMappedTableGUI extends ilTable2GUI
            * Hack zum sortieren nach  Rank             
            */
 
-          public function populateE()
+          public function populateE($sorting)
         {            
                 
 		if( $this->getExternalSegmentation() && $this->getExternalSorting() )
@@ -114,7 +114,7 @@ abstract class ilMappedTableGUI extends ilTable2GUI
 
 		/* Post-query logic. Implement custom sorting or display
 		   in formatData overload. */
-		$data = $this->formatData($data,true);
+		$data = $this->formatData($data,$sorting);
                 $datacount=count($data);
                 echo("<script>console.log('PHP: vor buildtable $datacount');</script>");
 		$this->setData( $this->buildTableRowsArray($data['items']) );

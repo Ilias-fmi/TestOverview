@@ -238,9 +238,12 @@ extends ilMappedTableGUI
                 
 		$formatted['items'] = $this->fetchUserInformation($formatted['items']);
                 
-                    // TODO SORT
+                 if($b==false){   
                     return $this->sortByAveragePoints($formatted);
-                
+                 }else
+                 {
+                    return $this->sortByFullName($formatted); 
+                 }
 	}
 	
 	public function fetchUserInformation($usr_ids)
@@ -386,6 +389,7 @@ extends ilMappedTableGUI
 		/* Partition data. */
 		foreach ($data['items'] as $userObj) {
 			$name = $userObj->getFullName();
+                        $name=strtoupper($name);
 			$azList[$name{0}][] = $userObj;
 		}
 
