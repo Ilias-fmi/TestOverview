@@ -45,18 +45,20 @@ class ilExerciseMapper extends ilDataMapper {
 
         return $DbObject;
     }
-
     /**
-     * Gets the Name of an Exercise for the given Object ID
+     * Returns the name of a Exercise 
      */
     public function getExerciseName($exerciseID) {
         global $ilDB;
-        $query = "Select exc_id , title from exc_assignment
-                where exc_id = '" . $exerciseID . "'";
-        $result = $ilDB->query($query);
-        $record = $ilDB->fetchObject($result);
-        return $record->title;
+        $query = "SELECT title FROM object_data WHERE obj_id = %s";
+        $result = $ilDB->queryF($query, 
+                        array('integer'),
+                        array($exerciseID));
+        $record = $ilDB->fetchAssoc($result);
+        return $record['title'];
     }
+
+    
 
     /**
      * Gets the Name of an Student for the given Member ID

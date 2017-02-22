@@ -46,44 +46,41 @@ class BinDiagrammMapper extends ilTestOverviewTableGUI {
                 ->populate();
 
         $data = $this->getData();
-        
+
         foreach ($data as $set) {
             array_push($this->average, $this->fillRow($set));
         }
     }
+
     /**
      * Gets 
      * @param type $row
      * @return type
      */
-    public function fillRow($row){
+    public function fillRow($row) {
         $overview = $this->getParentObject()->object;
 
-		$results = array();
-		foreach ($overview->getUniqueTests() as $obj_id => $refs)
-		{
-			$test = $overview->getTest($obj_id);
-			$activeId  = $test->getActiveIdOfUser($row['member_id']);
-			$result = $progress = null;
-			$result = $test->getTestResult($activeId);
-			$result =  (float) $result['pass']['percent'] * 100;
-                        $results[]  = $result;
-		}
-		if (count($results))
-		{
-			$average = (array_sum($results) / count($results));
-		}
-                return $average;
-        
+        $results = array();
+        foreach ($overview->getUniqueTests() as $obj_id => $refs) {
+            $test = $overview->getTest($obj_id);
+            $activeId = $test->getActiveIdOfUser($row['member_id']);
+            $result = $progress = null;
+            $result = $test->getTestResult($activeId);
+            $result = (float) $result['pass']['percent'] * 100;
+            $results[] = $result;
+        }
+        if (count($results)) {
+            $average = (array_sum($results) / count($results));
+        }
+        return $average;
     }
 
     public function getResult() {
 
         return $result;
     }
+
 }
-
-
 
 /**
  * Creats a Bar Diagramm that shows the number of students with there Points in a Range of 10 Percent
@@ -290,22 +287,22 @@ class PieAverageDiagramm extends AverageDiagramm {
     }
 
 }
+
 /**
  * Creats a Bar diagramm for exercises.
  * The Bucketsize is calculatet by a given value from the user 
  */
-
 class exerciseCharts {
 
     private $buckets = array();
-    private $bucketSize = array ("","","","","","","","","","");
+    private $bucketSize = array("", "", "", "", "", "", "", "", "", "");
     private $data = null;
     private $diagramSize = 0;
     private $sizeOfBucket = 0;
     private $overviewId;
     private $error = false;
 
-    function __construct($diagramSize, $overviewId,$sizeOfBucket) {
+    function __construct($diagramSize, $overviewId, $sizeOfBucket) {
         $this->diagramSize = $diagramSize;
         $this->overviewId = $overviewId;
         $this->sizeOfBucket = $sizeOfBucket;
@@ -314,26 +311,27 @@ class exerciseCharts {
                         ->getDirectory() . '/classes/mapper/class.ilExerciseMapper.php';
         $excMapper = new ilExerciseMapper();
         $this->data = $excMapper->getTotalScores($overviewId);
-        sort($this->data); 
+        sort($this->data);
         $this->fillArray();
         if ($this->diagramSize > 0 && !empty($this->data)) {
             $this->fillBuckets();
         }
-        
     }
-    function getMaxValue(){
+
+    function getMaxValue() {
         return end($this->data);
     }
-    function fillArray(){
-        for ($i = 1; $i <= $this->getMaxValue()/$this->sizeOfBucket; $i++){ 
-        array_push($this->buckets,0);
+
+    function fillArray() {
+        for ($i = 1; $i <= $this->getMaxValue() / $this->sizeOfBucket; $i++) {
+            array_push($this->buckets, 0);
         }
     }
-    
-    function fillBuckets(){
-       foreach ($this->data as $value){
-           $this->buckets[(ceil($value/$this->sizeOfBucket))-1]++;
-       }
+
+    function fillBuckets() {
+        foreach ($this->data as $value) {
+            $this->buckets[(ceil($value / $this->sizeOfBucket)) - 1] ++;
+        }
     }
 
     function getHTML() {
@@ -352,40 +350,44 @@ class exerciseCharts {
 
         $data->setBarOptions(0.5, "center");
         /* Creation of the Legend */
-        
+
         $tpl = new ilTemplate("tpl.DigramLegend.html", true, true, "Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview");
-        $tpl->setVariable("number",$lng->txt("bibitem_number"));
-        $tpl->setVariable("percent",$lng->txt("points"));
-        $i=1;
-        foreach ($this->buckets as $bucket){
+        $tpl->setVariable("number", $lng->txt("bibitem_number"));
+        $tpl->setVariable("percent", $lng->txt("points"));
+        $i = 1;
+        foreach ($this->buckets as $bucket) {
             $tpl->setCurrentBlock("buckets");
-            $tpl->setVariable("Numbers",$i);
-            $tpl->setVariable("Percents","&le; " . $this->sizeOfBucket*$i);
+            $tpl->setVariable("Numbers", $i);
+            $tpl->setVariable("Percents", "&le; " . $this->sizeOfBucket * $i);
             $tpl->parseCurrentBlock();
             $i += 1;
+        }
+        if ($i <= 20) {
+            $height = $i * 20;
+            $height .= "px";
+            $tpl->setVariable("Height", $height);
+        } else {
+            $tpl->setVariable("Height", "400px");
         }
         $legend = new ilChartLegend();
         $legend->setOpacity(50);
         $chart->setLegend($legend);
         $chart->setYAxisToInteger(true);
-        /*Null Point set to let the diageram start of at (0,0)*/
-        $data->addPoint(0,0);
-        $i=1;
-        foreach ($this->buckets as $bucketValue){
-            if($bucketValue > 0){
-                $data->addPoint($i,$bucketValue);
+        /* Null Point set to let the diageram start of at (0,0) */
+        $data->addPoint(0, 0);
+        $i = 1;
+        foreach ($this->buckets as $bucketValue) {
+            if ($bucketValue > 0) {
+                $data->addPoint($i, $bucketValue);
             }
             $i = $i + 1;
         }
         $chart->addData($data);
-        $tpl->setVariable("diagram",$chart->getHTML());
-        return $tpl-> get();
-       // return implode(";",$this-> buckets);
+        $tpl->setVariable("diagram", $chart->getHTML());
+        return $tpl->get();
+        // return implode(";",$this-> buckets);
     }
-    
-   
 
 }
-
 
 ?>

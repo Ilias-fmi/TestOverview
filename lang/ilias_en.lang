@@ -79,7 +79,7 @@ gend#:#Gender
 qteil#:#Question 
 assign#:#Assignment
 make_diagram#:#Make my Diagramm
-max_diagram_value#:#Please enter the maximal diagramm value
+max_diagram_value#:#Please enter the granularity of your diagram
 userResults#:#Your Results
 order_ranking#:#Order by rank
 orderName#:#Order by name
