@@ -351,30 +351,30 @@ class exerciseCharts {
         $lng->loadLanguageModule("assessment");
 
 
-        $data->setBarOptions(2, "center");
+        $data->setBarOptions(0.5, "center");
         /* Creation of the Legend */
         
         $tpl = new ilTemplate("tpl.DigramLegend.html", true, true, "Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview");
         $tpl->setVariable("number",$lng->txt("bibitem_number"));
-        $tpl->setVariable("percent",$lng->txt("tst_percent_solved"));
-        $i=10;
-        foreach ($this->bucketSize as $bucket){
+        $tpl->setVariable("percent",$lng->txt("points"));
+        $i=1;
+        foreach ($this->buckets as $bucket){
             $tpl->setCurrentBlock("buckets");
             $tpl->setVariable("Numbers",$i);
-            $tpl->setVariable("Percents",$bucket);
+            $tpl->setVariable("Percents","&le; " . $this->sizeOfBucket*$i);
             $tpl->parseCurrentBlock();
-            $i += 10;
+            $i += 1;
         }
         $legend = new ilChartLegend();
         $legend->setOpacity(50);
         $chart->setLegend($legend);
         $chart->setYAxisToInteger(true);
-        
-             
+        /*Null Point set to let the diageram start of at (0,0)*/
+        $data->addPoint(0,0);
         $i=1;
-        foreach ($this->buckets as $jo){
-            if($jo > 0){
-                $data->addPoint($i,$jo);
+        foreach ($this->buckets as $bucketValue){
+            if($bucketValue > 0){
+                $data->addPoint($i,$bucketValue);
             }
             $i = $i + 1;
         }
