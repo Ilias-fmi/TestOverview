@@ -79,7 +79,7 @@ gend#:#Geschlecht
 qteil#:#Frage 
 assign#:#Übungseinheit 
 make_diagram#:#Erstelle mein Diagramm
-max_diagram_value#:#Bitte geben Sie hier die Maximalpunktzahl für Ihr Diagramm ein
+max_diagram_value#:#Bitte geben Sie hier die Granularität(Schrittgröße) des Diagrammes ein 
 userResults#:#Ihre Leistung
 order_ranking#:#Ordnen nach Ranking
 orderName#:#Ordnen nach Namen
