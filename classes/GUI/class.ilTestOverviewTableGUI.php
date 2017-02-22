@@ -520,7 +520,7 @@ class ilTestOverviewTableGUI
           */
         public function getStudentsRanked(array $data)
         {
-        
+        $this->getmapper()->resetRanks($this->getParentObject()->object->getID());
          foreach ($data['items'] as $userObj) 
          {   
             $stdID = $userObj->getId();  

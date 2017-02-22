@@ -28,6 +28,7 @@ class studentMapper {
         $lng->loadLanguageModule("assessment");
         $lng->loadLanguageModule("certificate");
         $lng->loadLanguageModule("rating");
+        $lng->loadLanguageModule("common");
         $lng->loadLanguageModule("trac");
         $tpl->setCurrentBlock("head_row");
         $tpl->setVariable("testTitle", $lng->txt("certificate_ph_testtitle"));
@@ -97,12 +98,19 @@ class studentMapper {
         $ilOverviewMapper = new ilOverviewMapper();
         $rank=$ilOverviewMapper->getRankedStudent($overviewId, $studId);
         $count=$ilOverviewMapper->getCount($overviewId);
-        $tpl->setVariable("toRanking","Tests: Rank $rank out of $count");
-        
+        if(!$rank=='0'){
+          $tpl->setVariable("toRanking",$lng->txt('tests')." ".$rank." ".$lng->txt('of')." ".$count);  
+        }else{
+        $tpl->setVariable("toRanking",$lng->txt('tests')." - ".$lng->txt('links_not_available'));
+        }
         $ilExerciseMapper= new ilExerciseMapper();
         $rank=$ilExerciseMapper->getRankedStudent($overviewId, $studId);
         $count=$ilExerciseMapper->getCount($overviewId);
-        $tpl->setVariable("eoRanking","Exercises: Rank $rank out of $count");
+        if(!$rank=='0'){
+        $tpl->setVariable("eoRanking",$lng->txt('excs')." - ".$rank." ".$lng->txt('of')." ".$count);
+         }else{
+        $tpl->setVariable("eoRanking",$lng->txt('excs')." - ".$lng->txt('links_not_available'));
+        }
         return $tpl->get();
     }
 

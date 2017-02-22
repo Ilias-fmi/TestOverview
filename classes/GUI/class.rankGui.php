@@ -74,8 +74,8 @@ extends ilMappedTableGUI
                         $this->addColumn( $excMapper->getExerciseName($obj_id),$ilCtrl->getLinkTargetByClass('ilobjtestgui', 'infoScreen'));
                         
 		}
-		$this->addColumn($this->lng->txt('rep_robj_xtov_test_overview_hdr_avg'));
-
+                $this->lng->loadLanguageModule("trac");
+		$this->addColumn($this->lng->txt('stats_summation'));
 		$plugin = ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview');
 		$this->setRowTemplate('tpl.test_overview_row.html', $plugin->getDirectory());
 		$this->setDescription($this->lng->txt("rep_robj_xtov_test_overview_description"));
@@ -167,7 +167,7 @@ extends ilMappedTableGUI
                     echo("<script>console.log('PHP: fill row mark $mark');</script>");
 		    $results[] = $result;
 		    $progress='2';
-		    $this->populateNoLinkCell($mark, $this->getCSSByProgress($progress));
+		    $this->populateNoLinkCell($mark, "no-prem-result");
 			
 			
 			$this->tpl->setCurrentBlock('cell');
@@ -420,7 +420,7 @@ extends ilMappedTableGUI
         {          
             global $ilDB, $tpl;
             echo("<script>console.log('PHP: rank aufruf');</script>");
-                $this->getStudentsRanked($data);
+            $this->getStudentsRanked($data);
             $overviewMapper= $this->getMapper();           
             $rankList = array();
 		$sorted = array(
@@ -436,8 +436,7 @@ extends ilMappedTableGUI
                   $stdID = $userObj->getId();                  
                   $actualRank = $overviewMapper->getRankedStudent($this->getParentObject()->object->getId(),$stdID );
                   $rankList[$actualRank ][] = $userObj;
-                  echo("<script>console.log('PHP: schleife für sort RANK $actualRank');</script>");
-		}
+                }
 
 		/* Group all results. */
 		for ($rank = '1'; $rank <= count($rankList); $rank++) {
@@ -447,8 +446,6 @@ extends ilMappedTableGUI
 				$sorted['items'] = array_merge($sorted['items'], $userList);
                         }
 		}
-                $a=count($sorted['items']);
-                echo("<script>console.log('PHP: oder anzahl eintraege $a');</script>");
 		return $sorted;
          }    
          /**
@@ -457,6 +454,7 @@ extends ilMappedTableGUI
         public function getStudentsRanked(array $data)
         {
         
+         $this->getMapper()->resetRanks($this->getParentObject()->object->getID());
          foreach ($data['items'] as $userObj) 
          {   
             $stdID = $userObj->getId();  
