@@ -251,7 +251,7 @@ class ilExerciseMapper extends ilDataMapper {
          */
         public function resetRanks($id)
         {$query=
-                 "DELETE FROM `rep_robj_xtov_eorank` WHERE to_id=$id" ;
+                 "DELETE FROM `rep_robj_xtov_eorank` WHERE eo_id=$id" ;
             $this->db->query($query); 
         }       
         /**
