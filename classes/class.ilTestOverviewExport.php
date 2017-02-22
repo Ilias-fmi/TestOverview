@@ -392,7 +392,7 @@ function buildExportFile()
             
         }
         foreach ($info as $key => $group) {
-            $groups .=  $info['title']." ";
+            $groups .=  $group['title']." ";
         }
         return $groups;
     }
