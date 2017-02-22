@@ -34,7 +34,7 @@ class studentMapper {
         $tpl->setVariable("score", $lng->txt("toplist_col_score"));
         $tpl->parseCurrentBlock();
         /* PLS INTERNATIONALIZE */
-        $tpl->setVariable("average", "Durschnittliche !Punktzahl!/ Average Points");
+        $tpl->setVariable("average", $lng->txt('rep_robj_xtov_avg_points'));
         $tpl->setVariable("averagePercent", $lng->txt("trac_average"));
         $tpl->setVariable("exerciseTitle", $lng->txt("certificate_ph_exercisetitle"));
         $tpl->setVariable("mark", $lng->txt("tst_mark"));

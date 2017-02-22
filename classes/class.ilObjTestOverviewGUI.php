@@ -408,15 +408,17 @@ protected function showContent()
         require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
                         ->getDirectory() . '/classes/mapper/class.ilBinDiagrammMapper.php';
 
-        $attachment = new ilTextInputGUI("DiagramSize", "diagramSize");
+       //$attachment = new ilTextInputGUI("DiagramSize", "diagramSize");
+        $attachment2 = new ilTextInputGUI("SizeBucket", "sizeBucket");
         $ilToolbar->setFormAction($ilCtrl->getLinkTarget($this, 'ExerciseOverview'), true);
-        $ilToolbar->addInputItem($attachment);
+        //$ilToolbar->addInputItem($attachment);
+        $ilToolbar->addInputItem($attachment2);
         $ilToolbar->addFormButton($this->txt("make_diagram"), "");
 
         require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
                         ->getDirectory() . '/classes/mapper/class.ilExerciseMapper.php';
-        if ($_POST["diagramSize"] != null) {
-            $Obj = new exerciseCharts($_POST["diagramSize"], $this->object->getId());
+        if ($_POST["sizeBucket"] != null) {
+            $Obj = new exerciseCharts(30000, $this->object->getId(),$_POST["sizeBucket"]);
             //$tpl->setContent (implode(";", $Obj->getHTML()));
 
 

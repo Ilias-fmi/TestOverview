@@ -73,6 +73,7 @@ reduced_exp#:#Export the results for all tests and exercises linked to the TestO
 extended_exp#:#Export the results for all questions for every test and for all assignments for all exercises linked to the TestOverview Object
 name#:#Name
 mat#:#Matriculation
+group#:#Group
 mail#:#Mail Address
 gend#:#Gender
 qteil#:#Question 
@@ -88,4 +89,5 @@ exercise_list_description#:#Please select the exercises you want to add to this 
 min_one_check_exercise#:#Please select at least one exercise
 exc_add#:#Add Exercise
 exercises_updated_success#:#Updated successfully.
+avg_points#:#Average Points
 

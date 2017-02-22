@@ -73,6 +73,7 @@ reduced_exp#:#Ergebnisse von allen Tests und Exercises die mit dem TestOverview 
 extended_exp#:#Ergebnisse von allen Tests und Exercises die mit dem TestOverview Objekt assoziiert sind, inkl. derer Teilfragen und Assignments exportieren
 name#:#Name
 mat#:#Matrikelnummer
+group#:#Gruppe
 mail#:#Email Adresse
 gend#:#Geschlecht
 qteil#:#Frage 
@@ -88,4 +89,5 @@ exercise_list_description#:#Wählen Sie aus, welche Exercises in der Inhaltsansi
 min_one_check_exercise#:#Bitte wählen Sie mindestens eine Exercise.
 exc_add#:#Exercise hinzufügen
 exercises_updated_success#:#Die Einstellungen wurden erfolgreich aktualisiert.
+avg_points#:#Durchschnittliche Punktzahl
 

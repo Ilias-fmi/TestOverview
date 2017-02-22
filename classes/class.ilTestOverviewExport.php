@@ -7,6 +7,7 @@ class ilTestOverviewExport extends ilObjTestOverviewGUI
     /** @var integer ID of current TestOverview  */
     var $overviewID;
     
+    var $parentID;
     
     var $filename;
       
@@ -18,20 +19,21 @@ class ilTestOverviewExport extends ilObjTestOverviewGUI
     
     var $assoc;
     
-public function __construct($parent,$id, $type, $a_main_object = null){
+public function __construct($parent, $id ,$type, $a_main_object= null){
       
         parent::__construct($parent, $a_main_object);
         $this->type=$type;
         $this->overviewID = $id;
+        $this->ref_id = $parent->object->getRefId();
+        $this->parentID = $parent->object->getParentId($this->ref_id);
         
         $this->testIDs = $this->getTestIDs();
         $this->exerciseIDs = $this->getUniqueExerciseIDs();
         $this->users = $this->getUniqueTestExeciseUserID();
         $this->assoc = $this->getAssociation();
-        $date = date("Y-m-d-H:i:s");
+        $date = date("Y-m-d");
         
-        $this->subdir = "TestOverview_Export_".$date."_".$type;
-	$this->filename = $this->subdir.".csv";  
+        $this->filename = $parent->object->getTitle()."_Export_".$date."_".$type.".csv";
         
 }   
 function buildExportFile()
@@ -66,37 +68,62 @@ function buildExportFile()
      */
     private function buildReducedExportFile() {
         global $lng, $ilCtrl;
+        
         $rows= array();
         $datarow = array();
         //var_dump($this->users);
-        //build headrow
+        //Build the headrow
         array_push($datarow, $this->txt("name"));
         array_push($datarow,$this->txt("mat"));
+        array_push($datarow,$this->txt("group"));
         array_push($datarow,$this->txt("mail"));
         array_push($datarow,$this->txt("gend"));
+        //push all TestNames into the headrow
+        $tCounter = 1;
+        foreach ($this->testIDs as $key => $value) {
+            $testName ="Test $tCounter";
+            array_push($datarow, $testName);
+            $tCounter++;
+        }
+        //push a name of every exercise into headrow
+        $eCounter = 1;
+        foreach ($this->exerciseIDs as $num => $exvalue) {
+            $exName = "Exercise $eCounter";
+            array_push($datarow, $exName);
+            $eCounter++;
+        }
+        
+        $headrow= $datarow;
+        array_push($rows, $headrow);
+        $inforow = array();
+        array_push($inforow, "");
+        array_push($inforow, "");
+        array_push($inforow, "");
+        array_push($inforow, "");
+        array_push($inforow, "");
         //push all TestNames into the headrow
         foreach ($this->testIDs as $key => $value) {
             $testID = $value['test_id'];
             $testName = $this->getTestTitle($testID);
-            array_push($datarow, $testName);
+            array_push($inforow, $testName);
         }
         //push a name of every exercise into headrow
         foreach ($this->exerciseIDs as $num => $exvalue) {
             $exerciseID = $exvalue['obj_id'];
             
             $exName = $this->getExerciseName($exerciseID);
-            array_push($datarow, $exName);
+            array_push($inforow, $exName);
         }
-        
-        $headrow= $datarow;
-        array_push($rows, $headrow);
+        array_push($rows, $inforow);
         //push user specific info into every row (userInfo)
         foreach ($this->users as $num => $preValue) {
             $userID = $preValue['user_fi'];
+            $userGroup = $this->participatedGroups($userID);
             $datarow2 = array();
             $userInfo = $this->getInfo($userID);
             array_push($datarow2, $userInfo['lastname'].', '.$userInfo['firstname']); 
             array_push($datarow2, $userInfo['matriculation']);
+            array_push($datarow2, $userGroup);
             array_push($datarow2, $userInfo['email']);
             array_push($datarow2, $userInfo['gender']);
             //push test results into user row
@@ -143,52 +170,95 @@ function buildExportFile()
         //build headrow        
         array_push($datarow, $this->txt("name"));
         array_push($datarow, $this->txt("mat"));
+        array_push($datarow, $this->txt("group"));
         array_push($datarow, $this->txt("mail"));
         array_push($datarow, $this->txt("gend"));
         //push all TestNames into the headrow
+        $tCounter = 1;
         foreach ($this->testIDs as $key => $value) {
             $testID = $value['test_id'];
-            $testName = $this->getTestTitle($testID);
+            $testName ="Test $tCounter";
             array_push($datarow, $testName);
+            $tCounter++;
+            
             $questionIDs = $this->getQuestionID($testID);
             $qCounter = 1;
             //push a name for every subtask a test has into the headrow
-            foreach ($questionIDs as $key => $questionInfo) {
-                $questionID = $questionInfo['question_fi'];
-                //$questionName = $this->getQuestionTitle($questionID);
-                $questionName = $this->txt("qteil").$qCounter;
+            foreach ($questionIDs as $question) {
+                $questionName = $this->txt("qteil")." $qCounter";
                 array_push($datarow, $questionName);
                 $qCounter++;
+            }
+        }
+        //push a name of every exercise into headrow
+        $eCounter = 1;
+        foreach ($this->exerciseIDs as $num => $exvalue) {
+            $exerciseID = $exvalue['obj_id'];
+            $exName = "Exercise $eCounter";
+            array_push($datarow, $exName);
+            $eCounter++;
+            
+            $assignmentIDs = $this->getAssignments($exerciseID);
+            $aCounter = 1;
+            //push a name for every assignments a exercise has into the headrow
+            foreach ($assignmentIDs as $assignment) {
+                $assignmentName = $this->txt("assign")." $aCounter";
+                array_push($datarow, $assignmentName);
+                $aCounter++;
+            }
+        }
+        
+        array_push($rows, $datarow);
+        
+        $inforow = array();
+        array_push($inforow, "");
+        array_push($inforow, "");
+        array_push($inforow, "");
+        array_push($inforow, "");
+        array_push($inforow, "");
+        
+        //push the test name into a new row
+        foreach ($this->testIDs as $key => $value) {
+            $testID = $value['test_id'];
+            $testName = $this->getTestTitle($testID);
+            array_push($inforow, $testName);
+            $questions = $this->getQuestionID($testID);
+            
+            //push a name for every subtask a test has into the headrow
+            foreach ($questions as $key => $questionInfo) {
+                $questionID = $questionInfo['question_fi'];
+                $questionName = $this->getQuestionTitle($questionID);
+                array_push($inforow, $questionName);
             }
         }
         //push a name of every exercise into headrow
         foreach ($this->exerciseIDs as $num => $exvalue) {
             $exerciseID = $exvalue['obj_id'];
             $exName = $this->getExerciseName($exerciseID);
-            array_push($datarow, $exName);
-            $assignmentIDs = $this->getAssignments($exerciseID);
-            $aCounter = 1;
+            array_push($inforow, $exName);
+            $assignments = $this->getAssignments($exerciseID);
+            
             //push a name for every assignments a exercise has into the headrow
-            foreach ($assignmentIDs as $key => $assignmentInfo) {
+            foreach ($assignments as $key => $assignmentInfo) {
                 $assignmentIDs = $assignmentInfo['id'];
-                $assignmentName = $this->txt("assign")." ".$aCounter;
-                array_push($datarow, $assignmentName);
+                $assignmentName = $assignmentInfo['title'];
+                array_push($inforow, $assignmentName);
                 $aCounter++;
             }
         }
-        /*
-         * need to implement a smart way to show the subquestion names + enumerated tests and assignments
-         */
-        $headrow= $datarow;
-        array_push($rows, $headrow);
+        
+        array_push($rows, $inforow);
+        
         //push user specific info into every row (userInfo)
         foreach ($this->users as $num => $preValue) {
             $userID = $preValue['user_fi'];
+            $userGroup = $this->participatedGroups($userID);
             $datarow = $headrow;
             $datarow2 = array();
             $userInfo = $this->getInfo($userID);
             array_push($datarow2, $userInfo['lastname'].', '.$userInfo['firstname']);    
             array_push($datarow2, $userInfo['matriculation']);
+            array_push($datarow2, $userGroup);
             array_push($datarow2, $userInfo['email']);
             array_push($datarow2, $userInfo['gender']);
             //push test results into user row
@@ -295,6 +365,37 @@ function buildExportFile()
         return $testIDs;
     }
     
+    
+    
+    protected function participatedGroups($userID) {
+        global $ilDB;
+        $info = array();
+        $query = "SELECT 
+                    obd.title
+                  FROM
+                    rbac_ua ua
+                  JOIN
+                    rbac_fa fa ON ua.rol_id = fa.rol_id
+                  JOIN 
+                    tree t1 ON t1.child = fa.parent
+                  JOIN
+                    object_reference obr ON t1.child = obr.ref_id
+                  JOIN
+                    object_data obd ON obr.obj_id = obd.obj_id
+                  WHERE
+                 obr.deleted IS NULL AND ua.usr_id = %s AND fa.assign = 'y' AND obd.type in ('grp') and t1.parent = %s";
+        $result = $ilDB->queryF($query,
+                                array('integer', 'integer'),
+                                array($userID, $this->parentID));
+        while($record = $ilDB->fetchAssoc($result)){
+            array_push($info, $record);
+            
+        }
+        foreach ($info as $key => $group) {
+            $groups .=  $info['title']." ";
+        }
+        return $groups;
+    }
     /**
      * 
      * @global type $ilDB
@@ -419,7 +520,15 @@ function buildExportFile()
 	return $row['reached_points'];
 		
     }
-    
+    //public function getParentId() {
+      //      global $ilDB;
+        //    $query = "SELECT parent FROM tree WHERE child = %s";
+          //  $result = $ilDB->queryF($query, 
+            //                   array('integer'),
+              //                 array($this->ref_id));
+          //  $record = $ilDB->fetchAssoc($result);
+           // return $record['parent'];
+        //}
     
     /**
      * 
@@ -583,6 +692,7 @@ function buildExportFile()
     }
     
     
+    
     /**
      * 
      * @global type $ilDB
@@ -667,7 +777,7 @@ function buildExportFile()
         $assignmentID = array();
         
         $query = "SELECT 
-                  id
+                  id, title
                   FROM
                   exc_assignment
                   WHERE

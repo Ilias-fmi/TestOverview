@@ -25,7 +25,7 @@ class ilTestOverviewExportGUI extends ilObjTestOverviewGUI {
         parent::__construct($a_parent_gui, $a_main_object);
         $this->parent = $a_parent_gui;
         $this->id = $id;
-        $this->ref_id = $this->object->getRefId();
+        $this->ref_id = $this->parent->object->getRefId();
     }
 
     function &executeCommand() {
@@ -51,7 +51,9 @@ class ilTestOverviewExportGUI extends ilObjTestOverviewGUI {
         /* Populate template */
         $this->tpl->setContent($this->form->getHTML());
     }
-
+    /*
+     * Command that is triggered on clicking the "export"-Button
+     */
     protected function triggerExport() {
         global $tpl, $lng, $ilCtrl;
         $this->initExportForm();
@@ -64,7 +66,9 @@ class ilTestOverviewExportGUI extends ilObjTestOverviewGUI {
             $to_exp->buildExportFile();
         }
     }
-
+    /*
+     * Initialize the export form
+     */
     public function initExportForm() {
 
         global $ilCtrl, $tpl, $lng;
