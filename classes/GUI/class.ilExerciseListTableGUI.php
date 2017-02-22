@@ -126,7 +126,8 @@ class ilExerciseListTableGUI extends ilMappedTableGUI {
 			$path_str = $prepend . $node['title'];
 			next($path);
 		}
-
+                $path_str = "<div><a href='ilias.php?baseClass=ilExerciseHandlerGUI&cmd=showOverview&ref_id=$item->ref_id'>".$path_str."</a></div>";
+                
 		return $path_str;
 	}
     

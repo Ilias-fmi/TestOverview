@@ -137,7 +137,8 @@ class ilTestListTableGUI extends ilMappedTableGUI
 			$path_str = $prepend . $node['title'];
 			next($path);
 		}
-
+                $path_str ="<div><a href='ilias.php?ref_id=$item->ref_id&cmd=infoScreen&cmdClass=ilobjtestgui&cmdNode=1z:mi&baseClass=ilrepositorygui'>".$path_str."</a></div>"; 
+                        
 		return $path_str;
 	}
 
