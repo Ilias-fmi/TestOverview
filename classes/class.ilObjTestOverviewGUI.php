@@ -430,17 +430,24 @@ protected function showContent()
     
     
     protected function subTabEO() {
-        global $tpl, $ilUser, $ilTabs, $ilCtrl, $ilToolbar;
-
+        global $tpl, $ilTabs, $ilCtrl, $ilToolbar;
         $this->subTabs("Exercise");
         $ilTabs->activateTab('ExerciseOverview');
-        $ilTabs->activateSubTab('subTabEO');
+        $ilTabs->activateSubTab('subTabEO'); 
+        //$tpl->setContent("ranking stuff");
+        require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
+                        ->getDirectory() . '/classes/GUI/class.ilMappedTableGUI.php';
+        require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
+                        ->getDirectory() . '/classes/GUI/class.rankGui.php';
         require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
                         ->getDirectory() . '/classes/mapper/class.ilExerciseMapper.php';
-
-        $Obj = new ilExerciseMapper();
-        $Obj->setParent($this);
-        $tpl->setContent($Obj->getHtml($this->object->getId()));
+        $ilExerciseMapper =new ilExerciseMapper;                
+        $table = new rankGUI( $this, 'subTabEO' );
+	$table->setMapper($ilExerciseMapper)->populateE(true);
+	/* Populate template */
+	$tpl->setDescription($this->object->getDescription());
+        $data = array_slice($table-> getData(), $table->getOffset(), $table->getLimit());
+	$tpl->setContent( $table->getHTML());
     }
 
     protected function subTabEO1() {
@@ -480,13 +487,12 @@ protected function showContent()
         require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
                         ->getDirectory() . '/classes/mapper/class.ilExerciseMapper.php';
         $ilExerciseMapper =new ilExerciseMapper;                
-		$table = new rankGUI( $this, 'subTabEORanking' );
-		$table->setMapper($ilExerciseMapper)->populateE();
-		/* Populate template */
-		$tpl->setDescription($this->object->getDescription());
-                
-                $data = array_slice($table-> getData(), $table->getOffset(), $table->getLimit());
-		$tpl->setContent( $table->getHTML());
+        $table = new rankGUI( $this, 'subTabEORanking' );
+	$table->setMapper($ilExerciseMapper)->populateE(false);
+	/* Populate template */
+	$tpl->setDescription($this->object->getDescription());
+        $data = array_slice($table-> getData(), $table->getOffset(), $table->getLimit());
+	$tpl->setContent( $table->getHTML());
                 
         
     }
