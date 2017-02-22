@@ -343,7 +343,6 @@ class exerciseCharts {
         require_once 'Services/Chart/classes/class.ilChartSpider.php';
         require_once 'Services/Chart/classes/class.ilChartLegend.php';
         require_once 'Services/Chart/classes/class.ilChartDataPie.php';
-        $this-> calcBuckets();
         $chart = ilChart::getInstanceByType(ilChart::TYPE_GRID, 1);
         $chart->setsize(900, 400);
         $data = $chart->getDataInstance(ilChartGrid::DATA_BARS);
@@ -384,19 +383,7 @@ class exerciseCharts {
        // return implode(";",$this-> buckets);
     }
     
-    function calcBuckets(){
-        $size = $this->diagramSize / 10;
-        $this->bucketSize[0] = "&le; " . $size ;
-        $this->bucketSize[1] = "&le; " . $size*2;
-        $this->bucketSize[2] = "&le; " . $size*3;
-        $this->bucketSize[3] = "&le; " . $size*4;
-        $this->bucketSize[4] = "&le; " . $size*5;
-        $this->bucketSize[5] = "&le; " . $size*6;
-        $this->bucketSize[6] = "&le; " . $size*7;
-        $this->bucketSize[7] = "&le; " . $size*8;
-        $this->bucketSize[8] = "&le; " . $size*9;
-        $this->bucketSize[9] = "&le; " . $size*10;
-    }
+   
 
 }
 

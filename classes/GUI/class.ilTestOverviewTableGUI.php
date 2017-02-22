@@ -455,6 +455,8 @@ class ilTestOverviewTableGUI
 		/* Partition data. */
 		foreach ($data['items'] as $userObj) {
 			$name = $userObj->getFullName();
+                        $name=strtoupper($name);
+                        echo("<script>console.log('PHP: sort name $name');</script>");
 			$azList[$name{0}][] = $userObj;
 		}
 
@@ -504,13 +506,13 @@ class ilTestOverviewTableGUI
 		}
 
 		/* Group all results. */
-		for ($rank = '1'; $rank <= count($data['items']); $rank++) {
+		for ($rank = '1'; $rank <= count($rankList); $rank++) {
                     $userList=$rankList[$rank];
-			if (! empty($userList))
+			if (! empty($userList)){
                             
 				$sorted['items'] = array_merge($sorted['items'], $userList);
+                        }
 		}
-
 		return $sorted;
          }    
          /**
@@ -528,27 +530,22 @@ class ilTestOverviewTableGUI
 					
 		foreach ($overview->getUniqueTests() as $obj_id => $refs)
 		{
-                        
-			$test = $overview->getTest($obj_id);
+                      	$test = $overview->getTest($obj_id);
 			$activeId  = $test->getActiveIdOfUser($stdID);	
                         $result=$progress = null;
 			$result = $test->getTestResult($activeId);
-                        //echo("<script>console.log('PHP:results get rank $result]]');</script>");
-		         
-                       $lpStatus = new ilLPStatus( $test->getId() );
-				$progress = $lpStatus->_lookupStatus($test->getId(), $stdID);
-
-				if ((bool) $progress)
-				{
+                        $lpStatus = new ilLPStatus( $test->getId() );
+			$progress = $lpStatus->_lookupStatus($test->getId(), $stdID);
+			    if ((bool) $progress)
+			    {
 					$result		= sprintf("%.2f %%", (float) $result['pass']['percent'] * 100);
 					
 					$results[]  = $result;
-				}
-				else
-				{
-					
-					$results[]  = 0;
-				} 
+			    }
+			    else
+			    {
+			    $results[]  = 0;
+			    } 
                                 
                      if (count($results))
 		    {
