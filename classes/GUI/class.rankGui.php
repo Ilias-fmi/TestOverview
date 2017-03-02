@@ -167,9 +167,18 @@ extends ilMappedTableGUI
                     echo("<script>console.log('PHP: fill row mark $mark');</script>");
 		    $results[] = $result;
 		    $progress='2';
-		    $this->populateNoLinkCell($mark, "no-prem-result");
-			
-			
+                    $state = $this->isPassed($obj_id,$row['member_id']); 
+                    /*
+                     * Colors the Results if they are gradet 
+                     */
+                    if ($state == "passed"){
+                        $this->populateNoLinkCell($mark, "green-result");
+                    }else if ($state == "failed"){
+                        $this->populateNoLinkCell($mark, "red-result");
+                    }else {
+                      $this->populateNoLinkCell($mark, "no-prem-result");  
+                    }
+	
 			$this->tpl->setCurrentBlock('cell');
 			$this->tpl->parseCurrentBlock();
 		}
@@ -667,6 +676,14 @@ extends ilMappedTableGUI
 		
 		return $link;
 	}
+        public function isPassed ($objId,$usrId){
+            global $ilDB;
+            
+            $query = "select exc_members.status from exc_members where obj_id = '$objId' AND usr_id = '$usrId'";
+            $result = $ilDB->query($query);
+           $state = $ilDB->fetchObject($result);
+            return $state-> status;
+        }
        
 }
 
