@@ -34,7 +34,6 @@ class studentMapper {
         $tpl->setVariable("testTitle", $lng->txt("certificate_ph_testtitle"));
         $tpl->setVariable("score", $lng->txt("toplist_col_score"));
         $tpl->parseCurrentBlock();
-        /* PLS INTERNATIONALIZE */
         $tpl->setVariable("average", $lng->txt('rep_robj_xtov_avg_points'));
         $tpl->setVariable("averagePercent", $lng->txt("trac_average"));
         $tpl->setVariable("exerciseTitle", $lng->txt("certificate_ph_exercisetitle"));
@@ -72,8 +71,11 @@ class studentMapper {
                         ->getDirectory() . '/classes/mapper/class.ilExerciseMapper.php';
         $excMapper = new ilExerciseMapper();
         $grades = $this->getExerciseMarks($studId, $overviewId);
+        $totalGrade = 0;
+        
         foreach ($grades as $grade) {
             $gradeName = $excMapper->getExerciseName($grade->obj_id);
+            $totalGrade += $grade->mark;
             $tpl->setCurrentBlock("exercise_results");
             $tpl->setVariable("Exercise", $gradeName);
             $tpl->setVariable("Mark", $grade->mark);
@@ -92,6 +94,11 @@ class studentMapper {
         } else {
             $Prozentnum = (float) ($average / $maxPoints) * 100;
         }
+        $lng->loadLanguageModule("crs");
+        $tpl->setVariable("averageMark",$lng->txt('rep_robj_xtov_average_mark'));
+        $tpl->setVariable("AverageMark",$totalGrade/count($grades));
+        $tpl->setVariable("totalMark",$lng->txt('rep_robj_xtov_total_mark'));
+        $tpl->setVariable("TotalMark",$totalGrade);
 
         $tpl->setVariable("Average", round($Prozentnum, 2));
        /// ranking part /////
@@ -144,6 +151,10 @@ class studentMapper {
         $result .= " %";
         return $result;
     }
+    
+    private function getTotalMark ($overviewId){
+        
+    }
 
     private function getNumTests($overviewId) {
         global $ilDB;
@@ -174,9 +185,10 @@ class studentMapper {
     private function getExerciseMarks($studId, $overviewId) {
         global $ilDB;
         $grades = array();
-        $query = "select ut_lp_marks.usr_id as user_id,obj_id ,mark from  rep_robj_xtov_e2o join ut_lp_marks join usr_data on 
-                    (rep_robj_xtov_e2o.obj_id_exercise = ut_lp_marks.obj_id and ut_lp_marks.usr_id = usr_data.usr_id) 
-                    where obj_id_overview = '" . $overviewId . "' And ut_lp_marks.usr_id='" . $studId . "'";
+        $query = "select ut_lp_marks.usr_id as user_id,obj_id ,mark 
+                  from  rep_robj_xtov_e2o join ut_lp_marks join usr_data on 
+                  (rep_robj_xtov_e2o.obj_id_exercise = ut_lp_marks.obj_id and ut_lp_marks.usr_id = usr_data.usr_id) 
+                  where obj_id_overview = '" . $overviewId . "' And ut_lp_marks.usr_id='" . $studId . "'";
         $result = $ilDB->query($query);
         while ($exercise = $ilDB->fetchObject($result)) {
             array_push($grades, $exercise);

@@ -90,4 +90,6 @@ min_one_check_exercise#:#Bitte wählen Sie mindestens eine Exercise.
 exc_add#:#Exercise hinzufügen
 exercises_updated_success#:#Die Einstellungen wurden erfolgreich aktualisiert.
 avg_points#:#Durchschnittliche Punktzahl
+total_mark#:#Gesamt Note/Punkte
+average_mark#:#Durchschnittliche Note 
 
