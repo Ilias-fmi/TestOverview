@@ -57,16 +57,29 @@ class ilMembershipListTableGUI
 		
 		$this->setDescription($this->lng->txt("rep_robj_xtov_membership_list_description"));
 		$this->setFormAction($ilCtrl->getFormAction($this->getParentObject(), 'updateSettings') );
-		$this->addMultiCommand('addMemberships', $this->lng->txt('rep_robj_xtov_add_to_overview'));
-		$this->addMultiCommand('removeMemberships', $this->lng->txt('rep_robj_xtov_remove_from_overview'));
-
-		$this->setShowRowsSelector(true);
+		
+                if($a_parent_cmd == "subTabTO2"){
+                    $this->addMultiCommand('addMemberships', $this->lng->txt('rep_robj_xtov_add_to_overview'));
+                    $this->addMultiCommand('removeMemberships', $this->lng->txt('rep_robj_xtov_remove_from_overview'));
+                }
+                if($a_parent_cmd == "subTabEO2"){
+                    $this->addMultiCommand('addMembershipsEx', $this->lng->txt('rep_robj_xtov_add_to_overview'));
+                    $this->addMultiCommand('removeMembershipsEx', $this->lng->txt('rep_robj_xtov_remove_from_overview'));
+                }
+		
+                $this->setShowRowsSelector(true);
 
 		/* Add 'Select All', configure filters */
 		$this->setSelectAllCheckbox('membership_ids[]');
 		$this->initFilter();
-		$this->setFilterCommand("applyGroupsFilter");
-		$this->setResetCommand("resetGroupsFilter");
+                if($a_parent_cmd == "subTabTO2"){
+                    $this->setFilterCommand("applyGroupsFilter");
+                    $this->setResetCommand("resetGroupsFilter");
+                }
+                if($a_parent_cmd == "subTabEO2"){
+                    $this->setFilterCommand("applyGroupsFilterEx");
+                    $this->setResetCommand("resetGroupsFilterEx");
+                }
 	}
 
 	/**
