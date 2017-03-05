@@ -72,6 +72,7 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
         global $ilTabs, $tpl;
         $tpl->setDescription($this->object->getDescription());
         $next_class = $this->ctrl->getNextClass($this);
+        echo $cmd;
         switch ($next_class) {
             case 'ilmdeditorgui':
                 $this->checkPermission('write');
@@ -105,6 +106,8 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
                     case 'removeTests':
                     case 'addMemberships':
                     case 'removeMemberships':
+                    case 'addMembershipsEx':
+                    case 'removeMembershipsEx':
                     case 'exportRedirect':    
                     case 'TestOverview':
                     case 'ExerciseOverview':
@@ -474,7 +477,7 @@ protected function showContent()
         $ilTabs->activateTab('ExerciseOverview');
         $ilTabs->activateSubTab('subTabEO2');
       
-        $tpl->setContent($this->getExerciseList()->getHtml().$this->getMembershipList()->getHTML());
+        $tpl->setContent($this->getExerciseList()->getHtml(). $this->getMembershipListEx()->getHTML());
         
     }
     protected function subTabEORanking()
@@ -1146,12 +1149,107 @@ protected function showContent()
         $this->includePluginClasses(array(
             "ilMembershipListTableGUI",
             "ilMembershipMapper"));
-        $testList = new ilMembershipListTableGUI($this, 'subTabTo2');
+        $testList = new ilMembershipListTableGUI($this, 'subTabTO2');
         $testList->setMapper(new ilMembershipMapper)
                 ->populate();
         return $testList;
     }
+    
+    protected function getMembershipListEx() {
+        $this->includePluginClasses(array(
+            "ilMembershipListTableGUI",
+            "ilMembershipMapper"));
+        $testList = new ilMembershipListTableGUI($this, 'subTabEO2');
+        $testList->setMapper(new ilMembershipMapper)
+                ->populate();
+        return $testList;
+    }
+    
+    /**
+     * 	Apply a filter to the groups list table.
+     *
+     * 	The applyGroupFilter() method is used as a command
+     * 	to apply (re-populate) and save the filters.
+     */
+    public function applyGroupsFilterEx() {
+        $this->includePluginClasses(array(
+            "ilMembershipListTableGUI"));
+        $table = new ilMembershipListTableGUI($this, 'subTabEO2');
+        $table->resetOffset();
+        $table->writeFilterToSession();
+        $this->subTabEO2();
+    }
+    
+    /**
+     * 	Reset the groups list filters
+     *
+     * 	This method is used as a command (form submit handler)
+     * 	to reset the filters set on the groups list table.
+     */
+    public function resetGroupsFilterEx() {
+        $this->includePluginClasses(array(
+            "ilMembershipListTableGUI"));
+        $table = new ilMembershipListTableGUI($this, 'subTabEO2');
+        $table->resetOffset();
+        $table->resetFilter();
+        $this->subTabEO2();
+    }
+    
+    
+    public function addMembershipsEx() {
+        /**
+         * @var $tpl    ilTemplate
+         * @var $lng    ilLanguage
+         * @var $ilCtrl ilCtrl
+         */
+        global $tpl, $lng, $ilCtrl;
+        $this->initSettingsForm();
+        $this->populateSettings();
+        echo "hello top";
+        if (isset($_POST['membership_ids'])) {
+            /* Executing the registered test retrieval again with the same filters
+              allows to determine which tests are really removed. */
+            include_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
+                            ->getDirectory() . "/classes/mapper/class.ilMembershipMapper.php";
+            foreach ($_POST['membership_ids'] as $groupId) {
+                $this->object
+                        ->addGroup($groupId);
+            }
+            echo "hello";
+            ilUtil::sendSuccess($lng->txt('rep_robj_xtov_memberships_updated_success'), true);
+            $ilCtrl->redirect($this, 'subTabEO2');
+        }
+        ilUtil::sendFailure($lng->txt('rep_robj_xtov_min_one_check_membership'), true);
+        $ilCtrl->redirect($this, 'subTabEO2');
+        //$tpl->setContent( $this->renderSettings() );
+    }
 
+    public function removeMembershipsEx() {
+        /**
+         * @var $tpl    ilTemplate
+         * @var $lng    ilLanguage
+         * @var $ilCtrl ilCtrl
+         */
+        global $tpl, $lng, $ilCtrl;
+        $this->initSettingsForm();
+        $this->populateSettings();
+        if (isset($_POST['membership_ids'])) {
+            /* Executing the registered test retrieval again with the same filters
+              allows to determine which tests are really removed. */
+            include_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
+                            ->getDirectory() . "/classes/mapper/class.ilMembershipMapper.php";
+            foreach ($_POST['membership_ids'] as $containerId) {
+                $this->object->rmGroup($containerId);
+            }
+            ilUtil::sendSuccess($lng->txt('rep_robj_xtov_memberships_updated_success'), true);
+            $ilCtrl->redirect($this, 'subTabEO2');
+        }
+
+        ilUtil::sendFailure($lng->txt('rep_robj_xtov_min_one_check_membership'));
+        //$tpl->setContent( $this->renderSettings() );
+        $ilCtrl->redirect($this, 'subTabEO2');
+    }
+    
     /**
      * 	Include a class implemented by this plugin.
      *
