@@ -72,6 +72,7 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
         global $ilTabs, $tpl;
         $tpl->setDescription($this->object->getDescription());
         $next_class = $this->ctrl->getNextClass($this);
+        echo $cmd;
         switch ($next_class) {
             case 'ilmdeditorgui':
                 $this->checkPermission('write');
@@ -105,6 +106,8 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
                     case 'removeTests':
                     case 'addMemberships':
                     case 'removeMemberships':
+                    case 'addMembershipsEx':
+                    case 'removeMembershipsEx':
                     case 'exportRedirect':    
                     case 'TestOverview':
                     case 'ExerciseOverview':
@@ -1146,7 +1149,7 @@ protected function showContent()
         $this->includePluginClasses(array(
             "ilMembershipListTableGUI",
             "ilMembershipMapper"));
-        $testList = new ilMembershipListTableGUI($this, 'subTabTo2');
+        $testList = new ilMembershipListTableGUI($this, 'subTabTO2');
         $testList->setMapper(new ilMembershipMapper)
                 ->populate();
         return $testList;
@@ -1202,6 +1205,7 @@ protected function showContent()
         global $tpl, $lng, $ilCtrl;
         $this->initSettingsForm();
         $this->populateSettings();
+        echo "hello top";
         if (isset($_POST['membership_ids'])) {
             /* Executing the registered test retrieval again with the same filters
               allows to determine which tests are really removed. */
@@ -1211,6 +1215,7 @@ protected function showContent()
                 $this->object
                         ->addGroup($groupId);
             }
+            echo "hello";
             ilUtil::sendSuccess($lng->txt('rep_robj_xtov_memberships_updated_success'), true);
             $ilCtrl->redirect($this, 'subTabEO2');
         }
