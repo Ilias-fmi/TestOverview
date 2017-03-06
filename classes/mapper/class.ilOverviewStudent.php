@@ -96,7 +96,9 @@ class studentMapper {
         }
         $lng->loadLanguageModule("crs");
         $tpl->setVariable("averageMark",$lng->txt('rep_robj_xtov_average_mark'));
+        if(count($grades)){
         $tpl->setVariable("AverageMark",$totalGrade/count($grades));
+        }
         $tpl->setVariable("totalMark",$lng->txt('rep_robj_xtov_total_mark'));
         $tpl->setVariable("TotalMark",$totalGrade);
 
