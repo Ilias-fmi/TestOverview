@@ -56,6 +56,7 @@ class rankGui extends ilMappedTableGUI {
 
         $overview = $this->getParentObject()->object;
 
+
         $this->addColumn($this->lng->txt('rep_robj_xtov_test_overview_hdr_user'));
 
         //get Object_reference mapper from Exercise Overview
@@ -96,6 +97,7 @@ class rankGui extends ilMappedTableGUI {
      * 	the filters from present on the top of the table.
      */
     public function initFilter() {
+
         include_once 'Services/Form/classes/class.ilTextInputGUI.php';
         include_once 'Services/Form/classes/class.ilSelectInputGUI.php';
         include_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
@@ -106,34 +108,41 @@ class rankGui extends ilMappedTableGUI {
         $pname->setSubmitFormOnEnter(true);
         /* Martins code für gender filter */
         $pgender = new ilSelectInputGUI("Gender", 'flt_participant_gender');
-        $genderArray = array("" => "-- Select --", "f" => "female", "m" => "male");
-        $pgender->setOptions($genderArray);
-        /* Martins code gender filter ende */
 
-        /* Configure participant group name filter (select) */
-//		$mapper = new ilOverviewMapper;
-//		$groups = $mapper->getGroupPairs($this->getParentObject()->object->getId());
-//		$groups = array("" => "-- Select --") + $groups;
-//
-//		$gname = new ilSelectInputGUI($this->lng->txt("rep_robj_xtov_overview_flt_group_name"), 'flt_group_name');
-//		$gname->setOptions($groups);
+        $genderArray=array("" => "-- Select --","f"=>"female","m"=>"male");
+        $pgender->setOptions($genderArray);        
+         /* Martins code gender filter ende */
+        
+		/* Configure participant group name filter (select) */
+		$mapper = new ilOverviewMapper();
+		$groups = $mapper->getGroupPairs($this->getParentObject()->object->getId());
+		$groups = array("" => "-- Select --") + $groups;
+
+		$gname = new ilSelectInputGUI($this->lng->txt("rep_robj_xtov_overview_flt_group_name"), 'flt_group_name');
+		$gname->setOptions($groups);
+
 
         /* Configure filter form */
         $this->addFilterItem($pname);
-        //       $this->addFilterItem($gname);        
-        /* Martins code gender filter */
+
+        $this->addFilterItem($gname);        
+        /*Martins code gender filter*/
+
         $this->addFilterItem($pgender);
         $pgender->readFromSession();
         /* Martins code gender filter ende */
         $pname->readFromSession();
-        //   $gname->readFromSession();
-        /* martis code gender filter */
+
+        $gname->readFromSession();
+        /*martis code gender filter */
+
         $this->filter['flt_participant_gender'] = $pgender->getValue();
         /* martins code ende */
         $this->filter['flt_participant_name'] = $pname->getValue();
         $stringN = $pname->getValue();
         echo("<script>console.log('PHP: RANK NAME FILTER $stringN');</script>");
-        // $this->filter['flt_group_name']		  = $gname->getValue();
+
+         $this->filter['flt_group_name']= $gname->getValue();
     }
 
     /**
@@ -205,100 +214,9 @@ class rankGui extends ilMappedTableGUI {
         $this->tpl->parseCurrentBlock();
     }
 
-    /**
-     *    Format the fetched data.
-     *
-     *    This method is used internally to retrieve ilObjUser
-     *    objects from participant group ids (ilObjCourse || ilObjGroup).
-     *
-     * @params    array    $data    array of IDs
-     *
-     * @param array $data
-     * @throws OutOfRangeException
-     * @return array
-     */
-    protected function formatData(array $data, $b = false) {
-        /* For each group object we fetched, we need
-          to retrieve the members in order to have
-          a list of Participant. */
-        $formatted = array(
-            'items' => array(),
-            'cnt' => 0);
+    
 
-
-        $index = 0;
-        echo("<script>console.log('PHP: format data 1 ');</script>");
-        foreach ($data as $usrId) {
-            echo("<script>console.log('PHP: format data 2 $usrId ');</script>");
-            $formatted['items'][$usrId] = $usrId;
-            $index++;
-        }
-
-        $formatted['items'] = $this->fetchUserInformation($formatted['items']);
-
-        if ($b == false) {
-            return $this->sortByAveragePoints($formatted);
-        } else {
-            return $this->sortByFullName($formatted);
-        }
-    }
-
-    public function fetchUserInformation($usr_ids) {
-        global $ilDB, $tpl;
-
-        $usr_id__IN__usrIds = $ilDB->in('usr_id', $usr_ids, false, 'integer');
-
-        $query = "
-			SELECT usr_id, title, firstname, lastname, gender FROM usr_data WHERE $usr_id__IN__usrIds
-		";
-
-        $res = $ilDB->query($query);
-
-        $users = array();
-
-        while ($row = $ilDB->fetchAssoc($res)) {
-            $user = new ilObjUser();
-            $user->setId($row['usr_id']);
-            $user->setUTitle($row['title']);
-            $user->setFirstname($row['firstname']);
-            $user->setLastname($row['lastname']);
-            $user->setFullname();
-            $user->setGender($row['gender']);
-
-            if (!empty($this->filter['flt_participant_name'])) {
-                $name = strtolower($user->getFullName());
-                $filter = strtolower($this->filter['flt_participant_name']);
-                echo("<script>console.log('PHP: filter name $name ');</script>");
-                echo("<script>console.log('PHP: filter namefilter $filter ');</script>");
-                /* Simulate MySQL LIKE operator */
-                if (false === strstr($name, $filter)) {
-                    $ausgabe = strstr($name, $filter);
-                    echo("<script>console.log('PHP: user is skipped $ausgabe ');</script>");
-                    /* User should be skipped. (Does not match filter) */
-                    continue;
-                }
-            }
-            if (!empty($this->filter['flt_participant_gender'])) {
-
-                $gender = $user->getGender();
-                $filterGender = $this->filter['flt_participant_gender'];
-
-
-                /* Simulate MySQL LIKE operator */
-                if (false === strstr($gender, $filterGender)) {
-                    echo("<script>console.log('PHP: user is skipped gender ');</script>");
-
-                    /* User should be skipped. (Does not match filter) */
-                    continue;
-                }
-            }
-            echo("<script>console.log('PHP: fetchUI $testString ');</script>");
-            $users[$row['usr_id']] = $user;
-        }
-        $test = count($users);
-        echo("<script>console.log('PHP: fetchUI items count $test ');</script>");
-        return $users;
-    }
+    
 
     /**
      *    Get a CSS class name by the result
@@ -345,126 +263,330 @@ class rankGui extends ilMappedTableGUI {
         );
     }
 
-    /**
-     *    Sort the array of users by their full name.
-     *
-     *    This method had to be implemented in order to sort
-     *    the listed users by their full name. The overview
-     *    settings allows selecting participant groups rather
-     *    than users. This means the data fetched according
-     *    to a test overview, is the participant group's data.
-     *
-     * @params    array    $data    Array with 'cnt' & 'items' indexes.
-     *
-     * @param array $data
-     * @return array
-     */
-    protected function sortByFullName(array $data) {
-        $azList = array();
-        $sorted = array(
-            'cnt' => $data['cnt'],
-            'items' => array());
+    
 
-        /* Initialize partition array. */
-        for ($az = 'A'; $az <= 'Z'; $az++)
-            $azList[$az] = array();
+   
 
-        /* Partition data. */
-        foreach ($data['items'] as $userObj) {
-            $name = $userObj->getFullName();
-            $name = strtoupper($name);
-            $azList[$name{0}][] = $userObj;
-        }
+        
+   
 
-        /* Group all results. */
-        foreach ($azList as $az => $userList) {
-            if (!empty($userList))
-                $sorted['items'] = array_merge($sorted['items'], $userList);
-        }
+	
+	/**
+	 *    Format the fetched data.
+	 *
+	 *    This method is used internally to retrieve ilObjUser
+	 *    objects from participant group ids (ilObjCourse || ilObjGroup).
+	 *
+	 * @params    array    $data    array of IDs
+	 *
+	 * @param array $data
+	 * @throws OutOfRangeException
+	 * @return array
+	 */
+	protected function formatData ( array $data, $b=false )
+	{
+		/* For each group object we fetched, we need
+		   to retrieve the members in order to have
+		   a list of Participant. */
+		$formatted = array(
+			'items' => array(),
+			'cnt'	=> 0);
+		
+		
+		$index=0;
+                echo("<script>console.log('PHP: format data  ');</script>");
+		foreach ($data as $usrId)
+		{	
+                    echo("<script>console.log('PHP: format data  $usrId ');</script>");
+		$formatted['items'][$usrId] = $usrId;              	
+		$index++;
+		}
+                
+		$formatted['items'] = $this->fetchUserInformation($formatted['items']);
+                
+                 if($b==false){   
+                    return $this->sortByAveragePoints($formatted);
+                 }else
+                 {
+                    return $this->sortByFullName($formatted); 
+                 }
+	}
+	
+	public function fetchUserInformation($usr_ids)
+	{
+		global $ilDB,$tpl;
+		
+		$usr_id__IN__usrIds = $ilDB->in('usr_id', $usr_ids, false, 'integer');
+		
+		$query = "
+			SELECT usr_id, title, firstname, lastname, gender FROM usr_data WHERE $usr_id__IN__usrIds
+		";
+		
+		$res = $ilDB->query($query);
+		
+		$users = array();
+		
+		while( $row = $ilDB->fetchAssoc($res) )
+		{
+			$user = new ilObjUser();
+			$user->setId($row['usr_id']);
+			$user->setUTitle($row['title']);
+			$user->setFirstname($row['firstname']);
+			$user->setLastname($row['lastname']);
+			$user->setFullname();
+                        $user->setGender($row['gender']);
+                        
+                        if (! empty($this->filter['flt_group_name']))
+			{       
+                                echo("<script>console.log('PHP: Gruppen Filter 1 ');</script>");
+				$gname=$filter = $this->filter['flt_group_name']; 
+                                $mapper = new ilOverviewMapper();
+                                
+                                $overviewGroups =$this->getParentObject()->object->getParticipantGroups(TRUE)  ;
+                                foreach ($overviewGroups as $group) {
+                                //$groupID= $group->getId();
+                                //$object = ilObjectFactory::getInstanceByObjId($group);
+                                if(false === strstr($group->getTitle(),$gname))
+                                {
+                                    if(false ===ilObjGroup::_isMember($user->getId(),$group)){
+                                      /* User should be skipped. (Does not match filter) */
+					continue;  
+                                    }
+                                }   
+                                }
+                                echo("<script>console.log('PHP: Gruppen Filter 2 ');</script>");
+				
+                                
+			}
+                        
+                        
+                        
+			if (! empty($this->filter['flt_participant_name']))
+			{
+				$name   = strtolower($user->getFullName());
+				$filter = strtolower($this->filter['flt_participant_name']);
+                                  echo("<script>console.log('PHP: filter name $name ');</script>");
+                                  echo("<script>console.log('PHP: filter namefilter $filter ');</script>");
+				/* Simulate MySQL LIKE operator */
+				if (false === strstr($name, $filter))
+				{
+                                    $ausgabe=strstr($name, $filter);
+                                    echo("<script>console.log('PHP: user is skipped $ausgabe ');</script>");
+					/* User should be skipped. (Does not match filter) */
+					continue;
+				}
+			}
+                        if (! empty($this->filter['flt_participant_gender']))
+			{          
+                                
+				$gender   = $user->getGender();
+				$filterGender = $this->filter['flt_participant_gender'];
+                                
+                                 
+				/* Simulate MySQL LIKE operator */
+				if (false === strstr($gender,$filterGender))
+				{
+                                    echo("<script>console.log('PHP: user is skipped gender ');</script>");
+				
+					/* User should be skipped. (Does not match filter) */
+					continue;
+				}
+			}
+			echo("<script>console.log('PHP: fetchUI $testString ');</script>");
+			$users[ $row['usr_id'] ] = $user;
+                        
+		}
+		$test=count($users);
+                 echo("<script>console.log('PHP: fetchUI items count $test ');</script>");
+		return $users;
+	}
 
-        return $sorted;
-    }
+		
 
-    /**
-     *    Sort the array of users by their average points.
-     *
-     *    This method had to be implemented in order to sort
-     *    the listed users by their average points. The overview
-     *    settings allows selecting participant groups rather
-     *    than users. This means the data fetched according
-     *    to a test overview, is the participant group's data.
-     *
-     * @params    array    $data    Array with 'cnt' & 'items' indexes.
-     *
-     * @param array $data
-     * @return array
-     */
-    protected function sortByAveragePoints(array $data) {
-        global $ilDB, $tpl;
-        echo("<script>console.log('PHP: rank aufruf');</script>");
-        $this->getStudentsRanked($data);
-        $overviewMapper = $this->getMapper();
-        $rankList = array();
-        $sorted = array(
-            'cnt' => $data['cnt'],
-            'items' => array());
+	/**
+	 *    Sort the array of users by their full name.
+	 *
+	 *    This method had to be implemented in order to sort
+	 *    the listed users by their full name. The overview
+	 *    settings allows selecting participant groups rather
+	 *    than users. This means the data fetched according
+	 *    to a test overview, is the participant group's data.
+	 *
+	 * @params    array    $data    Array with 'cnt' & 'items' indexes.
+	 *
+	 * @param array $data
+	 * @return array
+	 */
+	protected function sortByFullName( array $data )
+	{
+		$azList = array();
+		$sorted = array(
+			'cnt'   => $data['cnt'],
+			'items' => array());
 
-        /* Initialize partition array. */
-        for ($rank = '1'; $rank <= count($data['items']); $rank++) {
-            $rankList[$rank] = array();
-        }
-        /* Partition data. */
-        foreach ($data['items'] as $userObj) {
-            $stdID = $userObj->getId();
-            $actualRank = $overviewMapper->getRankedStudent($this->getParentObject()->object->getId(), $stdID);
-            $rankList[$actualRank][] = $userObj;
-        }
+		/* Initialize partition array. */
+		for ($az = 'A'; $az <= 'Z'; $az++)
+			$azList[$az] = array();
 
-        /* Group all results. */
-        for ($rank = '1'; $rank <= count($rankList); $rank++) {
-            $userList = $rankList[$rank];
-            if (!empty($userList)) {
+		/* Partition data. */
+		foreach ($data['items'] as $userObj) {
+			$name = $userObj->getFullName();
+                        $name=strtoupper($name);
+			$azList[$name{0}][] = $userObj;
+		}
 
-                $sorted['items'] = array_merge($sorted['items'], $userList);
-            }
-        }
-        return $sorted;
-    }
+		/* Group all results. */
+		foreach ($azList as $az => $userList) {
+			if (! empty($userList))
+				$sorted['items'] = array_merge($sorted['items'], $userList);
+		}
 
-    /**
-     * Function to rank all students and save the result in the database
-     */
-    public function getStudentsRanked(array $data) {
-
-        $this->getMapper()->resetRanks($this->getParentObject()->object->getID());
-        foreach ($data['items'] as $userObj) {
-            $stdID = $userObj->getId();
-            $overview = $this->getParentObject()->object;
-            $results = array();
-
-            $overview = $this->getParentObject()->object;
-            $dataArray = $this->getMapper()->getUniqueExerciseId($overview->getID());
-            $results = array();
-
-            for ($index = 0; $index < count($dataArray); $index++) {
-                $obj_id = $dataArray[$index];
-
+		return $sorted;
+	}
+        
+        /**
+	 *    Sort the array of users by their average points.
+	 *
+	 *    This method had to be implemented in order to sort
+	 *    the listed users by their average points. The overview
+	 *    settings allows selecting participant groups rather
+	 *    than users. This means the data fetched according
+	 *    to a test overview, is the participant group's data.
+	 *
+	 * @params    array    $data    Array with 'cnt' & 'items' indexes.
+	 *
+	 * @param array $data
+	 * @return array
+	 */
+        protected function sortByAveragePoints(array $data )
+        {          
+            global $ilDB, $tpl;
+            $overviewMapper= $this->getMapper(); 
+            // array which contains the user information
+            $rankList = array();
+            // array which contains the sum of points
+            $sumList =array();
+	    $sorted = array(
+		'cnt'   => $data['cnt'],
+		'items' => array());
+                                     
+		/* Initialize partition array. */
+	    for ($rank = '1'; $rank <= count($data['items']); $rank++){
+                $rankList[$rank] = array();
+                $sumList[$rank] = array();
+             }
+             
+                $studentIndex=1;
+		/* Partition data. */
+		foreach ($data['items'] as $userObj) {
+                   
+                  $stdID = $userObj->getId();                  
+                  $overview= $this->getParentObject()->object;
+                  $dataArray=$this->getMapper()->getUniqueExerciseId($overview->getID());
+		  $results = array();
+                
+                for ($index = 0; $index < count($dataArray); $index++) {
+                $obj_id=$dataArray[$index];
                 $this->getMapper()->getExerciseName($obj_id);
-                $DbObject = $this->getMapper()->getArrayofObjects($overview->getID());
+                $DbObject = $this->getMapper()->getArrayofObjects($overview->getID());		
                 $mark = $this->getMapper()->getMark($stdID, $obj_id, $DbObject);
-                $result = $mark;
-                $results[] = $result;
+                
+                $result= $mark;
+	        $results[] = $result;
+                }
+		$sum = array_sum($results) ;
+                $rankList[$studentIndex ][] = $userObj;
+                $sumList[$studentIndex ][] =$sum;
+                $studentIndex++;
+                }
+                asort($sumList);
+                $arraySorted=array_keys($sumList);
+		/* Group all results. */
+		for ($i = '1'; $i <= count($rankList); $i++) {
+                    $position=array_pop($arraySorted);
+                    $userList=$rankList[$position];
+			if (! empty($userList)){
+                         $sorted['items'] =  array_merge($sorted['items'], $userList);
+                        }
+		}
+		return $sorted;
+         }    
+         /**
+          * Function to rank all students and save the result in the database
+          */
+        public function getStudentsRanked()
+        {     echo("<script>console.log('PHP: filter EO Set Date Ranking ');</script>");
+            
+            if( $this->getExternalSegmentation() && $this->getExternalSorting() )
+		{
+			$this->determineOffsetAndOrder();
+		}
+		elseif( !$this->getExternalSegmentation() && $this->getExternalSorting() )
+		{
+			$this->determineOffsetAndOrder(true);
+		}
+		else
+		{
+			throw new ilException('invalid table configuration: extSort=false / extSegm=true');
+		}
+		
+		/* Configure query execution */
+		$params = array();
+		if( $this->getExternalSegmentation() )
+		{
+			$params['limit'] = $this->getLimit();
+			$params['offset'] = $this->getOffset();
+		}
+		if( $this->getExternalSorting() )
+		{
+			$params['order_field'] = $this->getOrderField();
+			$params['order_direction'] = $this->getOrderDirection();
+		}
 
+		$overview = $this->getParentObject()->object;
+		$filters  = array("overview_id" => $overview->getId()) + $this->filter;
 
+		/* Execute query. */
+                $data = $this->getMapper()->getUniqueUserId($overview->getID());
 
-                $average = array_sum($results);
-
-
-                $ilMapper = $this->getMapper();
-                $ilMapper->setData2Rank($average, $stdID, $this->getParentObject()->object->getId());
-            }
+                if( !count($data) && $this->getOffset() > 0) {
+			/* Query again, offset was incorrect. */
+                $this->resetOffset();
+	        $data = $this->getMapper()->getUniqueUserId($overview->getID());
         }
-    }
+
+		/* Post-query logic. Implement custom sorting or display
+		   in formatData overload. */
+		$data = $this->formatData($data,$sorting);
+            
+        
+         $this->getMapper()->resetRanks($this->getParentObject()->object->getID());
+         foreach ($data['items'] as $userObj) 
+         {   
+            $stdID = $userObj->getId();  
+            $overview= $this->getParentObject()->object;
+            $dataArray=$this->getMapper()->getUniqueExerciseId($overview->getID());
+	    $results = array();
+                
+                for ($index = 0; $index < count($dataArray); $index++) {
+                $obj_id=$dataArray[$index];
+                $this->getMapper()->getExerciseName($obj_id);
+                $DbObject = $this->getMapper()->getArrayofObjects($overview->getID());		
+                $mark = $this->getMapper()->getMark($stdID, $obj_id, $DbObject);
+                $result= $mark;
+	        $results[] = $result;
+                 }
+		$average = array_sum($results) ;
+		$ilMapper = $this->getMapper();
+                $ilMapper->setData2Rank($average, $stdID,$this->getParentObject()->object->getId());    
+                
+
+            }
+                                              
+            $this->getMapper()->createDate($this->getParentObject()->object->getId());
+        }
+
+    
 
     /**
      * @param string $a_text
@@ -510,6 +632,7 @@ class rankGui extends ilMappedTableGUI {
                 $this->tpl->setCurrentBlock("tbl_header_no_link");
                 if ($column["width"] != "") {
                     $this->tpl->setVariable("TBL_COLUMN_WIDTH_NO_LINK", " width=\"" . $column["width"] . "\"");
+
                 }
                 if (!$column["is_checkbox_action_column"]) {
                     $this->tpl->setVariable("TBL_HEADER_CELL_NO_LINK", $column["text"]);

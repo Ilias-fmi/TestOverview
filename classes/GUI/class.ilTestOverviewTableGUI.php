@@ -486,48 +486,25 @@ class ilTestOverviewTableGUI
         protected function sortByAveragePoints(array $data )
         {          
             global $ilDB, $tpl;
-            echo("<script>console.log('PHP: rank aufruf');</script>");
-                $this->getStudentsRanked($data);
-            $overviewMapper= new ilOverviewMapper();           
+            $overviewMapper= new ilOverviewMapper();   
+	    $overview = $this->getParentObject()->object;
             $rankList = array();
 		$sorted = array(
 			'cnt'   => $data['cnt'],
 			'items' => array());
                                      
-		/* Initialize partition array. */
-		for ($rank = '1'; $rank <= count($data['items']); $rank++)
-                     $rankList[$rank] = array();
-                
-		/* Partition data. */
-		foreach ($data['items'] as $userObj) {
-                  $stdID = $userObj->getId();                  
-                  $actualRank = $overviewMapper->getRankedStudent($this->getParentObject()->object->getId(),$stdID );
-                  $rankList[$actualRank ][] = $userObj;
-		}
+            /* Initialize partition array. */
+            for ($rank = '1'; $rank <= count($data['items']); $rank++)
+            {
+                    $rankList[$rank] = array();
+            }
+            //calculating average points
+            $studentIndex=1;
+            foreach ($data['items'] as $userObj)
+            {    
+            $stdID= $userObj->getId();   
+	    $results = array();
 
-		/* Group all results. */
-		for ($rank = '1'; $rank <= count($rankList); $rank++) {
-                    $userList=$rankList[$rank];
-			if (! empty($userList)){
-                            
-				$sorted['items'] = array_merge($sorted['items'], $userList);
-                        }
-		}
-		return $sorted;
-         }    
-         /**
-          * Function to rank all students and save the result in the database
-          */
-        public function getStudentsRanked(array $data)
-        {
-        $this->getmapper()->resetRanks($this->getParentObject()->object->getID());
-         foreach ($data['items'] as $userObj) 
-         {   
-            $stdID = $userObj->getId();  
-            $overview= $this->getParentObject()->object;
-            $results = array();
-               
-					
 		foreach ($overview->getUniqueTests() as $obj_id => $refs)
 		{
                       	$test = $overview->getTest($obj_id);
@@ -555,10 +532,124 @@ class ilTestOverviewTableGUI
 		    {
 			$average = 0;
 		    }
+            }
+            $rankList[$studentIndex ][] = $userObj;
+            $sumList[$studentIndex ][] =$average;
+            $studentIndex++;            
+            asort($sumList);
+            $arraySorted=array_keys($sumList);
+            }     
+		/* Group all results. */
+		for ($i = '1'; $i <= count($rankList); $i++) {
+                    $position=array_pop($arraySorted);
+                    $userList=$rankList[$position];
+			if (! empty($userList)){
+                         $sorted['items'] =  array_merge($sorted['items'], $userList);
+                }
+                
+              }
+              return $sorted;
+         }    
+         /**
+          * Function to rank all students and save the result in the database
+          */
+        public function getStudentsRanked()
+        {
+            
+            
+            
+		if( $this->getExternalSegmentation() && $this->getExternalSorting() )
+		{
+			$this->determineOffsetAndOrder();
+		}
+		elseif( !$this->getExternalSegmentation() && $this->getExternalSorting() )
+		{
+			$this->determineOffsetAndOrder(true);
+		}
+		else
+		{
+			throw new ilException('invalid table configuration: extSort=false / extSegm=true');
+		}
+		
+		/* Configure query execution */
+		$params = array();
+		if( $this->getExternalSegmentation() )
+		{
+			$params['limit'] = $this->getLimit();
+			$params['offset'] = $this->getOffset();
+		}
+		if( $this->getExternalSorting() )
+		{
+			$params['order_field'] = $this->getOrderField();
+			$params['order_direction'] = $this->getOrderDirection();
+		}
+
+		$overview = $this->getParentObject()->object;
+		$filters  = array("overview_id" => $overview->getId()) + $this->filter;
+
+		/* Execute query. */
+        $data = $this->getMapper()
+				     ->getList($params, $filters);
+
+        if( !count($data['items']) && $this->getOffset() > 0) {
+	    /* Query again, offset was incorrect. */
+            $this->resetOffset();
+	    $data = $this->getMapper()
+					     ->getList($params, $filters);
+        }
+
+		/* Post-query logic. Implement custom sorting or display
+		   in formatData overload. */
+		$data = $this->formatData($data);
+          
+            
+        $this->getmapper()->resetRanks($this->getParentObject()->object->getID());
+         foreach ($data['items'] as $userObj) 
+         {   
+            $stdID = $userObj->getId();  
+            $overview= $this->getParentObject()->object;
+            $results = array();
+               
+					
+		foreach ($overview->getUniqueTests() as $obj_id => $refs)
+		{
+                      	$test = $overview->getTest($obj_id);
+                        $endingTime=(float)$test->getEndingTime();
+                        $timestamp = time();
+                        $datum = (float) date("YmdHis", $timestamp);
+                        
+                        if($datum-$endingTime>0){
+			$activeId  = $test->getActiveIdOfUser($stdID);	
+                        $result=$progress = null;
+			$result = $test->getTestResult($activeId);
+                        $lpStatus = new ilLPStatus( $test->getId() );
+			$progress = $lpStatus->_lookupStatus($test->getId(), $stdID);
+			    if ((bool) $progress)
+			    {
+					$result		= sprintf("%.2f %%", (float) $result['pass']['percent'] * 100);
+					
+					$results[]  = $result;
+			    }
+			    else
+			    {
+			    $results[]  = 0;
+			    } 
+                                
+                     if (count($results))
+		    {
+			$average = (array_sum($results) / count($results));
+		    }
+		    else
+		    {
+			$average = 0;
+		    }
                     $ilMapper = $this->getMapper();
                     $ilMapper->setData2Rank($average, $stdID,$this->getParentObject()->object->getId());    
+                    }
+                
                 }
             }
+            $this->getMapper()->createDate($this->getParentObject()->object->getId());
         }
 	/**
 	 * @param string $a_text

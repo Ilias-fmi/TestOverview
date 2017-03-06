@@ -74,6 +74,7 @@ class ilMembershipMapper
 			"ua.usr_id = " . $this->db->quote($ilUser->getId(), 'integer'),);
 
 		if (! empty($filters['flt_grp_name'])) {
+                    echo("<script>console.log(' Filter Name Group ');</script>");
 			$conditions[] = sprintf(
 				"obd.title LIKE %s",
 				$this->db->quote("%" . $filters['flt_grp_name'] . "%", 'text'));

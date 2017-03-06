@@ -105,6 +105,8 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
                     case 'removeTests':
                     case 'addMemberships':
                     case 'removeMemberships':
+                         case 'addMembershipsEx':
+                    case 'removeMembershipsEx':
                     case 'exportRedirect':    
                     case 'TestOverview':
                     case 'ExerciseOverview':
@@ -128,6 +130,8 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
                     case 'applyGroupsFilter':
                     case 'resetOverviewFilter':
                     case 'resetTestsFilter':
+                    case 'applyGroupsFilterEx':
+                    case 'resetGroupsFilterEx':
                     case 'resetGroupsFilter':
                     case 'applyExerciseFilter':    
                     case 'resetExerciseFilter':
@@ -138,6 +142,8 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
                     case 'triggerExport':
                     case 'allLocalTests':
                     case 'UserResults':
+                    case 'updateStudentView':   
+                    case 'updateStudentViewEO':    
                     case 'showRanking':  
                         $this->checkPermission('read');
                         $this->UserResults();
@@ -150,8 +156,6 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
                         $this->$cmd();
                         break;
                 }
-
-
                 break;
         }
         $this->addHeaderAction();
@@ -239,6 +243,7 @@ protected function showContent()
                 $data = array_slice($table-> getData(), $table->getOffset(), $table->getLimit());
 		$tpl->setContent( $table->getHTML());
                 $ilToolbar->addButton($this->txt('order_ranking'), $ilCtrl->getLinkTarget($this,'showRanking'));
+                $ilToolbar->addButton("Update Ranking",$ilCtrl->getLinkTarget($this,'updateStudentView'));
 	}
         protected function showRanking()
 	{		/**
@@ -268,9 +273,26 @@ protected function showContent()
 		$tpl->setContent( $table->getHTML());
                 $table->getData();
                 $ilToolbar->addButton($this->txt('orderName'), $ilCtrl->getLinkTarget($this,'showContent'));
-                }
-        
+                $ilToolbar->addButton("Update Ranking",$ilCtrl->getLinkTarget($this,'updateStudentView'));
+             }
+        /**
+         * This method is called to update the ranking of the User Result Tab.
+         * This method updates Test- and Exercise- Overview.  
+         * 
+         * @param type $view
+         */
 	
+        protected function updateStudentView() {
+        global $ilCtrl;
+		$this->includePluginClasses(array(
+			"ilTestOverviewTableGUI",
+			"ilOverviewMapper"));
+        $ilMapper = new ilOverviewMapper();
+        $table = new ilTestOverviewTableGUI( $this, 'updateStudentView' );
+        $table->setMapper($ilMapper);
+        $table->getStudentsRanked(); 
+        $ilCtrl->redirect($this, 'showContent');
+        }    
 
     /**
      * 	Render the settings page.
@@ -327,23 +349,7 @@ protected function showContent()
     
     protected function TestOverview() {
         global $tpl, $ilTabs, $ilCtrl,$ilToolbar;
-        $this->subTabs('Test');
-        $ilTabs->activateTab('TestOverview');
-        //$ilTabs->activateSubTab('subTabTO');
-        $ilTabs->activateSubTab('content');
-        $this->includePluginClasses(array(
-            "ilTestOverviewTableGUI",
-            "ilOverviewMapper"));
-
-        /* Configure content UI */
-        $table = new ilTestOverviewTableGUI($this, 'showContent');
-        $table->setMapper(new ilOverviewMapper)
-                ->populate();
-        /* Populate template */
-        $tpl->setDescription($this->object->getDescription());
-        $data = array_slice($table->getData(), $table->getOffset(), $table->getLimit());
-        $tpl->setContent($table->getHTML());
-        $ilToolbar->addButton($this->txt('order_ranking'), $ilCtrl->getLinkTarget($this,'showRanking'));
+        $this->showContent();
    }
 
     protected function subTabTO() {
@@ -438,7 +444,6 @@ protected function showContent()
         $this->subTabs("Exercise");
         $ilTabs->activateTab('ExerciseOverview');
         $ilTabs->activateSubTab('subTabEO'); 
-        //$tpl->setContent("ranking stuff");
         require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
                         ->getDirectory() . '/classes/GUI/class.ilMappedTableGUI.php';
         require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
@@ -452,7 +457,9 @@ protected function showContent()
 	$tpl->setDescription($this->object->getDescription());
         $data = array_slice($table-> getData(), $table->getOffset(), $table->getLimit());
 	$tpl->setContent( $table->getHTML());
-    }
+        $ilToolbar->addButton($this->txt('order_ranking'), $ilCtrl->getLinkTarget($this,'subTabEORanking'));
+        $ilToolbar->addButton("update Ranking", $ilCtrl->getLinkTarget($this,'updateStudentViewEO')); 
+         }
 
     protected function subTabEO1() {
         global $tpl, $ilTabs, $ilCtrl, $ilToolbar;
@@ -482,7 +489,7 @@ protected function showContent()
       global $tpl, $ilTabs, $ilCtrl, $ilToolbar;
         $this->subTabs("Exercise");
         $ilTabs->activateTab('ExerciseOverview');
-        $ilTabs->activateSubTab('subTabEORanking'); 
+        $ilTabs->activateSubTab('subTabEO'); 
         //$tpl->setContent("ranking stuff");
         require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
                         ->getDirectory() . '/classes/GUI/class.ilMappedTableGUI.php';
@@ -491,16 +498,32 @@ protected function showContent()
         require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
                         ->getDirectory() . '/classes/mapper/class.ilExerciseMapper.php';
         $ilExerciseMapper =new ilExerciseMapper;                
-        $table = new rankGUI( $this, 'subTabEORanking' );
+        $table = new rankGUI( $this, 'subTabEO' );
 	$table->setMapper($ilExerciseMapper)->populateE(false);
 	/* Populate template */
 	$tpl->setDescription($this->object->getDescription());
         $data = array_slice($table-> getData(), $table->getOffset(), $table->getLimit());
 	$tpl->setContent( $table->getHTML());
-                
-        
+        $ilToolbar->addButton($this->txt('orderName'), $ilCtrl->getLinkTarget($this,'subTabEO')); 
+        $ilToolbar->addButton("update Ranking", $ilCtrl->getLinkTarget($this,'updateStudentViewEO'));   
+          }
+          
+     protected function updateStudentViewEO() {
+         global $ilCtrl;
+          require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
+                        ->getDirectory() . '/classes/GUI/class.ilMappedTableGUI.php';
+        require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
+                        ->getDirectory() . '/classes/GUI/class.rankGui.php';
+        require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
+                        ->getDirectory() . '/classes/mapper/class.ilExerciseMapper.php';
+        $ilExerciseMapper =new ilExerciseMapper;                
+        $table = new rankGUI( $this, 'updateStudentViewEO' );
+        $table->setMapper($ilExerciseMapper);
+        echo("<script>console.log('PHP: UPDATE STUDENT VIEW');</script>");
+	$table->getStudentsRanked();   
+        echo("<script>console.log('PHP: UPDATE STUDENT VIEW');</script>");
+        $ilCtrl->redirect($this, 'subTabEO');  
     }
-    
     protected function subTabs($type) {
         global $ilTabs, $ilCtrl;
         switch ($type) {
@@ -508,7 +531,6 @@ protected function showContent()
                 $ilTabs->addSubTab('subTabEO', $this->txt("exercise_overview"), $ilCtrl->getLinkTarget($this, 'subTabEO'));
                 $ilTabs->addSubTab('subTabEO1', $this->txt("diagram"), $ilCtrl->getLinkTarget($this, 'subTabEO1'));
                 $ilTabs->addSubTab('subTabEO2', $this->txt("exercise_administration"), $ilCtrl->getLinkTarget($this, 'subTabEO2'));
-                $ilTabs->addSubTab('subTabEORanking',$this->txt('ranking'),$ilCtrl->getLinkTarget($this,'subTabEORanking'));                
                 break;
 
             case 'Test':
@@ -1146,7 +1168,7 @@ protected function showContent()
         $this->includePluginClasses(array(
             "ilMembershipListTableGUI",
             "ilMembershipMapper"));
-        $testList = new ilMembershipListTableGUI($this, 'subTabTo2');
+        $testList = new ilMembershipListTableGUI($this, 'subTabTO2');
         $testList->setMapper(new ilMembershipMapper)
                 ->populate();
         return $testList;

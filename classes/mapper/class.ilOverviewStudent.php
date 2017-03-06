@@ -98,16 +98,18 @@ class studentMapper {
         $ilOverviewMapper = new ilOverviewMapper();
         $rank=$ilOverviewMapper->getRankedStudent($overviewId, $studId);
         $count=$ilOverviewMapper->getCount($overviewId);
+        $date =$ilOverviewMapper->getDate($overviewId); 
         if(!$rank=='0'){
-          $tpl->setVariable("toRanking",$lng->txt('tests')." ".$rank." ".$lng->txt('of')." ".$count);  
+          $tpl->setVariable("toRanking",$lng->txt('tests')." ".$rank." ".$lng->txt('of')." ".$count." last update: ".$date);  
         }else{
         $tpl->setVariable("toRanking",$lng->txt('tests')." - ".$lng->txt('links_not_available'));
         }
         $ilExerciseMapper= new ilExerciseMapper();
         $rank=$ilExerciseMapper->getRankedStudent($overviewId, $studId);
         $count=$ilExerciseMapper->getCount($overviewId);
+        $date =$ilExerciseMapper->getDate($overviewId); 
         if(!$rank=='0'){
-        $tpl->setVariable("eoRanking",$lng->txt('excs')." - ".$rank." ".$lng->txt('of')." ".$count);
+        $tpl->setVariable("eoRanking",$lng->txt('excs')." - ".$rank." ".$lng->txt('of')."  ".$count." last update: ".$date);
          }else{
         $tpl->setVariable("eoRanking",$lng->txt('excs')." - ".$lng->txt('links_not_available'));
         }
