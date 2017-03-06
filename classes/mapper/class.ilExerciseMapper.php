@@ -322,5 +322,62 @@ class ilExerciseMapper extends ilDataMapper {
              return $count; 
         } 
 
+        public function createDate($o_id)
+        {   
+            global $ilDB;
+            $timestamp = time();
+            $datum = (float) date("YmdHis", $timestamp);
+            
+             $query=
+                            "REPLACE INTO 
+                                    rep_robj_xtov_rankdate (rankdate, otype,o_id)
+                            Values
+                                    ($datum,'eo',$o_id);";
+                      $this->db->query($query); 
+            
+        }
+        
+         public function getDate($o_id)
+         {
+             global $ilDB;
+             $query=
+                 "SELECT rankdate FROM `rep_robj_xtov_rankdate` WHERE o_id=$o_id AND otype='eo'"
+			   ;
+            
+            $result= $this->db->query($query);
+            
+            $result= $this->db->query($query);
+            $rankDate=array();
+            
+             while($date= $ilDB ->fetchAssoc ($result) ){
+             $rankDate=$date['rankdate']; 
+               
+             }
+             
+             return $rankDate;
+             
+         }   
+        /**
+	 *	Get pairs of Participants groups
+	 *
+	 *	This method can be used to list groups in a
+	 *	HTML <select>. The index in the returned array
+	 *	corresponds to the groups' obj_id and the value
+	 *	is the groups' title.
+	 *
+	 *	@param	integer	$overviewId
+	 *	@return array	Where index = obj_id and value = group title
+	 */
+	public function getGroupPairs($overviewId)
+	{
+		$pairs   = array();
+		$rawData = $this->getList(array(), array("overview_id" => $overviewId));
+		foreach ($rawData['items'] as $item) {
+			$object = ilObjectFactory::getInstanceByObjId($item->obj_id, false);
+			$pairs[$item->obj_id] = $object->getTitle();
+		}
+
+		return $pairs;
+	}
 }
 ?> 

@@ -104,19 +104,17 @@ abstract class ilMappedTableGUI extends ilTable2GUI
 		$filters  = array("overview_id" => $overview->getId()) + $this->filter;
 
 		/* Execute query. */
-        $data = $this->getMapper()->getUniqueUserId($overview->getID());
+                $data = $this->getMapper()->getUniqueUserId($overview->getID());
 
-        if( !count($data) && $this->getOffset() > 0) {
+                if( !count($data) && $this->getOffset() > 0) {
 			/* Query again, offset was incorrect. */
-            $this->resetOffset();
+                $this->resetOffset();
 	        $data = $this->getMapper()->getUniqueUserId($overview->getID());
         }
 
 		/* Post-query logic. Implement custom sorting or display
 		   in formatData overload. */
 		$data = $this->formatData($data,$sorting);
-                $datacount=count($data);
-                echo("<script>console.log('PHP: vor buildtable $datacount');</script>");
 		$this->setData( $this->buildTableRowsArray($data['items']) );
 		
  		if( $this->getExternalSegmentation() )
@@ -237,9 +235,9 @@ abstract class ilMappedTableGUI extends ilTable2GUI
 				     ->getList($params, $filters);
 
         if( !count($data['items']) && $this->getOffset() > 0) {
-			/* Query again, offset was incorrect. */
+	    /* Query again, offset was incorrect. */
             $this->resetOffset();
-	        $data = $this->getMapper()
+	    $data = $this->getMapper()
 					     ->getList($params, $filters);
         }
 

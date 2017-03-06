@@ -237,3 +237,30 @@ $ilDB->addPrimaryKey('rep_robj_xtov_eorank', array('stud_id','eo_id'));
 
 
  ?>
+<#9>
+<?php
+$fields_rankdate = array(
+        'rankdate' => array(
+			'type' => 'date',			
+			'notnull' => false
+		),
+        'otype' => array(
+		'type'    => 'text',
+		'length'  => 2,
+		'notnull' => true,
+		'default' => "-"    
+	),
+        
+        'o_id' => array(
+		'type'    => 'integer',
+		'length'  => 4,
+		'notnull' => true,
+		'default' => 0    
+	),
+);
+
+$ilDB->createTable('rep_robj_xtov_rankdate', $fields_rankdate);
+$ilDB->addPrimaryKey('rep_robj_xtov_rankdate', array('otype','o_id'));
+
+
+ ?>

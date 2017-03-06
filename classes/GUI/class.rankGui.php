@@ -68,8 +68,6 @@ extends ilMappedTableGUI
                 $dataArray=$excMapper->getUniqueExerciseId($overview->getID());
                 for ($index = 0; $index < count($dataArray); $index++) {
                 $obj_id=$dataArray[$index];
-//		foreach( $excMapper->getUniqueExerciseId($overview->getID()) as $obj_id => $refs )
-//		{
 			
                         $this->addColumn( $excMapper->getExerciseName($obj_id),$ilCtrl->getLinkTargetByClass('ilobjtestgui', 'infoScreen'));
                         
@@ -79,7 +77,6 @@ extends ilMappedTableGUI
 		$plugin = ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview');
 		$this->setRowTemplate('tpl.test_overview_row.html', $plugin->getDirectory());
 		$this->setDescription($this->lng->txt("rep_robj_xtov_test_overview_description"));
-
 		$cssFile = $plugin->getDirectory() . "/templates/css/testoverview.css";
 		$tpl->addCss($cssFile);
 
@@ -114,29 +111,29 @@ extends ilMappedTableGUI
          /* Martins code gender filter ende */
         
 		/* Configure participant group name filter (select) */
-//		$mapper = new ilOverviewMapper;
-//		$groups = $mapper->getGroupPairs($this->getParentObject()->object->getId());
-//		$groups = array("" => "-- Select --") + $groups;
-//
-//		$gname = new ilSelectInputGUI($this->lng->txt("rep_robj_xtov_overview_flt_group_name"), 'flt_group_name');
-//		$gname->setOptions($groups);
+		$mapper = new ilOverviewMapper();
+		$groups = $mapper->getGroupPairs($this->getParentObject()->object->getId());
+		$groups = array("" => "-- Select --") + $groups;
+
+		$gname = new ilSelectInputGUI($this->lng->txt("rep_robj_xtov_overview_flt_group_name"), 'flt_group_name');
+		$gname->setOptions($groups);
 
 		/* Configure filter form */
         $this->addFilterItem($pname);
- //       $this->addFilterItem($gname);        
+        $this->addFilterItem($gname);        
         /*Martins code gender filter*/
         $this->addFilterItem($pgender);
         $pgender->readFromSession();
         /*Martins code gender filter ende*/        
         $pname->readFromSession();
-     //   $gname->readFromSession();
+        $gname->readFromSession();
         /*martis code gender filter */
         $this->filter['flt_participant_gender'] = $pgender->getValue();
         /* martins code ende*/
         $this->filter['flt_participant_name'] = $pname->getValue();
         $stringN=$pname->getValue();
         echo("<script>console.log('PHP: RANK NAME FILTER $stringN');</script>");
-       // $this->filter['flt_group_name']		  = $gname->getValue();
+        $this->filter['flt_group_name']		  = $gname->getValue();
     }
 
 	/**
@@ -163,10 +160,7 @@ extends ilMappedTableGUI
                     $mark = $this->getMapper()->getMark($row['member_id'], $obj_id, $DbObject);
 		    $result= $mark;
                     $memID=$obj_id;
-                    
-                    echo("<script>console.log('PHP: fill row mark $mark');</script>");
-		    $results[] = $result;
-		    $progress='2';
+                    $results[] = $result;
 		    $this->populateNoLinkCell($mark, "no-prem-result");
 			
 			
@@ -228,10 +222,10 @@ extends ilMappedTableGUI
 		
 		
 		$index=0;
-                echo("<script>console.log('PHP: format data 1 ');</script>");
+                echo("<script>console.log('PHP: format data  ');</script>");
 		foreach ($data as $usrId)
 		{	
-                    echo("<script>console.log('PHP: format data 2 $usrId ');</script>");
+                    echo("<script>console.log('PHP: format data  $usrId ');</script>");
 		$formatted['items'][$usrId] = $usrId;              	
 		$index++;
 		}
@@ -269,7 +263,32 @@ extends ilMappedTableGUI
 			$user->setLastname($row['lastname']);
 			$user->setFullname();
                         $user->setGender($row['gender']);
-                                           
+                        
+                        if (! empty($this->filter['flt_group_name']))
+			{       
+                                echo("<script>console.log('PHP: Gruppen Filter 1 ');</script>");
+				$gname=$filter = $this->filter['flt_group_name']; 
+                                $mapper = new ilOverviewMapper();
+                                
+                                $overviewGroups =$this->getParentObject()->object->getParticipantGroups(TRUE)  ;
+                                foreach ($overviewGroups as $group) {
+                                //$groupID= $group->getId();
+                                //$object = ilObjectFactory::getInstanceByObjId($group);
+                                if(false === strstr($group->getTitle(),$gname))
+                                {
+                                    if(false ===ilObjGroup::_isMember($user->getId(),$group)){
+                                      /* User should be skipped. (Does not match filter) */
+					continue;  
+                                    }
+                                }   
+                                }
+                                echo("<script>console.log('PHP: Gruppen Filter 2 ');</script>");
+				
+                                
+			}
+                        
+                        
+                        
 			if (! empty($this->filter['flt_participant_name']))
 			{
 				$name   = strtolower($user->getFullName());
@@ -419,31 +438,52 @@ extends ilMappedTableGUI
         protected function sortByAveragePoints(array $data )
         {          
             global $ilDB, $tpl;
-            echo("<script>console.log('PHP: rank aufruf');</script>");
-            $this->getStudentsRanked($data);
-            $overviewMapper= $this->getMapper();           
+            $overviewMapper= $this->getMapper(); 
+            // array which contains the user information
             $rankList = array();
-		$sorted = array(
-			'cnt'   => $data['cnt'],
-			'items' => array());
+            // array which contains the sum of points
+            $sumList =array();
+	    $sorted = array(
+		'cnt'   => $data['cnt'],
+		'items' => array());
                                      
 		/* Initialize partition array. */
-		for ($rank = '1'; $rank <= count($data['items']); $rank++){
-                     $rankList[$rank] = array();
-                }
+	    for ($rank = '1'; $rank <= count($data['items']); $rank++){
+                $rankList[$rank] = array();
+                $sumList[$rank] = array();
+             }
+             
+                $studentIndex=1;
 		/* Partition data. */
 		foreach ($data['items'] as $userObj) {
+                   
                   $stdID = $userObj->getId();                  
-                  $actualRank = $overviewMapper->getRankedStudent($this->getParentObject()->object->getId(),$stdID );
-                  $rankList[$actualRank ][] = $userObj;
+                  $overview= $this->getParentObject()->object;
+                  $dataArray=$this->getMapper()->getUniqueExerciseId($overview->getID());
+		  $results = array();
+                
+                for ($index = 0; $index < count($dataArray); $index++) {
+                $obj_id=$dataArray[$index];
+                $this->getMapper()->getExerciseName($obj_id);
+                $DbObject = $this->getMapper()->getArrayofObjects($overview->getID());		
+                $mark = $this->getMapper()->getMark($stdID, $obj_id, $DbObject);
+                
+                $result= $mark;
+	        $results[] = $result;
                 }
-
+		$sum = array_sum($results) ;
+                $rankList[$studentIndex ][] = $userObj;
+                $sumList[$studentIndex ][] =$sum;
+                $studentIndex++;
+                }
+                asort($sumList);
+                $arraySorted=array_keys($sumList);
 		/* Group all results. */
-		for ($rank = '1'; $rank <= count($rankList); $rank++) {
-                    $userList=$rankList[$rank];
+		for ($i = '1'; $i <= count($rankList); $i++) {
+                    $position=array_pop($arraySorted);
+                    $userList=$rankList[$position];
 			if (! empty($userList)){
-                            
-				$sorted['items'] = array_merge($sorted['items'], $userList);
+                         $sorted['items'] =  array_merge($sorted['items'], $userList);
                         }
 		}
 		return $sorted;
@@ -451,38 +491,75 @@ extends ilMappedTableGUI
          /**
           * Function to rank all students and save the result in the database
           */
-        public function getStudentsRanked(array $data)
-        {
+        public function getStudentsRanked()
+        {     echo("<script>console.log('PHP: filter EO Set Date Ranking ');</script>");
+            
+            if( $this->getExternalSegmentation() && $this->getExternalSorting() )
+		{
+			$this->determineOffsetAndOrder();
+		}
+		elseif( !$this->getExternalSegmentation() && $this->getExternalSorting() )
+		{
+			$this->determineOffsetAndOrder(true);
+		}
+		else
+		{
+			throw new ilException('invalid table configuration: extSort=false / extSegm=true');
+		}
+		
+		/* Configure query execution */
+		$params = array();
+		if( $this->getExternalSegmentation() )
+		{
+			$params['limit'] = $this->getLimit();
+			$params['offset'] = $this->getOffset();
+		}
+		if( $this->getExternalSorting() )
+		{
+			$params['order_field'] = $this->getOrderField();
+			$params['order_direction'] = $this->getOrderDirection();
+		}
+
+		$overview = $this->getParentObject()->object;
+		$filters  = array("overview_id" => $overview->getId()) + $this->filter;
+
+		/* Execute query. */
+                $data = $this->getMapper()->getUniqueUserId($overview->getID());
+
+                if( !count($data) && $this->getOffset() > 0) {
+			/* Query again, offset was incorrect. */
+                $this->resetOffset();
+	        $data = $this->getMapper()->getUniqueUserId($overview->getID());
+        }
+
+		/* Post-query logic. Implement custom sorting or display
+		   in formatData overload. */
+		$data = $this->formatData($data,$sorting);
+            
         
          $this->getMapper()->resetRanks($this->getParentObject()->object->getID());
          foreach ($data['items'] as $userObj) 
          {   
             $stdID = $userObj->getId();  
             $overview= $this->getParentObject()->object;
-            $results = array();
-               
-		$overview = $this->getParentObject()->object;
-                $dataArray=$this->getMapper()->getUniqueExerciseId($overview->getID());
-		$results = array();
+            $dataArray=$this->getMapper()->getUniqueExerciseId($overview->getID());
+	    $results = array();
                 
                 for ($index = 0; $index < count($dataArray); $index++) {
                 $obj_id=$dataArray[$index];
-
-                    $this->getMapper()->getExerciseName($obj_id);
-                    $DbObject = $this->getMapper()->getArrayofObjects($overview->getID());		
-                    $mark = $this->getMapper()->getMark($stdID, $obj_id, $DbObject);
-		    $result= $mark;
-		    $results[] = $result;
-				
-                                
-                     
-			$average = array_sum($results) ;
-		    
-		    
-                    $ilMapper = $this->getMapper();
-                    $ilMapper->setData2Rank($average, $stdID,$this->getParentObject()->object->getId());    
-                }
+                $this->getMapper()->getExerciseName($obj_id);
+                $DbObject = $this->getMapper()->getArrayofObjects($overview->getID());		
+                $mark = $this->getMapper()->getMark($stdID, $obj_id, $DbObject);
+                $result= $mark;
+	        $results[] = $result;
+                 }
+		$average = array_sum($results) ;
+		$ilMapper = $this->getMapper();
+                $ilMapper->setData2Rank($average, $stdID,$this->getParentObject()->object->getId());    
+                
             }
+                                              
+            $this->getMapper()->createDate($this->getParentObject()->object->getId());
         }
 	/**
 	 * @param string $a_text
@@ -633,7 +710,7 @@ extends ilMappedTableGUI
 		
 		foreach($data as $member)
 		{
-                    echo("<script>console.log('PHP: build tablerow');</script>");
+                    
                     if(!($member->getId()==null))
                         { 
 			$rows[] = array(

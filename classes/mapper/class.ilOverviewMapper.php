@@ -195,6 +195,40 @@ class ilOverviewMapper
                         
         }
         
+        public function createDate($o_id)
+        {   
+            global $ilDB;
+            $timestamp = time();
+            $datum = (float) date("YmdHis", $timestamp);
+            
+             $query=
+                            "REPLACE INTO 
+                                    rep_robj_xtov_rankdate (rankdate, otype,o_id)
+                            Values
+                                    ($datum,'to',$o_id);";
+                      $this->db->query($query); 
+            
+        }
+        
+         public function getDate($o_id)
+         {
+             global $ilDB;
+             $query=
+                 "SELECT rankdate FROM `rep_robj_xtov_rankdate` WHERE o_id=$o_id AND otype='to'"
+			   ;
+            
+            $result= $this->db->query($query);
+            $rankDate=array();
+            
+             while($date= $ilDB ->fetchAssoc ($result) ){
+             $rankDate=$date['rankdate']; 
+               
+             }
+             
+             return $rankDate;
+         }         
+        
+        
          public function getCount($id)
         {
            
