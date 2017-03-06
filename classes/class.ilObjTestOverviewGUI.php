@@ -40,18 +40,18 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
      * 	@return string
      */
     public function getAfterCreationCmd() {
-        return 'showContent';
+        global $ilAccess;
+        if($ilAccess->checkAccess('write', '', $this->object->getRefId())){
+        return 'UserResults';}
+        else{
+        return 'UserResults';}
     }
 
     /**
      * 	@return string
      */
     public function getStandardCmd() {
-        global $ilAccess;
-        if($ilAccess->checkAccess('write', '', $this->object->getRefId())){
-        return 'TestOverview';}
-        else{
-        return 'UserResults';}
+        return 'UserResults';
     }
 
     /**
@@ -105,6 +105,8 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
                     case 'removeTests':
                     case 'addMemberships':
                     case 'removeMemberships':
+                    case 'addMembershipsEx':
+                    case 'removeMembershipsEx':
                     case 'exportRedirect':    
                     case 'TestOverview':
                     case 'ExerciseOverview':
@@ -126,9 +128,11 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
                     case 'subTabEORanking':    
                     case 'rights':
                     case 'applyGroupsFilter':
+                    case 'applyGroupsFIlterEx':
                     case 'resetOverviewFilter':
                     case 'resetTestsFilter':
                     case 'resetGroupsFilter':
+                    case 'resetGroupsFilterEx':
                     case 'applyExerciseFilter':    
                     case 'resetExerciseFilter':
                     case 'applyExerciseFilterRanking':    
@@ -1146,7 +1150,7 @@ protected function showContent()
         $this->includePluginClasses(array(
             "ilMembershipListTableGUI",
             "ilMembershipMapper"));
-        $testList = new ilMembershipListTableGUI($this, 'subTabTo2');
+        $testList = new ilMembershipListTableGUI($this, 'subTabTO2');
         $testList->setMapper(new ilMembershipMapper)
                 ->populate();
         return $testList;
