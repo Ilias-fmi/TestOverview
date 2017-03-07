@@ -72,7 +72,7 @@ class studentMapper {
         $excMapper = new ilExerciseMapper();
         $grades = $this->getExerciseMarks($studId, $overviewId);
         $totalGrade = 0;
-        
+
         foreach ($grades as $grade) {
             $gradeName = $excMapper->getExerciseName($grade->obj_id);
             $totalGrade += $grade->mark;
@@ -95,34 +95,36 @@ class studentMapper {
             $Prozentnum = (float) ($average / $maxPoints) * 100;
         }
         $lng->loadLanguageModule("crs");
-        $tpl->setVariable("averageMark",$lng->txt('rep_robj_xtov_average_mark'));
-        if(count($grades) > 0){
-        $tpl->setVariable("AverageMark",$totalGrade/count($grades));
+        $tpl->setVariable("averageMark", $lng->txt('rep_robj_xtov_average_mark'));
+
+        if (count($grades) > 0) {
+
+            $tpl->setVariable("AverageMark", $totalGrade / count($grades));
         }
-        $tpl->setVariable("totalMark",$lng->txt('rep_robj_xtov_total_mark'));
-        $tpl->setVariable("TotalMark",$totalGrade);
+        $tpl->setVariable("totalMark", $lng->txt('rep_robj_xtov_total_mark'));
+        $tpl->setVariable("TotalMark", $totalGrade);
 
         $tpl->setVariable("Average", round($Prozentnum, 2));
         /// ranking part /////
         $ilOverviewMapper = new ilOverviewMapper();
-        $rank=$ilOverviewMapper->getRankedStudent($overviewId, $studId);
-        $count=$ilOverviewMapper->getCount($overviewId);
-        $date =$ilOverviewMapper->getDate($overviewId); 
-        if(!$rank=='0'){
-          $tpl->setVariable("toRanking",$lng->txt('tests')." ".$rank." ".$lng->txt('of')." ".$count." last update: ".$date);  
-        }else{
-        $tpl->setVariable("toRanking",$lng->txt('tests')." - ".$lng->txt('links_not_available'));
+        $rank = $ilOverviewMapper->getRankedStudent($overviewId, $studId);
+        $count = $ilOverviewMapper->getCount($overviewId);
+        $date = $ilOverviewMapper->getDate($overviewId);
+        if (!$rank == '0') {
+            $tpl->setVariable("toRanking", $lng->txt('tests') . " " . $rank . " " . $lng->txt('of') . " " . $count . " last update: " . $date);
+        } else {
+            $tpl->setVariable("toRanking", $lng->txt('tests') . " - " . $lng->txt('links_not_available'));
         }
-        $ilExerciseMapper= new ilExerciseMapper();
-        $rank=$ilExerciseMapper->getRankedStudent($overviewId, $studId);
-        $count=$ilExerciseMapper->getCount($overviewId);
-        $date =$ilExerciseMapper->getDate($overviewId); 
-        if(!$rank=='0'){
-        $tpl->setVariable("eoRanking",$lng->txt('excs')." - ".$rank." ".$lng->txt('of')."  ".$count." last update: ".$date);
-         }else{
-        $tpl->setVariable("eoRanking",$lng->txt('excs')." - ".$lng->txt('links_not_available'));
+        $ilExerciseMapper = new ilExerciseMapper();
+        $rank = $ilExerciseMapper->getRankedStudent($overviewId, $studId);
+        $count = $ilExerciseMapper->getCount($overviewId);
+        $date = $ilExerciseMapper->getDate($overviewId);
+        if (!$rank == '0') {
+            $tpl->setVariable("eoRanking", $lng->txt('excs') . " - " . $rank . " " . $lng->txt('of') . "  " . $count . " last update: " . $date);
+        } else {
+            $tpl->setVariable("eoRanking", $lng->txt('excs') . " - " . $lng->txt('links_not_available'));
         }
-        
+
         return $tpl->get();
     }
 
@@ -156,8 +158,8 @@ class studentMapper {
         $result .= " %";
         return $result;
     }
-    
-    private function getTotalMark ($overviewId){
+
+    private function getTotalMark($overviewId) {
         
     }
 

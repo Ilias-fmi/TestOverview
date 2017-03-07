@@ -383,7 +383,7 @@ function buildExportFile()
                   JOIN
                     object_data obd ON obr.obj_id = obd.obj_id
                   WHERE
-                 obr.deleted IS NULL AND ua.usr_id = %s AND fa.assign = 'y' AND obd.type in ('grp') and t1.parent = %s";
+                 obr.deleted IS NULL AND ua.usr_id = %s AND fa.assign = 'y' AND obd.type in ('grp') AND t1.parent = %s";
         $result = $ilDB->queryF($query,
                                 array('integer', 'integer'),
                                 array($userID, $this->parentID));

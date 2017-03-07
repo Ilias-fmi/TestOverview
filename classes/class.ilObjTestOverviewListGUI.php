@@ -29,7 +29,7 @@ class ilObjTestOverviewListGUI
 		(
 			array(
 				'permission' => 'read',
-				'cmd'        => 'showContent',
+				'cmd'        => 'UserResults',
 				'default'    => true
 			),
 			array(
