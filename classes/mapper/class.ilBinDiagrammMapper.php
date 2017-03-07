@@ -306,16 +306,30 @@ class exerciseCharts {
         $this->diagramSize = $diagramSize;
         $this->overviewId = $overviewId;
         $this->sizeOfBucket = $sizeOfBucket;
+        $this->bucketsToSmall = false;
 
         require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
                         ->getDirectory() . '/classes/mapper/class.ilExerciseMapper.php';
         $excMapper = new ilExerciseMapper();
         $this->data = $excMapper->getTotalScores($overviewId);
         sort($this->data);
+        if (!(($this->getMaxValue() / $sizeOfBucket) <= 100)) {
+            $this->sizeOfBucket = $this->getMaxValue() / 100;
+            $this->bucketsToSmall = true;
+        }
         $this->fillArray();
         if ($this->diagramSize > 0 && !empty($this->data)) {
             $this->fillBuckets();
         }
+    }
+
+    function checkData() {
+        /* if ($this->getMaxValue / $this->sizeOfBucket > 100) {
+          return true;
+          } else {
+          return false;
+          } */
+        return ($this->getMaxValue / $this->sizeOfBucket);
     }
 
     function getMaxValue() {
@@ -341,6 +355,7 @@ class exerciseCharts {
         require_once 'Services/Chart/classes/class.ilChartSpider.php';
         require_once 'Services/Chart/classes/class.ilChartLegend.php';
         require_once 'Services/Chart/classes/class.ilChartDataPie.php';
+
         $chart = ilChart::getInstanceByType(ilChart::TYPE_GRID, 1);
         $chart->setsize(900, 400);
         $data = $chart->getDataInstance(ilChartGrid::DATA_BARS);
@@ -384,6 +399,9 @@ class exerciseCharts {
         }
         $chart->addData($data);
         $tpl->setVariable("diagram", $chart->getHTML());
+        if ($this->bucketsToSmall){
+        $tpl->setVariable("overSize", $lng->txt("rep_robj_xtov_bucketFail"));
+        }
         return $tpl->get();
         // return implode(";",$this-> buckets);
     }

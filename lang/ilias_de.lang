@@ -92,4 +92,5 @@ exercises_updated_success#:#Die Einstellungen wurden erfolgreich aktualisiert.
 avg_points#:#Durchschnittliche Punktzahl
 total_mark#:#Gesamt Note/Punkte
 average_mark#:#Durchschnittliche Note 
+bucketFail#:# Die gewählte Körnung(Granularität) ist zu klein. Die Unterteilung wurde in 100 Segmente festgelegt
 
