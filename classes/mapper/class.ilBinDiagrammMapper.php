@@ -312,9 +312,10 @@ class exerciseCharts {
                         ->getDirectory() . '/classes/mapper/class.ilExerciseMapper.php';
         $excMapper = new ilExerciseMapper();
         $this->data = $excMapper->getTotalScores($overviewId);
-        if (!empty($this->data)){
-        sort($this->data);
+        if (empty($this->data)){
+            $this->data =array();
         }
+        sort($this->data);
         if (!(($this->getMaxValue() / $sizeOfBucket) <= 100)) {
             $this->sizeOfBucket = $this->getMaxValue() / 100;
             $this->bucketsToSmall = true;
