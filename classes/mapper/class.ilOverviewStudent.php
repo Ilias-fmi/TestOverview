@@ -111,7 +111,7 @@ class studentMapper {
         $count = $ilOverviewMapper->getCount($overviewId);
         $date = $ilOverviewMapper->getDate($overviewId);
         if (!$rank == '0') {
-            $tpl->setVariable("toRanking", $lng->txt('tests') . " " . $rank . " " . $lng->txt('of') . " " . $count . " last update: " . $date);
+            $tpl->setVariable("toRanking",  $rank . " " . $lng->txt('Out of') . " " . $count . "<br> last update: " . $date);
         } else {
             $tpl->setVariable("toRanking", $lng->txt('tests') . " - " . $lng->txt('links_not_available'));
         }
@@ -120,7 +120,7 @@ class studentMapper {
         $count = $ilExerciseMapper->getCount($overviewId);
         $date = $ilExerciseMapper->getDate($overviewId);
         if (!$rank == '0') {
-            $tpl->setVariable("eoRanking", $lng->txt('excs') . " - " . $rank . " " . $lng->txt('of') . "  " . $count . " last update: " . $date);
+            $tpl->setVariable("eoRanking", $rank . " " . $lng->txt('Out of') . "  " . $count . "<br> last update: " . $date);
         } else {
             $tpl->setVariable("eoRanking", $lng->txt('excs') . " - " . $lng->txt('links_not_available'));
         }
