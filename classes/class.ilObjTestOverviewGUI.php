@@ -39,19 +39,14 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
      * 	@return string
      */
     public function getAfterCreationCmd() {
-        global $ilAccess;
-        if ($ilAccess->checkAccess('write', '', $this->object->getRefId())) {
-            return 'UserResults';
-        } else {
-            return 'UserResults';
-        }
+        return 'showContent';
     }
 
     /**
      * 	@return string
      */
     public function getStandardCmd() {
-        return 'UserResults';
+        return 'showContent';
     }
 
     /**
