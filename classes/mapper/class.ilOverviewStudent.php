@@ -31,6 +31,8 @@ class studentMapper {
         $lng->loadLanguageModule("common");
         $lng->loadLanguageModule("trac");
         $tpl->setCurrentBlock("head_row");
+        $tpl->setVariable("test",$lng->txt("rep_robj_xtov_testOverview"));
+        $tpl->setVariable("exercise",$lng->txt("rep_robj_xtov_ex_overview"));
         $tpl->setVariable("testTitle", $lng->txt("certificate_ph_testtitle"));
         $tpl->setVariable("score", $lng->txt("toplist_col_score"));
         $tpl->parseCurrentBlock();
@@ -113,7 +115,7 @@ class studentMapper {
         if (!$rank == '0') {
             $tpl->setVariable("toRanking",  $rank . " " . $lng->txt('Out of') . " " . $count . "<br> last update: " . $date);
         } else {
-            $tpl->setVariable("toRanking", $lng->txt('tests') . " - " . $lng->txt('links_not_available'));
+            $tpl->setVariable("toRanking",$lng->txt('links_not_available'));
         }
         $ilExerciseMapper = new ilExerciseMapper();
         $rank = $ilExerciseMapper->getRankedStudent($overviewId, $studId);
@@ -122,7 +124,7 @@ class studentMapper {
         if (!$rank == '0') {
             $tpl->setVariable("eoRanking", $rank . " " . $lng->txt('Out of') . "  " . $count . "<br> last update: " . $date);
         } else {
-            $tpl->setVariable("eoRanking", $lng->txt('excs') . " - " . $lng->txt('links_not_available'));
+            $tpl->setVariable("eoRanking", $lng->txt('links_not_available'));
         }
 
         return $tpl->get();

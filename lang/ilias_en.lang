@@ -1,6 +1,7 @@
 <!-- language file start -->
 obj_xtov#:#Test Overview
 objs_xtov#:#Test Overview
+testOverview#:#Test Overview
 obj_xtov_duplicate#:#Copy
 objs_xtov_duplicate#:#Copy Test Overviews
 xtov_add#:#Add Test Overview
@@ -21,6 +22,7 @@ properties#:#Settings
 edit_properties#:#Edit Settings
 TestOverview#:#TestOverview
 ExerciseOverview#:#ExerciseOverview
+ex_overview#:#Exercise Overview
 title#:#Title
 description#:#Description
 save#:#Save
