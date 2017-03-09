@@ -11,6 +11,7 @@ The overview itself should present a table matrix of users (rows), test/exercise
    1.1  mkdir -p Customizing/global/plugins/Services/Repository/RepositoryObject/
    1.2  cd Customizing/global/plugins/Services/Repository/RepositoryObject/
    1.3  git clone https://github.com/Ilias-fmi/TestOverview.git
+   ```
 2. Login to ILIAS with an administrator account (e.g. root)
 3. Select **Plugins** from the **Administration** main menu drop down.
 4. Search the **TestOverview** plugin in the list of plugin and choose **Activate** from the **Actions** drop down.
