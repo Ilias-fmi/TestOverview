@@ -20,9 +20,10 @@ The overview itself should present a table matrix of users (rows), test/exercise
 4. Search the **TestOverview** plugin in the list of plugin and choose **Update** and **Activate** from the **Actions** drop down.
 
 ##Manual
+This manual shows the main functions of the plugin and explains how to use them.
 
 ###Importing Test/Exercieses
-
+![Bild kann nicht geladen werden](https://raw.githubusercontent.com/Ilias-fmi/TestOverview/ReadMe_update-1/TestImport.png)
 ###Test/Exercise Diagrams
 
 ###Export
