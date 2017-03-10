@@ -23,7 +23,7 @@ The overview itself should present a table matrix of users (rows), test/exercise
 This manual shows the main functions of the plugin and explains how to use them.
 
 ###Importing Test/Exercieses
-![Bild kann nicht geladen werden](https://raw.githubusercontent.com/Ilias-fmi/TestOverview/ReadMe_update-1/TestImport.png)
+![Bild kann nicht geladen werden](https://raw.githubusercontent.com/Ilias-fmi/TestOverview/ReadMe_update-1/readMe/TestImport.png)
 ###Test/Exercise Diagrams
 
 ###Export
