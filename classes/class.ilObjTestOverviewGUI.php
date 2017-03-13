@@ -356,8 +356,8 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
         try {
             $Obj = new BinDiagrammMapper($this, 'showContent');
             $tpl->setContent($Obj->createAverageDia("BARS"));
-            $ilToolbar->addButton($this->txt("pie_chart"), $ilCtrl->getLinkTarget($this, 'testPieChart'));
-            $ilToolbar->addButton($this->txt("bar_chart"), $ilCtrl->getLinkTarget($this, 'subTabTO'));
+           // $ilToolbar->addButton($this->txt("pie_chart"), $ilCtrl->getLinkTarget($this, 'testPieChart'));
+            //$ilToolbar->addButton($this->txt("bar_chart"), $ilCtrl->getLinkTarget($this, 'subTabTO'));
         } catch (Exception $ex) {
             $tpl->setContent("Diagramm can not be Created");
         }
