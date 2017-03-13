@@ -32,6 +32,14 @@ Select your tests and click **Select**
 ###Test/Exercise Diagrams
 
 ###Export
+The export window of TestOverview looks like this.
+![Picture not available](https://github.com/Ilias-fmi/TestOverview/blob/ReadMe_update-1/readMe/export.png)
+It provides two generic ways to export the results of added tests and exercises; reduced and extended.
 
+The first entries of the resulting comma-seperated values file contains in each case the **names of the students** (lastname, firstname), their **matriculation number** (this is a field especially for the plugin-usage at University of Stuttgart), the **groups** they are members in (e.g. in the course the TestOverview object lies in), their **email-address** and **gender**.
+
+The first case, the **Reduced Format** lets the user export the *final* test- and exercise results of all users that participated in the added tests and exercises.
+
+The second case, the **Extended Format** additionally exports the results for all **subquestions** from tests and **assignments** from exercises.
 ### More Information
 [Ilias Feature Wiki Entry](http://www.ilias.de/docu/goto_docu_wiki_1357_Test_Overview.html)
