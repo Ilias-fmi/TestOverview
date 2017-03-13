@@ -39,7 +39,9 @@ With TestOverview it is possible to creat diagrams of the average results. For a
 
 ![Picture not available](https://github.com/Ilias-fmi/TestOverview/blob/ReadMe_update-1/readMe/TestDiagram_mit_pfeil.png)
 
-For a exercisediagram you have to enter a granularity. If your granularity is to small the diagramm is set to 100 buckets as a max size.
+For a exercisediagram you have to enter a granularity. If your granularity is to small the diagramm is set to 100 buckets as a max size. After click on **Make my Diagram** to render it.
+
+![Picture not available](https://github.com/Ilias-fmi/TestOverview/blob/ReadMe_update-1/readMe/exerciseDiagram.png)
 ###Export
 
 ### More Information
