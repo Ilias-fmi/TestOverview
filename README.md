@@ -7,8 +7,8 @@ The overview itself should present a table matrix of users (rows), test/exercise
 ## Installation Instructions
 1. Clone this repository to <ILIAS_DIRECTORY>/Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview
 
-1.1 Go to ilias root directory:
-   
+    1.1 Go to ilias root directory:
+
    ```bash
    1.2  mkdir -p Customizing/global/plugins/Services/Repository/RepositoryObject/
    1.3  cd Customizing/global/plugins/Services/Repository/RepositoryObject/
@@ -35,10 +35,11 @@ Now your able to see the results in the subtab **TestOverview**
 
 ![Picture not available](https://github.com/Ilias-fmi/TestOverview/blob/ReadMe_update-1/readMe/TO_table.png)
 ###Test/Exercise Diagrams
-With TestOverview it is possible to creat diagrams of the matrix results. For a testdiagram go to the subtab **Diagram** in the tab **TestOverview**
+With TestOverview it is possible to creat diagrams of the average results. For a testdiagram go to the subtab **Diagram** in the tab **TestOverview**.
 
 ![Picture not available](https://github.com/Ilias-fmi/TestOverview/blob/ReadMe_update-1/readMe/TestDiagram_mit_pfeil.png)
 
+For a exercisediagram you have to enter a granularity. If your granularity is to small the diagramm is set to 100 buckets as a max size.
 ###Export
 
 ### More Information
