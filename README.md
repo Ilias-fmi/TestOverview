@@ -35,6 +35,9 @@ Now your able to see the results in the subtab **TestOverview**
 
 ![Picture not available](https://github.com/Ilias-fmi/TestOverview/blob/ReadMe_update-1/readMe/TO_table.png)
 ###Test/Exercise Diagrams
+With TestOverview it is possible to creat diagrams of the matrix results. For a testdiagram go to the subtab **Diagram** in the tab **TestOverview**
+
+![Picture not available](https://github.com/Ilias-fmi/TestOverview/blob/ReadMe_update-1/readMe/TO_table.png)
 
 ###Export
 
