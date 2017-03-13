@@ -28,7 +28,12 @@ Go to the tab **Test Adminestration** and click on **Add tests to Overview**
 ![Picture not available](https://raw.githubusercontent.com/Ilias-fmi/TestOverview/ReadMe_update-1/readMe/TestImport.png)
 
 Select your tests and click **Select**
+
 ![Picture not available](https://github.com/Ilias-fmi/TestOverview/blob/ReadMe_update-1/readMe/TestImport2.png)
+
+Now your able to see the results in the subtab **TestOverview** 
+
+![Picture not available](https://github.com/Ilias-fmi/TestOverview/blob/ReadMe_update-1/readMe/TO_table.png)
 ###Test/Exercise Diagrams
 
 ###Export
