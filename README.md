@@ -52,5 +52,9 @@ The first entries of the resulting comma-seperated values file contains in each 
 The first case, the **Reduced Format** lets the user export the *final* test- and exercise results of all users that participated in the added tests and exercises.
 
 The second case, the **Extended Format** additionally exports the results for all **subquestions** from tests and **assignments** from exercises.
+### Permissions Management
+
+### User Panel
+
 ### More Information
 [Ilias Feature Wiki Entry](http://www.ilias.de/docu/goto_docu_wiki_1357_Test_Overview.html)
