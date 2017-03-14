@@ -5,6 +5,7 @@
  * 	@package	TestOverview repository plugin
  * 	@category	GUI
  * 	@author		Greg Saive <gsaive@databay.de>
+ *      @author         Jan Ruthardt <janruthardt@web.de>
  */
 require_once 'Services/Repository/classes/class.ilObjectPluginGUI.php';
 require_once 'Services/Form/classes/class.ilPropertyFormGUI.php';
@@ -355,7 +356,7 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
         try {
             $Obj = new BinDiagrammMapper($this, 'showContent');
             $tpl->setContent($Obj->createAverageDia("BARS"));
-           // $ilToolbar->addButton($this->txt("pie_chart"), $ilCtrl->getLinkTarget($this, 'testPieChart'));
+            // $ilToolbar->addButton($this->txt("pie_chart"), $ilCtrl->getLinkTarget($this, 'testPieChart'));
             //$ilToolbar->addButton($this->txt("bar_chart"), $ilCtrl->getLinkTarget($this, 'subTabTO'));
         } catch (Exception $ex) {
             $tpl->setContent("Diagramm can not be Created");

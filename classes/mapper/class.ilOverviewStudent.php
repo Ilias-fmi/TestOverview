@@ -1,6 +1,13 @@
 <?php
 
+/* Copyright (c) 1998-2012 ILIAS open source, Extended GPL, see docs/LICENSE */
+
 /**
+ * 	@package	TestOverview repository plugin
+ * 	@category	Core
+ * 	@author		Jan Ruthardt <janruthardt@web.de>
+ *  
+ *
  * DB Mapper for the Student View (User with only read Permissons)
  */
 class studentMapper {
@@ -31,8 +38,8 @@ class studentMapper {
         $lng->loadLanguageModule("common");
         $lng->loadLanguageModule("trac");
         $tpl->setCurrentBlock("head_row");
-        $tpl->setVariable("test",$lng->txt("rep_robj_xtov_testOverview"));
-        $tpl->setVariable("exercise",$lng->txt("rep_robj_xtov_ex_overview"));
+        $tpl->setVariable("test", $lng->txt("rep_robj_xtov_testOverview"));
+        $tpl->setVariable("exercise", $lng->txt("rep_robj_xtov_ex_overview"));
         $tpl->setVariable("testTitle", $lng->txt("certificate_ph_testtitle"));
         $tpl->setVariable("score", $lng->txt("toplist_col_score"));
         $tpl->parseCurrentBlock();
@@ -113,9 +120,9 @@ class studentMapper {
         $count = $ilOverviewMapper->getCount($overviewId);
         $date = $ilOverviewMapper->getDate($overviewId);
         if (!$rank == '0') {
-            $tpl->setVariable("toRanking",  $rank . " " . $lng->txt('Out of') . " " . $count . "<br> last update: " . $date);
+            $tpl->setVariable("toRanking", $rank . " " . $lng->txt('Out of') . " " . $count . "<br> last update: " . $date);
         } else {
-            $tpl->setVariable("toRanking",$lng->txt('links_not_available'));
+            $tpl->setVariable("toRanking", $lng->txt('links_not_available'));
         }
         $ilExerciseMapper = new ilExerciseMapper();
         $rank = $ilExerciseMapper->getRankedStudent($overviewId, $studId);

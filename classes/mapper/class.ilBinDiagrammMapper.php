@@ -1,14 +1,12 @@
 <?php
 
-/* Copyright (c) 1998-2010 ILIAS open source, Extended GPL, see docs/LICENSE */
+/* Copyright (c) 1998-2012 ILIAS open source, Extended GPL, see docs/LICENSE */
 
-
-/*
- * Class gets the Results in a String and Maps it to the Diagramms
- * @package	TestOverview repository plugin
- * 
+/**
+ * 	@package	TestOverview repository plugin
+ * 	@category	Core
+ * 	@author		Jan Ruthardt <janruthardt@web.de>
  */
-
 /* Dependencies : */
 require_once 'Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview/classes/GUI/class.ilTestOverviewTableGUI.php';
 require_once 'Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview/classes/mapper/class.ilOverviewMapper.php';
@@ -34,7 +32,7 @@ class BinDiagrammMapper extends ilTestOverviewTableGUI {
 
     /*
      * Gets the Data from every Student and there Testresults in a String saperated by "|"
-     * 
+     *
      */
 
     public function data() {
@@ -53,7 +51,7 @@ class BinDiagrammMapper extends ilTestOverviewTableGUI {
     }
 
     /**
-     * Gets 
+     * Gets
      * @param type $row
      * @return type
      */
@@ -178,7 +176,7 @@ class AverageDiagramm {
         } else if ($average > 90.00 && $average <= 100.00) {
             $this->buckets[9] ++;
         } else {
-            //last index checks vor errors 
+            //last index checks vor errors
             $this->buckets[10] ++;
         }
     }
@@ -275,7 +273,7 @@ class PieAverageDiagramm extends AverageDiagramm {
         } else if ($average > 90.00 && $average <= 100.00) {
             $this->buckets[9] ++;
         } else {
-            //last index checks vor errors 
+            //last index checks vor errors
             $this->buckets[10] ++;
         }
     }
@@ -290,7 +288,7 @@ class PieAverageDiagramm extends AverageDiagramm {
 
 /**
  * Creats a Bar diagramm for exercises.
- * The Bucketsize is calculatet by a given value from the user 
+ * The Bucketsize is calculatet by a given value from the user
  */
 class exerciseCharts {
 
@@ -312,8 +310,8 @@ class exerciseCharts {
                         ->getDirectory() . '/classes/mapper/class.ilExerciseMapper.php';
         $excMapper = new ilExerciseMapper();
         $this->data = $excMapper->getTotalScores($overviewId);
-        if (empty($this->data)){
-            $this->data =array();
+        if (empty($this->data)) {
+            $this->data = array();
         }
         sort($this->data);
         if (!(($this->getMaxValue() / $sizeOfBucket) <= 100)) {
@@ -402,8 +400,8 @@ class exerciseCharts {
         }
         $chart->addData($data);
         $tpl->setVariable("diagram", $chart->getHTML());
-        if ($this->bucketsToSmall){
-        $tpl->setVariable("overSize", $lng->txt("rep_robj_xtov_bucketFail"));
+        if ($this->bucketsToSmall) {
+            $tpl->setVariable("overSize", $lng->txt("rep_robj_xtov_bucketFail"));
         }
         return $tpl->get();
         // return implode(";",$this-> buckets);

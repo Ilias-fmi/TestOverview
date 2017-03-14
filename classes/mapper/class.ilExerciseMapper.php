@@ -1,5 +1,14 @@
 <?php
 
+/* Copyright (c) 1998-2012 ILIAS open source, Extended GPL, see docs/LICENSE */
+
+/**
+ * 	@package	TestOverview repository plugin
+ * 	@category	Core
+ * 	@author		Jan Ruthardt <janruthardt@web.de>
+ *  
+ *      Builds an Matrix of the Exercise Results
+ * */
 require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
                 ->getDirectory() . '/classes/mapper/class.ilDataMapper.php';
 
@@ -45,20 +54,17 @@ class ilExerciseMapper extends ilDataMapper {
 
         return $DbObject;
     }
+
     /**
      * Returns the name of a Exercise 
      */
     public function getExerciseName($exerciseID) {
         global $ilDB;
         $query = "SELECT title FROM object_data WHERE obj_id = %s";
-        $result = $ilDB->queryF($query, 
-                        array('integer'),
-                        array($exerciseID));
+        $result = $ilDB->queryF($query, array('integer'), array($exerciseID));
         $record = $ilDB->fetchAssoc($result);
         return $record['title'];
     }
-
-    
 
     /**
      * Gets the Name of an Student for the given Member ID
@@ -87,7 +93,7 @@ class ilExerciseMapper extends ilDataMapper {
         $tpl->setVariable("user", $lng->txt("eval_search_users"));
         $tpl->parseCurrentBlock();
         foreach ($tests as $test) {
-            $txt = "<th> <a href='ilias.php?ref_id=". $this->getRefId($test)."&cmd=showSummary&cmdClass=ilinfoscreengui&cmdNode=bb:au:7f&baseClass=ilExerciseHandlerGUI'>" . $this->getExerciseName($test) . "</th>";
+            $txt = "<th> <a href='ilias.php?ref_id=" . $this->getRefId($test) . "&cmd=showSummary&cmdClass=ilinfoscreengui&cmdNode=bb:au:7f&baseClass=ilExerciseHandlerGUI'>" . $this->getExerciseName($test) . "</th>";
             $tpl->setCurrentBlock("exercise_colum");
             $tpl->setVariable("colum", $txt);
             $tpl->parseCurrentBlock();
@@ -229,155 +235,135 @@ class ilExerciseMapper extends ilDataMapper {
 
         return $record['ref_id'];
     }
-    
-     /**
-         * This method is used to edit the ranking in the database 
-         * @param type $average
-         * @param type $studid
-         * @param type $toId
-         */
-        public function setData2Rank($average,$studid,$eoId)
-        {       	  $query=
-                            "REPLACE INTO 
+
+    /**
+     * This method is used to edit the ranking in the database 
+     * @param type $average
+     * @param type $studid
+     * @param type $toId
+     */
+    public function setData2Rank($average, $studid, $eoId) {
+        $query = "REPLACE INTO 
                                     rep_robj_xtov_eorank(stud_id, rank, eo_id)
                             Values
                                     ($studid,$average,$eoId);";
-                      $this->db->query($query); 
-                        
-        }
-        /**
-         * Delete all rankings for a TestOverview Object
-         * @param type $id
-         */
-        public function resetRanks($id)
-        {$query=
-                 "DELETE FROM `rep_robj_xtov_eorank` WHERE eo_id=$id" ;
-            $this->db->query($query); 
-        }       
-        /**
-         * Gets a list of students which is sorted by ranking
-         * @param type $id
-         * @return type
-         */
-        public function getRankedList($id)
-        {
-            $query=
-                 "SELECT stud_id FROM `rep_robj_xtov_eorank` WHERE eo_id=$id ORDER BY rank ASC "
-			   ;
-            
-            $result= $this->db->query($query);
-            //echo("<script>console.log('PHP: q ');</script>");
-             return  $result; 
-                        
-        }
-              
-        
-        /**
-         * Gets the ranking of a student
-         * @global type $ilDB
-         * @param type $id
-         * @param type $stdID
-         * @return int
-         */
-        
-        public function getRankedStudent($id,$stdID)
-        {
-            global $ilDB;
-            $rank=0;
-            $query=
-                 "SELECT stud_id FROM `rep_robj_xtov_eorank` WHERE eo_id=$id ORDER BY rank DESC "
-			   ;
-            
-            $result= $this->db->query($query);
-            $index=1;
-             while($student= $ilDB ->fetchAssoc ($result) ) 
-       {      
-                   if($student[stud_id]===$stdID){
-                   $rank=$index;
-                   break;
-               }
-               $index++;            
-            
-        }
-             return  $rank; 
-                        
-        }
-        
-         public function getCount($id)
-        {
-           
-             global $ilDB;
-            $count=0;
-            $query=
-                 "SELECT stud_id FROM `rep_robj_xtov_eorank` WHERE eo_id=$id "
-			   ;
-            
-            $result= $this->db->query($query);
-            while($data=$ilDB->fetchAssoc($result))
-            {
-                $count++;
-            }
-            //$count = count($data);
-             
-             return $count; 
-        } 
+        $this->db->query($query);
+    }
 
-        public function createDate($o_id)
-        {   
-            global $ilDB;
-            $timestamp = time();
-            $datum = (float) date("YmdHis", $timestamp);
-            
-             $query=
-                            "REPLACE INTO 
+    /**
+     * Delete all rankings for a TestOverview Object
+     * @param type $id
+     */
+    public function resetRanks($id) {
+        $query = "DELETE FROM `rep_robj_xtov_eorank` WHERE eo_id=$id";
+        $this->db->query($query);
+    }
+
+    /**
+     * Gets a list of students which is sorted by ranking
+     * @param type $id
+     * @return type
+     */
+    public function getRankedList($id) {
+        $query = "SELECT stud_id FROM `rep_robj_xtov_eorank` WHERE eo_id=$id ORDER BY rank ASC "
+        ;
+
+        $result = $this->db->query($query);
+        //echo("<script>console.log('PHP: q ');</script>");
+        return $result;
+    }
+
+    /**
+     * Gets the ranking of a student
+     * @global type $ilDB
+     * @param type $id
+     * @param type $stdID
+     * @return int
+     */
+    public function getRankedStudent($id, $stdID) {
+        global $ilDB;
+        $rank = 0;
+        $query = "SELECT stud_id FROM `rep_robj_xtov_eorank` WHERE eo_id=$id ORDER BY rank DESC "
+        ;
+
+        $result = $this->db->query($query);
+        $index = 1;
+        while ($student = $ilDB->fetchAssoc($result)) {
+            if ($student[stud_id] === $stdID) {
+                $rank = $index;
+                break;
+            }
+            $index++;
+        }
+        return $rank;
+    }
+
+    public function getCount($id) {
+
+        global $ilDB;
+        $count = 0;
+        $query = "SELECT stud_id FROM `rep_robj_xtov_eorank` WHERE eo_id=$id "
+        ;
+
+        $result = $this->db->query($query);
+        while ($data = $ilDB->fetchAssoc($result)) {
+            $count++;
+        }
+        //$count = count($data);
+
+        return $count;
+    }
+
+    public function createDate($o_id) {
+        global $ilDB;
+        $timestamp = time();
+        $datum = (float) date("YmdHis", $timestamp);
+
+        $query = "REPLACE INTO 
                                     rep_robj_xtov_rankdate (rankdate, otype,o_id)
                             Values
                                     ($datum,'eo',$o_id);";
-                      $this->db->query($query); 
-            
-        }
-        
-         public function getDate($o_id)
-         {
-             global $ilDB;
-             $query=
-                 "SELECT rankdate FROM `rep_robj_xtov_rankdate` WHERE o_id=$o_id AND otype='eo'"
-			   ;
-            
-            $result= $this->db->query($query);
-            
-            $result= $this->db->query($query);
-            $rankDate=array();
-            
-             while($date= $ilDB ->fetchAssoc ($result) ){
-             $rankDate=$date['rankdate']; 
-               
-             }
-             
-             return $rankDate;
-             
-         }   
-        /**
-	 *	Get pairs of Participants groups
-	 *
-	 *	This method can be used to list groups in a
-	 *	HTML <select>. The index in the returned array
-	 *	corresponds to the groups' obj_id and the value
-	 *	is the groups' title.
-	 *
-	 *	@param	integer	$overviewId
-	 *	@return array	Where index = obj_id and value = group title
-	 */
-	public function getGroupPairs($overviewId)
-	{
-		$pairs   = array();
-		$rawData = $this->getList(array(), array("overview_id" => $overviewId));
-		foreach ($rawData['items'] as $item) {
-			$object = ilObjectFactory::getInstanceByObjId($item->obj_id, false);
-			$pairs[$item->obj_id] = $object->getTitle();
-		}
+        $this->db->query($query);
+    }
 
-		return $pairs;
-	}
+    public function getDate($o_id) {
+        global $ilDB;
+        $query = "SELECT rankdate FROM `rep_robj_xtov_rankdate` WHERE o_id=$o_id AND otype='eo'"
+        ;
+
+        $result = $this->db->query($query);
+
+        $result = $this->db->query($query);
+        $rankDate = array();
+
+        while ($date = $ilDB->fetchAssoc($result)) {
+            $rankDate = $date['rankdate'];
+        }
+
+        return $rankDate;
+    }
+
+    /**
+     * 	Get pairs of Participants groups
+     *
+     * 	This method can be used to list groups in a
+     * 	HTML <select>. The index in the returned array
+     * 	corresponds to the groups' obj_id and the value
+     * 	is the groups' title.
+     *
+     * 	@param	integer	$overviewId
+     * 	@return array	Where index = obj_id and value = group title
+     */
+    public function getGroupPairs($overviewId) {
+        $pairs = array();
+        $rawData = $this->getList(array(), array("overview_id" => $overviewId));
+        foreach ($rawData['items'] as $item) {
+            $object = ilObjectFactory::getInstanceByObjId($item->obj_id, false);
+            $pairs[$item->obj_id] = $object->getTitle();
+        }
+
+        return $pairs;
+    }
+
 }
 ?> 
