@@ -179,16 +179,16 @@ function buildExportFile()
             $testID = $value['test_id'];
             $testName ="Test $tCounter";
             array_push($datarow, $testName);
-            $tCounter++;
             
             $questionIDs = $this->getQuestionID($testID);
             $qCounter = 1;
             //push a name for every subtask a test has into the headrow
             foreach ($questionIDs as $question) {
-                $questionName = $this->txt("qteil")." $qCounter";
+                $questionName = "Tst$tCounter- ".$this->txt("qteil")." $qCounter";
                 array_push($datarow, $questionName);
                 $qCounter++;
             }
+            $tCounter++;
         }
         //push a name of every exercise into headrow
         $eCounter = 1;
@@ -196,16 +196,17 @@ function buildExportFile()
             $exerciseID = $exvalue['obj_id'];
             $exName = "Exercise $eCounter";
             array_push($datarow, $exName);
-            $eCounter++;
+            
             
             $assignmentIDs = $this->getAssignments($exerciseID);
             $aCounter = 1;
             //push a name for every assignments a exercise has into the headrow
             foreach ($assignmentIDs as $assignment) {
-                $assignmentName = $this->txt("assign")." $aCounter";
+                $assignmentName ="Ex$eCounter- ". $this->txt("assign")." $aCounter";
                 array_push($datarow, $assignmentName);
                 $aCounter++;
             }
+            $eCounter++;
         }
         
         array_push($rows, $datarow);

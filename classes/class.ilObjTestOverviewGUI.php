@@ -67,7 +67,6 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
         global $ilTabs, $tpl;
         $tpl->setDescription($this->object->getDescription());
         $next_class = $this->ctrl->getNextClass($this);
-        echo $cmd;
         switch ($next_class) {
             case 'ilmdeditorgui':
                 $this->checkPermission('write');
