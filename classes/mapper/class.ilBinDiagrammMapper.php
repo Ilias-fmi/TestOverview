@@ -11,8 +11,7 @@
 require_once 'Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview/classes/GUI/class.ilTestOverviewTableGUI.php';
 require_once 'Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview/classes/mapper/class.ilOverviewMapper.php';
 
-/* Required Exeptions */
-require_once 'Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview/Exceptions/class.ilDiagrammExeption.php';
+
 
 class BinDiagrammMapper extends ilTestOverviewTableGUI {
 
