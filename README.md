@@ -19,11 +19,11 @@ The overview itself should present a table matrix of users (rows), test/exercise
 3. Select **Plugins** from the **Administration** main menu drop down.
 4. Search the **TestOverview** plugin in the list of plugin and choose **Update** and **Activate** from the **Actions** drop down.
 
-##Manual
+## Manual
 
 This manual shows the main functions of the plugin and explains how to use them.
 
-###Importing Test/Exercieses
+### Importing Test/Exercieses
 
 Go to the tab **Test Adminestration** and click on **Add tests to Overview**
 
@@ -36,7 +36,7 @@ Select your tests and click **Select**
 Now your able to see the results in the subtab **TestOverview** 
 
 ![Picture not available](https://github.com/Ilias-fmi/TestOverview/blob/ReadMe_update-1/readMe/TO_table.png)
-###Test/Exercise Diagrams
+### Test/Exercise Diagrams
 
 With TestOverview it is possible to creat diagrams of the average results. For a testdiagram go to the subtab **Diagram** in the tab **TestOverview**.
 
@@ -45,7 +45,7 @@ With TestOverview it is possible to creat diagrams of the average results. For a
 For a exercisediagram you have to enter a granularity. If your granularity is to small the diagramm is set to 100 buckets as a max size. After click on **Make my Diagram** to render it.
 
 ![Picture not available](https://github.com/Ilias-fmi/TestOverview/blob/ReadMe_update-1/readMe/exerciseDiagram.png)
-###Export
+### Export
 
 The export window of TestOverview looks like this.
 ![Picture not available](https://github.com/Ilias-fmi/TestOverview/blob/ReadMe_update-1/readMe/export.png)
