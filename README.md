@@ -45,17 +45,27 @@ For a exercisediagram you have to enter a granularity. If your granularity is to
 ###Export
 The export window of TestOverview looks like this.
 ![Picture not available](https://github.com/Ilias-fmi/TestOverview/blob/ReadMe_update-1/readMe/export.png)
-It provides two generic ways to export the results of added tests and exercises; reduced and extended.
+It provides two generic ways to export the results of added tests and exercises; *reduced* and *extended*.
 
-The first entries of the resulting comma-seperated values file contains in each case the **names of the students** (lastname, firstname), their **matriculation number** (this is a field especially for the plugin-usage at University of Stuttgart), the **groups** they are members in (e.g. in the course the TestOverview object lies in), their **email-address** and **gender**.
+The first entries of the resulting comma-seperated values file contain in each case the **names of the students** (lastname, firstname), their **matriculation number** (this is a field especially for the usage at University of Stuttgart), the **groups** they are members in (in the course the TestOverview object lies in), their **email-address** and **gender**.
 
 The first case, the **Reduced Format** lets the user export the *final* test- and exercise results of all users that participated in the added tests and exercises.
 
 The second case, the **Extended Format** additionally exports the results for all **subquestions** from tests and **assignments** from exercises.
 ### Permissions Management
+Course administators maybe need the right to **Create a new TestOverview Object**.  
+Repository>>Course>>Permissions>>Create new Objects>>TestOverview  
+![Picture not available](Object creation)
+To use the full range of functions, you need to make sure to manage the permissions for the users. 
+People that should be able to see the course results should be granted **Write Permissions**.  
+The people that should only have insights in their own summarized results should be granted **Read Permissions**.
+
+This can be done in the TestOverview Object under Permissions>>Course Administrator/Member/Tutor
+
+![Picture not available](Permissions)
 
 ### User Panel
-The user panel is for students to lookup there results. The window showes total and average results of test and exercises and the total rank of the student. It also gives a list of every test and exercise and the related result. By marking the results with color it shows if the exercise/test is passed or failed (green = passed / red = failed). 
+The user panel is for students to lookup their results. The window shows total and average results of tests and exercises and the total rank of the student. It also gives a list of every test and exercise and the related result. By marking the results with color it shows if the exercise/test is passed or failed (green = passed / red = failed). 
 
 
 ![Picture not available](https://raw.githubusercontent.com/Ilias-fmi/TestOverview/ReadMe_Bene/readMe/studView.png)
