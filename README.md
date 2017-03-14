@@ -58,7 +58,7 @@ The second case, the **Extended Format** additionally exports the results for al
 The user panel is for students to lookup there results. The window showes total and average results of test and exercises and the total rank of the student. It also gives a list of every test and exercise and the related result. By marking the results with color it shows if the exercise/test is passed or failed (green = passed / red = failed). 
 
 
-![Picture not available](
+![Picture not available](https://raw.githubusercontent.com/Ilias-fmi/TestOverview/ReadMe_Bene/readMe/studView.png)
 
 ### More Information
 [Ilias Feature Wiki Entry](http://www.ilias.de/docu/goto_docu_wiki_1357_Test_Overview.html)
