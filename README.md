@@ -54,8 +54,9 @@ The first case, the **Reduced Format** lets the user export the *final* test- an
 The second case, the **Extended Format** additionally exports the results for all **subquestions** from tests and **assignments** from exercises.
 
 ### Permissions Management
-Course administators maybe need the right to **Create a new TestOverview Object**.  
-Repository>>Course>>Permissions>>Create new Objects>>TestOverview.  
+Course administators maybe need the right to **Create a new TestOverview Object**. So the administrator goes to  
+Repository>>Course>>Permissions->Create new Objects->TestOverview.   
+![Picture not available](https://github.com/Ilias-fmi/TestOverview/blob/ReadMe_Bene/readMe/AdminTestOverviewPermissions.png)
 To use the full range of functions, you need to make sure to manage the permissions for the users. 
 People that should be able to see the course results should be granted **Write Permissions**.  
 The people that should only have insights in their own summarized results should be granted **Read Permissions**.
