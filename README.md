@@ -55,15 +55,14 @@ The second case, the **Extended Format** additionally exports the results for al
 
 ### Permissions Management
 Course administators maybe need the right to **Create a new TestOverview Object**.  
-Repository>>Course>>Permissions>>Create new Objects>>TestOverview  
-![Picture not available](Object creation)
+Repository>>Course>>Permissions>>Create new Objects>>TestOverview.  
 To use the full range of functions, you need to make sure to manage the permissions for the users. 
 People that should be able to see the course results should be granted **Write Permissions**.  
 The people that should only have insights in their own summarized results should be granted **Read Permissions**.
 
 This can be done in the TestOverview Object under Permissions>>Course Administrator/Member/Tutor
 
-![Picture not available](Permissions)
+![Picture not available](https://github.com/Ilias-fmi/TestOverview/blob/ReadMe_Bene/readMe/Permissions.png)
 
 ### User Panel
 The user panel is for students to lookup their results. The window shows total and average results of tests and exercises and the total rank of the student. It also gives a list of every test and exercise and the related result. By marking the results with color it shows if the exercise/test is passed or failed (green = passed / red = failed). 
