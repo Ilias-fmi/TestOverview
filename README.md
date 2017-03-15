@@ -19,11 +19,11 @@ The overview itself should present a table matrix of users (rows), test/exercise
 3. Select **Plugins** from the **Administration** main menu drop down.
 4. Search the **TestOverview** plugin in the list of plugin and choose **Update** and **Activate** from the **Actions** drop down.
 
-##Manual
+## Manual
 This manual shows the main functions of the plugin and explains how to use them.
 
-###Importing Test/Exercieses
-Go to the tab **Test Adminestration** and click on **Add tests to Overview**
+### Importing Test/Exercieses
+Go to the tab **Test Administration** and click on **Add tests to Overview**
 
 ![Picture not available](https://raw.githubusercontent.com/Ilias-fmi/TestOverview/ReadMe_update-1/readMe/TestImport.png)
 
@@ -31,18 +31,18 @@ Select your tests and click **Select**
 
 ![Picture not available](https://github.com/Ilias-fmi/TestOverview/blob/ReadMe_update-1/readMe/TestImport2.png)
 
-Now your able to see the results in the subtab **TestOverview** 
+The results are now visible in the subtab **TestOverview**. 
 
 ![Picture not available](https://github.com/Ilias-fmi/TestOverview/blob/ReadMe_update-1/readMe/TO_table.png)
-###Test/Exercise Diagrams
-With TestOverview it is possible to creat diagrams of the average results. For a testdiagram go to the subtab **Diagram** in the tab **TestOverview**.
+### Test/Exercise Diagrams
+With TestOverview it's possible to create diagrams of the average results. For a test-diagram go to the subtab **Diagram** in the tab **TestOverview**.
 
 ![Picture not available](https://github.com/Ilias-fmi/TestOverview/blob/ReadMe_update-1/readMe/TestDiagram_mit_pfeil.png)
 
-For a exercisediagram you have to enter a granularity. If your granularity is to small the diagramm is set to 100 buckets as a max size. After click on **Make my Diagram** to render it.
+For an exercise-diagram you have to enter a granularity. If the granularity is too small the diagramm is set to 100 buckets as a maximum size. Click on **Make my Diagram** to render it.
 
 ![Picture not available](https://github.com/Ilias-fmi/TestOverview/blob/ReadMe_update-1/readMe/exerciseDiagram.png)
-###Export
+### Export
 The export window of TestOverview looks like this.
 ![Picture not available](https://github.com/Ilias-fmi/TestOverview/blob/ReadMe_update-1/readMe/export.png)
 It provides two generic ways to export the results of added tests and exercises; *reduced* and *extended*.
@@ -52,6 +52,7 @@ The first entries of the resulting comma-seperated values file contain in each c
 The first case, the **Reduced Format** lets the user export the *final* test- and exercise results of all users that participated in the added tests and exercises.
 
 The second case, the **Extended Format** additionally exports the results for all **subquestions** from tests and **assignments** from exercises.
+
 ### Permissions Management
 Course administators maybe need the right to **Create a new TestOverview Object**.  
 Repository>>Course>>Permissions>>Create new Objects>>TestOverview  
