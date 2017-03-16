@@ -24,12 +24,6 @@ The overview itself should present a table matrix of users (rows), test/exercise
 This manual shows the main functions of the plugin and explains how to use them.
 
 ### Importing Test/Exercieses
-
-Go to the tab **Test Adminestration** and click on **Add tests to Overview**
-=======
-This manual shows the main functions of the plugin and explains how to use them.
-
-### Importing Test/Exercieses
 Go to the tab **Test Administration** and click on **Add tests to Overview**
 
 ![Picture not available](https://raw.githubusercontent.com/Ilias-fmi/TestOverview/ReadMe_update-1/readMe/TestImport.png)
