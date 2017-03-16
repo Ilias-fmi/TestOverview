@@ -95,4 +95,5 @@ avg_points#:#Average Points
 total_mark#:#Total Mark
 average_mark#:#Average Mark
 bucketFail#:#The chosen granularity is to small. The buckt size is set to 100.
-
+nmbr#:#Number
+points#:#Points 

@@ -129,9 +129,10 @@ class AverageDiagramm {
     }
 
     function legend() {
+        global $lng;
         $legend = "<div style ='background-color: #EDC240;opacity: 0.8;margin-top: 6px;'>";
         $legend .= "<table>";
-        $legend .= "<tr valign=\"top\"><td>Nummer</td><td>|Punkte</td></tr>";
+        $legend .= "<tr valign=\"top\"><td>".$lng->txt("rep_robj_xtov_nmbr")."</td><td>|".$lng->txt("rep_robj_xtov_points")."</td></tr>";
         $legend .= "<tr valign=\"top\"><td>1</td><td>| 0%-10%</td></tr>";
         $legend .= "<tr valign=\"top\"><td>2</td><td>| 11%-20%</td></tr>";
         $legend .= "<tr valign=\"top\"><td>3</td><td>| 21%-30%</td></tr>";
