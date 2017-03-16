@@ -25,7 +25,7 @@ class studentMapper {
         $maxPoints;
 
         $data = array();
-        $query = "Select DISTINCT title, points, maxpoints, ending_time, ending_time_enabled as timeded From rep_robj_xtov_t2o Join object_reference Join tst_tests Join tst_active Join tst_pass_result Join object_data ON
+        $query = "Select DISTINCT title, points,ref_id_test, maxpoints, ending_time, ending_time_enabled as timeded From rep_robj_xtov_t2o Join object_reference Join tst_tests Join tst_active Join tst_pass_result Join object_data ON
                 (rep_robj_xtov_t2o.ref_id_test = object_reference.ref_id AND object_reference.obj_id = tst_tests.obj_fi AND tst_active.test_fi = tst_tests.test_id
                 AND tst_active.active_id = tst_pass_result.active_fi AND object_reference.obj_id = object_data.obj_id) 
                 where obj_id_overview ='" . $overviewId . "'AND tst_active.user_fi = '" . $studId . "'";
@@ -60,7 +60,7 @@ class studentMapper {
 
 
             /* Checks if the test has been finished or if no end time is given */
-            if (($testTime - $datum) < 0 || $set->timeded == 1) {
+            if ((($testTime - $datum) < 0 || $set->timeded == 1)&& $this->isTestDeletd($set-> ref_id_test)== null) {
                 $tpl->setCurrentBlock("test_results");
                 $tpl->setVariable("Name", $set->title);
                 $average += $set->points;
@@ -135,6 +135,14 @@ class studentMapper {
         }
 
         return $tpl->get();
+    }
+    
+    public function isTestDeletd($refTestId){
+        global $ilDB;
+        $query = "select deleted from object_reference where ref_id = '$refTestId'";
+        $result = $ilDB->query($query);
+        $deleteObj =$ilDB->fetchObject($result);
+        return $deleteObj-> deleted;
     }
 
     /**
