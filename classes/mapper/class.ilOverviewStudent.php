@@ -60,7 +60,7 @@ class studentMapper {
 
 
             /* Checks if the test has been finished or if no end time is given */
-            if ((($testTime - $datum) < 0 || $set->timeded == 1)&& $this->isTestDeletd($set-> ref_id_test)== null) {
+            if ((($testTime - $datum) < 0 || $set->timeded == 1) && $this->isTestDeleted($set->ref_id_test) == null) {
                 $tpl->setCurrentBlock("test_results");
                 $tpl->setVariable("Name", $set->title);
                 $average += $set->points;
@@ -83,12 +83,14 @@ class studentMapper {
         $totalGrade = 0;
 
         foreach ($grades as $grade) {
-            $gradeName = $excMapper->getExerciseName($grade->obj_id);
-            $totalGrade += $grade->mark;
-            $tpl->setCurrentBlock("exercise_results");
-            $tpl->setVariable("Exercise", $gradeName);
-            $tpl->setVariable("Mark", $grade->mark);
-            $tpl->parseCurrentBlock();
+            if ($this->isExerciseDeleted($grade->obj_id) == null) {
+                $gradeName = $excMapper->getExerciseName($grade->obj_id);
+                $totalGrade += $grade->mark;
+                $tpl->setCurrentBlock("exercise_results");
+                $tpl->setVariable("Exercise", $gradeName);
+                $tpl->setVariable("Mark", $grade->mark);
+                $tpl->parseCurrentBlock();
+            }
         }
 
         //// generall Part /////
@@ -136,13 +138,21 @@ class studentMapper {
 
         return $tpl->get();
     }
-    
-    public function isTestDeletd($refTestId){
+
+    public function isTestDeleted($refTestId) {
         global $ilDB;
         $query = "select deleted from object_reference where ref_id = '$refTestId'";
         $result = $ilDB->query($query);
-        $deleteObj =$ilDB->fetchObject($result);
-        return $deleteObj-> deleted;
+        $deleteObj = $ilDB->fetchObject($result);
+        return $deleteObj->deleted;
+    }
+
+    public function isExerciseDeleted($ObjExerciseId) {
+        global $ilDB;
+        $query = "select deleted from object_reference where obj_id = '$ObjExerciseId'";
+        $result = $ilDB->query($query);
+        $deleteObj = $ilDB->fetchObject($result);
+        return $deleteObj->deleted;
     }
 
     /**
