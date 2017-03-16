@@ -111,17 +111,34 @@ class ilExerciseListTableGUI extends ilMappedTableGUI {
         global $tree;
 
         $path_str = '';
-
-        $path = $tree->getNodePath($item->ref_id);
+        $ref_id = $this->getRefId($item->obj_id);
+        $path = $tree->getNodePath($ref_id);
         while ($node = current($path)) {
             $prepend = empty($path_str) ? '' : "{$path_str} > ";
             $path_str = $prepend . $node['title'];
             next($path);
         }
-        $path_str = "<div><a href='ilias.php?baseClass=ilExerciseHandlerGUI&cmd=showOverview&ref_id=$item->ref_id'>" . $path_str . "</a></div>";
+        $path_str = "<div><a href='ilias.php?baseClass=ilExerciseHandlerGUI&cmd=showOverview&ref_id=$ref_id'>" . $path_str . "</a></div>";
 
         return $path_str;
     }
+    
+    public function getRefId($obj_id) {
+            global $ilDB;
+            //$refID = array();
+            $query = "SELECT ref_id FROM object_reference WHERE obj_id = %s ORDER BY ref_id ASC ";
+            $result = $ilDB->queryF($query, 
+                               array('integer'),
+                               array($obj_id));
+            
+            
+            $record = $ilDB->fetchAssoc($result);
+
+            return $record['ref_id'];
+            
+            
+            
+        }
 
 }
 
