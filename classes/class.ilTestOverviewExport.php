@@ -357,7 +357,7 @@ function buildExportFile()
                   JOIN tst_tests
                   ON (rep_robj_xtov_t2o.ref_id_test = object_reference.ref_id
                   AND obj_id = obj_fi)
-                  WHERE obj_id_overview =".$ilDB->quote($this->overviewID, 'integer');
+                  WHERE object_reference.deleted IS NULL AND obj_id_overview =".$ilDB->quote($this->overviewID, 'integer');
         
         $result= $ilDB->query($query);
         while ($record = $ilDB->fetchAssoc($result)){
@@ -704,7 +704,9 @@ function buildExportFile()
         global $ilDB;
         $uniqueIDs = array();
         
-        $query = "SELECT obj_id_exercise AS obj_id from rep_robj_xtov_e2o WHERE obj_id_overview = %s";
+        $query = "SELECT obj_id_exercise AS obj_id 
+                  FROM rep_robj_xtov_e2o e2o JOIN object_reference ref ON e2o.obj_id_exercise = ref.obj_id 
+                  WHERE e2o.obj_id_overview = %s AND ref.deleted IS NULL";
         $result = $ilDB->queryF($query, 
                                array('integer'),
                                array($this->overviewID));
