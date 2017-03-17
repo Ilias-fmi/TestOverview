@@ -7,8 +7,7 @@ class ilExerciseSettingsMapper extends ilDataMapper {
     protected $tableName = 'rep_robj_xtov_e2o';
     protected function getSelectPart() {
         $fields = array(
-			'ref.obj_id',
-			'ref.ref_id',
+			'DISTINCT (ref.obj_id)',
 			'od.title',
 			'od.description'
         );
