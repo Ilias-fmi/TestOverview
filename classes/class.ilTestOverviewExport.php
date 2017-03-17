@@ -2,22 +2,22 @@
 class ilTestOverviewExport extends ilObjTestOverviewGUI
 {
     
-    /** @var type extended/reduced (TestQuestions) */
-    var $type;
+    /** @protected type extended/reduced (TestQuestions) */
+    protected $type;
     /** @var integer ID of current TestOverview  */
-    var $overviewID;
+    protected $overviewID;
     
-    var $parentID;
+    protected $parentID;
     
-    var $filename;
+    protected $filename;
       
-    var $testIDs;
+    protected $testIDs;
     
-    var $exerciseIDs;
+    protected $exerciseIDs;
     
-    var $users;
+    private $users;
     
-    var $assoc;
+    private $assoc;
     
 public function __construct($parent, $id ,$type, $a_main_object= null){
       
