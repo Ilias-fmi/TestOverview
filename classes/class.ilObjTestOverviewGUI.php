@@ -23,7 +23,6 @@ include_once 'Services/jQuery/classes/class.iljQueryUtil.php';
  */
 class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHandling {
 
-
     /**
      * 
      */
@@ -40,18 +39,19 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
      * 	@return string
      */
     public function getAfterCreationCmd() {
-        return 'showContent';
+        global $ilAccess;
+        if ($ilAccess->checkAccess('write', '', $this->object->getRefId())) {
+            return 'UserResults';
+        } else {
+            return 'UserResults';
+        }
     }
 
     /**
      * 	@return string
      */
     public function getStandardCmd() {
-        global $ilAccess;
-        if($ilAccess->checkAccess('write', '', $this->object->getRefId())){
-        return 'TestOverview';}
-        else{
-        return 'UserResults';}
+        return 'UserResults';
     }
 
     /**
@@ -72,6 +72,7 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
         global $ilTabs, $tpl;
         $tpl->setDescription($this->object->getDescription());
         $next_class = $this->ctrl->getNextClass($this);
+        echo $cmd;
         switch ($next_class) {
             case 'ilmdeditorgui':
                 $this->checkPermission('write');
@@ -105,9 +106,9 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
                     case 'removeTests':
                     case 'addMemberships':
                     case 'removeMemberships':
-                         case 'addMembershipsEx':
+                    case 'addMembershipsEx':
                     case 'removeMembershipsEx':
-                    case 'exportRedirect':    
+                    case 'exportRedirect':
                     case 'TestOverview':
                     case 'ExerciseOverview':
                     case 'excDiagramm':
@@ -125,26 +126,28 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
                     case 'subTabEO':
                     case 'subTabEO1':
                     case 'subTabEO2':
-                    case 'subTabEORanking':    
+                    case 'subTabEORanking':
                     case 'rights':
                     case 'applyGroupsFilter':
+                    case 'applyGroupsFIlterEx':
                     case 'resetOverviewFilter':
                     case 'resetTestsFilter':
                     case 'applyGroupsFilterEx':
                     case 'resetGroupsFilterEx':
                     case 'resetGroupsFilter':
-                    case 'applyExerciseFilter':    
+                    case 'resetGroupsFilterEx':
+                    case 'applyExerciseFilter':
                     case 'resetExerciseFilter':
-                    case 'applyExerciseFilterRanking':    
+                    case 'applyExerciseFilterRanking':
                     case 'resetExerciseFilterRanking':
                     case 'addToDesk':
                     case 'removeExercises':
                     case 'triggerExport':
                     case 'allLocalTests':
                     case 'UserResults':
-                    case 'updateStudentView':   
-                    case 'updateStudentViewEO':    
-                    case 'showRanking':  
+                    case 'updateStudentView':
+                    case 'updateStudentViewEO':
+                    case 'showRanking':
                         $this->checkPermission('read');
                         $this->UserResults();
                     case 'removeFromDesk':
@@ -192,7 +195,7 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
 
         if ($ilAccess->checkAccess('read', '', $this->object->getRefId())) {
             $ilTabs->addTab('UserResults', $this->txt('userResults'), $ilCtrl->getLinkTarget($this, 'UserResults'));
-            
+
             /* Check for write access (editSettings available) */
             if ($ilAccess->checkAccess('write', '', $this->object->getRefId())) {
                 $ilTabs->addTab('TestOverview', $this->txt('TestOverview'), $this->ctrl->getLinkTarget($this, 'TestOverview'));
@@ -201,14 +204,13 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
             }
             // export
             if ($ilAccess->checkAccess('write', '', $this->object->getRefId())) {
-                $ilTabs->addTarget('export', $this->ctrl->getLinkTargetByClass('iltestoverviewexportgui','export'), '', 'iltestoverviewexportgui');
+                $ilTabs->addTarget('export', $this->ctrl->getLinkTargetByClass('iltestoverviewexportgui', 'export'), '', 'iltestoverviewexportgui');
             }
             $this->addPermissionTab();
         }
     }
 
-
-    /**
+        /**
 	 *	Command for rendering a Test Overview.
 	 *
 	 *	This command displays a test overview entry
@@ -275,25 +277,25 @@ protected function showContent()
                 $ilToolbar->addButton($this->txt('orderName'), $ilCtrl->getLinkTarget($this,'showContent'));
                 $ilToolbar->addButton($$this->txt('update_rank'),$ilCtrl->getLinkTarget($this,'updateStudentView'));
              }
-        /**
-         * This method is called to update the ranking of the User Result Tab.
-         * This method updates Test- and Exercise- Overview.  
-         * 
-         * @param type $view
-         */
-	
-        protected function updateStudentView() {
+
+    /**
+     * This method is called to update the ranking of the User Result Tab.
+     * This method updates Test- and Exercise- Overview.  
+     * 
+     * @param type $view
+     */
+    protected function updateStudentView() {
         global $ilCtrl;
-		$this->includePluginClasses(array(
-			"ilTestOverviewTableGUI",
-			"ilOverviewMapper"));
+        $this->includePluginClasses(array(
+            "ilTestOverviewTableGUI",
+            "ilOverviewMapper"));
         $ilMapper = new ilOverviewMapper();
-        $table = new ilTestOverviewTableGUI( $this, 'updateStudentView' );
+        $table = new ilTestOverviewTableGUI($this, 'updateStudentView');
         $table->setMapper($ilMapper);
         $table->getStudentsRanked(); 
         ilUtil::sendSuccess($this->txt('success_update'), true);
         $ilCtrl->redirect($this, 'showContent');
-        }    
+    }
 
     /**
      * 	Render the settings page.
@@ -307,10 +309,10 @@ protected function showContent()
     protected function renderSettings() {
 
         return $this->form->getHTML();
-                //. "<hr />"
-                //. $this->getTestList()->getHTML()
-                //. "<hr />"
-                //. $this->getMembershipList()->getHTML();
+        //. "<hr />"
+        //. $this->getTestList()->getHTML()
+        //. "<hr />"
+        //. $this->getMembershipList()->getHTML();
     }
 
     /**
@@ -343,15 +345,13 @@ protected function showContent()
         $dataMapper = new studentMapper ();
         $tpl->setContent($dataMapper->getResults($ilUser->getId(), $this->object->getId()));
     }
-    
-    
-    /*TABS FOR TEST OVERVIEW */
-    
-    
+
+    /* TABS FOR TEST OVERVIEW */
+
     protected function TestOverview() {
-        global $tpl, $ilTabs, $ilCtrl,$ilToolbar;
+        global $tpl, $ilTabs, $ilCtrl, $ilToolbar;
         $this->showContent();
-   }
+    }
 
     protected function subTabTO() {
         global $tpl, $ilTabs, $ilCtrl, $lng, $ilToolbar, $ilDB;
@@ -403,9 +403,9 @@ protected function showContent()
 
         $tpl->setContent($this->getTestList()->getHTML() . $this->getMembershipList()->getHTML());
     }
-    
-    /*TABS FOR EXERCISE OVERVIEW */
-    
+
+    /* TABS FOR EXERCISE OVERVIEW */
+
     /**
      * Render the Exercise Diagramms
      */
@@ -419,7 +419,7 @@ protected function showContent()
         require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
                         ->getDirectory() . '/classes/mapper/class.ilBinDiagrammMapper.php';
 
-       //$attachment = new ilTextInputGUI("DiagramSize", "diagramSize");
+        //$attachment = new ilTextInputGUI("DiagramSize", "diagramSize");
         $attachment2 = new ilTextInputGUI("SizeBucket", "sizeBucket");
         $ilToolbar->setFormAction($ilCtrl->getLinkTarget($this, 'ExerciseOverview'), true);
         //$ilToolbar->addInputItem($attachment);
@@ -429,7 +429,7 @@ protected function showContent()
         require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
                         ->getDirectory() . '/classes/mapper/class.ilExerciseMapper.php';
         if ($_POST["sizeBucket"] != null) {
-            $Obj = new exerciseCharts(30000, $this->object->getId(),$_POST["sizeBucket"]);
+            $Obj = new exerciseCharts(30000, $this->object->getId(), $_POST["sizeBucket"]);
             //$tpl->setContent (implode(";", $Obj->getHTML()));
 
 
@@ -438,19 +438,19 @@ protected function showContent()
             $tpl->setContent($this->txt("max_diagram_value"));
         }
     }
-    
-    
+
     protected function subTabEO() {
         global $tpl, $ilTabs, $ilCtrl, $ilToolbar;
         $this->subTabs("Exercise");
         $ilTabs->activateTab('ExerciseOverview');
-        $ilTabs->activateSubTab('subTabEO'); 
+        $ilTabs->activateSubTab('subTabEO');
         require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
                         ->getDirectory() . '/classes/GUI/class.ilMappedTableGUI.php';
         require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
                         ->getDirectory() . '/classes/GUI/class.rankGui.php';
         require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
                         ->getDirectory() . '/classes/mapper/class.ilExerciseMapper.php';
+
         $ilExerciseMapper =new ilExerciseMapper;                
         $table = new rankGUI( $this, 'subTabEO' );
 	$table->setMapper($ilExerciseMapper)->populateE(true);
@@ -465,6 +465,7 @@ protected function showContent()
         $ilToolbar->addButton($this->txt('update_rank'), $ilCtrl->getLinkTarget($this,'updateStudentViewEO')); 
          }
 
+
     protected function subTabEO1() {
         global $tpl, $ilTabs, $ilCtrl, $ilToolbar;
 
@@ -474,7 +475,7 @@ protected function showContent()
 
         $ilCtrl->redirect($this, 'ExerciseOverview');
     }
-    
+
     /**
      * Renders the Tab for Exercise Settings
      */
@@ -484,16 +485,15 @@ protected function showContent()
         $this->subTabs("Exercise");
         $ilTabs->activateTab('ExerciseOverview');
         $ilTabs->activateSubTab('subTabEO2');
-      
-        $tpl->setContent($this->getExerciseList()->getHtml(). $this->getMembershipListEx()->getHTML());
-        
+
+        $tpl->setContent($this->getExerciseList()->getHtml() . $this->getMembershipListEx()->getHTML());
     }
-    protected function subTabEORanking()
-    {
-      global $tpl, $ilTabs, $ilCtrl, $ilToolbar;
+
+    protected function subTabEORanking() {
+        global $tpl, $ilTabs, $ilCtrl, $ilToolbar;
         $this->subTabs("Exercise");
         $ilTabs->activateTab('ExerciseOverview');
-        $ilTabs->activateSubTab('subTabEO'); 
+        $ilTabs->activateSubTab('subTabEO');
         //$tpl->setContent("ranking stuff");
         require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
                         ->getDirectory() . '/classes/GUI/class.ilMappedTableGUI.php';
@@ -501,12 +501,13 @@ protected function showContent()
                         ->getDirectory() . '/classes/GUI/class.rankGui.php';
         require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
                         ->getDirectory() . '/classes/mapper/class.ilExerciseMapper.php';
+
         $ilExerciseMapper =new ilExerciseMapper;                
         $table = new rankGUI( $this, 'subTabEO' );
 	$table->setMapper($ilExerciseMapper)->populateE(false);
 	/* Populate template */
 	$tpl->setDescription($this->object->getDescription());
-       //$data = array_slice($table-> getData(), $table->getOffset(), $table->getLimit());
+        $data = array_slice($table-> getData(), $table->getOffset(), $table->getLimit());
 	$tpl->setContent( $table->getHTML());
         $ilToolbar->addButton($this->txt('orderName'), $ilCtrl->getLinkTarget($this,'subTabEO')); 
         $ilToolbar->addButton($this->txt('update_rank'), $ilCtrl->getLinkTarget($this,'updateStudentViewEO'));   
@@ -514,21 +515,24 @@ protected function showContent()
           
      protected function updateStudentViewEO() {
          global $ilCtrl;
-          require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
+        require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
+
                         ->getDirectory() . '/classes/GUI/class.ilMappedTableGUI.php';
         require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
                         ->getDirectory() . '/classes/GUI/class.rankGui.php';
         require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
                         ->getDirectory() . '/classes/mapper/class.ilExerciseMapper.php';
-        $ilExerciseMapper =new ilExerciseMapper;                
-        $table = new rankGUI( $this, 'updateStudentViewEO' );
+        $ilExerciseMapper = new ilExerciseMapper;
+        $table = new rankGUI($this, 'updateStudentViewEO');
         $table->setMapper($ilExerciseMapper);
         echo("<script>console.log('PHP: UPDATE STUDENT VIEW');</script>");
-	$table->getStudentsRanked();   
+        $table->getStudentsRanked();
         echo("<script>console.log('PHP: UPDATE STUDENT VIEW');</script>");
         ilUtil::sendSuccess($this->txt('success_update'), true);
         $ilCtrl->redirect($this, 'subTabEO');  
+
     }
+
     protected function subTabs($type) {
         global $ilTabs, $ilCtrl;
         switch ($type) {
@@ -545,7 +549,7 @@ protected function showContent()
                 break;
         }
     }
-    
+
     /**
      * 	Command for saving the updated Test Overview settings.
      *
@@ -595,9 +599,8 @@ protected function showContent()
                 $_SESSION['select_exercise'][] = $node_id;
             }
         }
-        $this->selectExercises();//(int)$_GET['select_exercise']);
+        $this->selectExercises(); //(int)$_GET['select_exercise']);
         return;
-        
     }
 
     /**
@@ -627,14 +630,12 @@ protected function showContent()
                         (int) $_GET['select_exercise'] :
                         $this->tree->readRootId()
         );
-        
+
         $exp->setDefaultHiddenObjects($this->object->getUniqueExercises(true));
         $exp->setOutput(0);
         $tpl->setVariable('OBJECT_TREE', $exp->getOutput());
         $tpl->setVariable('CMD_SUBMIT', 'performAddExcercise');
         $tpl->setVariable('TXT_SUBMIT', $lng->txt('select'));
-
-
     }
 
     public function initSelectTests() {
@@ -651,7 +652,6 @@ protected function showContent()
         foreach ((array) $path as $node_id) {
             if (!in_array($node_id, $_SESSION['select_tovr_expanded']))
                 $_SESSION['select_tovr_expanded'][] = $node_id;
-
         }
         $this->selectTests();
         return;
@@ -697,10 +697,10 @@ protected function showContent()
         global $tpl, $lng, $ilCtrl, $ilAccess;
 
         include_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
-                       ->getDirectory() . "/classes/mapper/class.ilExerciseImport.php";
+                        ->getDirectory() . "/classes/mapper/class.ilExerciseImport.php";
         $mapper = new ExerciseImport ();
         $overviewId = $this->object->getId();
-        
+
         if (!isset($_POST['nodes']) || !is_array($_POST['nodes']) || !$_POST['nodes']) {
             ilUtil::sendFailure($lng->txt('select_one'));
             $this->selectExercises();
@@ -712,7 +712,7 @@ protected function showContent()
                 $mapper->createEntry($overviewId, $ref_id);
                 ++$num_nodes;
             }
-        } 
+        }
         if (!$num_nodes) {
             ilUtil::sendFailure($lng->txt('select_one'));
             $this->selectExercises();
@@ -720,7 +720,6 @@ protected function showContent()
         }
         ilUtil::sendSuccess($this->txt('exercises_updated_success'), true);
         $ilCtrl->redirect($this, 'subTabEO2');
-        
     }
 
     public function performAddTests() {
@@ -751,7 +750,6 @@ protected function showContent()
         ilUtil::sendSuccess($this->txt('tests_updated_success'), true);
 
         $ilCtrl->redirect($this, 'subTabTO2');
-
     }
 
     public function removeTests() {
@@ -774,7 +772,7 @@ protected function showContent()
         //$tpl->setContent($this->renderSettings());
         $ilCtrl->redirect($this, 'subTabTO2');
     }
-    
+
     public function removeExercises() {
         /**
          * @var $tpl    ilTemplate
@@ -1040,25 +1038,25 @@ protected function showContent()
         $table->resetFilter();
         $this->subTabTO2();
     }
-     /**
+
+    /**
      * 	Reset the tests list filters
      *
      * 	This method is used as a command (form submit handler)
      * 	to reset the filters set on the tests list table.
      */
     public function resetExerciseFilterRanking() {
-         require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
+        require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
                         ->getDirectory() . '/classes/GUI/class.ilMappedTableGUI.php';
         require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
                         ->getDirectory() . '/classes/GUI/class.rankGui.php';
-        
+
         $table = new rankGui($this, 'subTabTORanking');
         $table->resetOffset();
         $table->resetFilter();
         $this->subTabEORanking();
     }
-    
-    
+
     /**
      * 	Apply a filter to the exercise list table.
      *
@@ -1070,13 +1068,13 @@ protected function showContent()
                         ->getDirectory() . '/classes/GUI/class.ilMappedTableGUI.php';
         require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
                         ->getDirectory() . '/classes/GUI/class.rankGui.php';
-        
+
         $table = new rankGUI($this, 'subTabTORanking');
         $table->resetOffset();
         $table->writeFilterToSession();
         $this->subTabEORanking();
     }
-    
+
     /**
      * 	Apply a filter to the exercise list table.
      *
@@ -1091,7 +1089,7 @@ protected function showContent()
         $table->writeFilterToSession();
         $this->subTabEO2();
     }
-    
+
     /**
      * 	Reset the exercise list filters
      *
@@ -1106,7 +1104,7 @@ protected function showContent()
         $table->resetFilter();
         $this->subTabEO2();
     }
-    
+
     /**
      * 	Reset the groups list filters
      *
@@ -1140,7 +1138,7 @@ protected function showContent()
                 ->populate();
         return $testList;
     }
-    
+
     /**
      * 	Retrieve the exercise list table.
      *
@@ -1159,6 +1157,7 @@ protected function showContent()
                 ->populate();
         return $Obj;
     }
+
     /**
      * 	Retrieve the memberships list table.
      *
@@ -1178,7 +1177,7 @@ protected function showContent()
                 ->populate();
         return $testList;
     }
-    
+
     protected function getMembershipListEx() {
         $this->includePluginClasses(array(
             "ilMembershipListTableGUI",
@@ -1188,7 +1187,7 @@ protected function showContent()
                 ->populate();
         return $testList;
     }
-    
+
     /**
      * 	Apply a filter to the groups list table.
      *
@@ -1203,7 +1202,7 @@ protected function showContent()
         $table->writeFilterToSession();
         $this->subTabEO2();
     }
-    
+
     /**
      * 	Reset the groups list filters
      *
@@ -1218,8 +1217,7 @@ protected function showContent()
         $table->resetFilter();
         $this->subTabEO2();
     }
-    
-    
+
     public function addMembershipsEx() {
         /**
          * @var $tpl    ilTemplate
@@ -1229,6 +1227,7 @@ protected function showContent()
         global $tpl, $lng, $ilCtrl;
         $this->initSettingsForm();
         $this->populateSettings();
+        echo "hello top";
         if (isset($_POST['membership_ids'])) {
             /* Executing the registered test retrieval again with the same filters
               allows to determine which tests are really removed. */
@@ -1238,6 +1237,7 @@ protected function showContent()
                 $this->object
                         ->addGroup($groupId);
             }
+            echo "hello";
             ilUtil::sendSuccess($lng->txt('rep_robj_xtov_memberships_updated_success'), true);
             $ilCtrl->redirect($this, 'subTabEO2');
         }
@@ -1271,7 +1271,7 @@ protected function showContent()
         //$tpl->setContent( $this->renderSettings() );
         $ilCtrl->redirect($this, 'subTabEO2');
     }
-    
+
     /**
      * 	Include a class implemented by this plugin.
      *
@@ -1356,8 +1356,5 @@ protected function showContent()
         ilUtil::sendSuccess($lng->txt('removed_from_desktop'));
         $this->showContent();
     }
-
-
-    
 
 }

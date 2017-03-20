@@ -57,12 +57,12 @@ class ilMembershipListTableGUI
 		
 		$this->setDescription($this->lng->txt("rep_robj_xtov_membership_list_description"));
 		$this->setFormAction($ilCtrl->getFormAction($this->getParentObject(), 'updateSettings') );
-		
-                if($a_parent_cmd == "subTabTO2"){
+
+                if(strcmp($a_parent_cmd, "subTabTO2") == 0){
                     $this->addMultiCommand('addMemberships', $this->lng->txt('rep_robj_xtov_add_to_overview'));
                     $this->addMultiCommand('removeMemberships', $this->lng->txt('rep_robj_xtov_remove_from_overview'));
                 }
-                if($a_parent_cmd == "subTabEO2"){
+                if(strcmp($a_parent_cmd, "subTabEO2") == 0){
                     $this->addMultiCommand('addMembershipsEx', $this->lng->txt('rep_robj_xtov_add_to_overview'));
                     $this->addMultiCommand('removeMembershipsEx', $this->lng->txt('rep_robj_xtov_remove_from_overview'));
                 }
