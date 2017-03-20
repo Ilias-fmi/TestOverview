@@ -11,21 +11,48 @@ class ilExerciseMapper extends ilDataMapper {
         $this->lng = $lng;
     }
 
-    protected $tableName = "rep_robj_xtov_e2o";
+   /**
+	 *	@var string
+	 */
+	protected $tableName = "rep_robj_xtov_overview overview";
 
-    public function getSelectPart() {
-        return " DISTINCT (user_id), firstname, lastname, obj_id , mark";
-    }
+	/**
+	 *	@see ilDataMapper::getSelectPart()
+	 */
+	public function getSelectPart()
+	{       
+		$fields = array(
+			"participants.obj_id_grpcrs obj_id",);
 
-    public function getFromPart() {
-        return " rep_robj_xtov_e2o  ,exc_returned , exc_mem_ass_status  join usr_data  on (exc_mem_ass_status.usr_id = usr_data.usr_id)";
-    }
+		return implode(', ', $fields);
+	}
 
-    public function getWherePart(array $filters) {
-        return " exc_returned.ass_id = exc_mem_ass_status.ass_id 
-                And user_id = exc_mem_ass_status.usr_id and obj_id_exercise = obj_id ";
-    }
+	/**
+	 *	@see ilDataMapper::getFromPart()
+	 */
+	public function getFromPart()
+	{
+		$joins = array(
+			"JOIN rep_robj_xtov_p2o participants
+				ON (overview.obj_id = participants.obj_id_overview)",);
 
+		return $this->tableName . " " . implode(' ', $joins);
+	}
+
+        /**
+	 *	@see ilDataMapper::getWherePart()
+	 */
+	public function getWherePart(array $filters)
+	{
+		$conditions = array("1 = 1");
+
+		if (! empty($filters['overview_id'])) {
+			$conditions[] = sprintf(
+				"overview.obj_id = " . $this->db->quote($filters['overview_id'], 'integer'));
+		}
+                
+		return implode(' AND ', $conditions);
+	}
     /**
      * Get the Class all Exercise Partisipants and there results
      */

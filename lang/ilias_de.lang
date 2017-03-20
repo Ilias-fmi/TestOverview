@@ -92,4 +92,6 @@ exercises_updated_success#:#Die Einstellungen wurden erfolgreich aktualisiert.
 avg_points#:#Durchschnittliche Punktzahl
 total_mark#:#Gesamt Note/Punkte
 average_mark#:#Durchschnittliche Note 
+update_rank#:#Aktualisiere Ranking
+success_update#:#Aktualisierung erfolgreich
 

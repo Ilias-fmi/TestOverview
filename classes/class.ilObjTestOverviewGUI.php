@@ -243,7 +243,7 @@ protected function showContent()
                 $data = array_slice($table-> getData(), $table->getOffset(), $table->getLimit());
 		$tpl->setContent( $table->getHTML());
                 $ilToolbar->addButton($this->txt('order_ranking'), $ilCtrl->getLinkTarget($this,'showRanking'));
-                $ilToolbar->addButton("Update Ranking",$ilCtrl->getLinkTarget($this,'updateStudentView'));
+                $ilToolbar->addButton($this->txt('update_rank'),$ilCtrl->getLinkTarget($this,'updateStudentView'));
 	}
         protected function showRanking()
 	{		/**
@@ -273,7 +273,7 @@ protected function showContent()
 		$tpl->setContent( $table->getHTML());
                 $table->getData();
                 $ilToolbar->addButton($this->txt('orderName'), $ilCtrl->getLinkTarget($this,'showContent'));
-                $ilToolbar->addButton("Update Ranking",$ilCtrl->getLinkTarget($this,'updateStudentView'));
+                $ilToolbar->addButton($$this->txt('update_rank'),$ilCtrl->getLinkTarget($this,'updateStudentView'));
              }
         /**
          * This method is called to update the ranking of the User Result Tab.
@@ -291,6 +291,7 @@ protected function showContent()
         $table = new ilTestOverviewTableGUI( $this, 'updateStudentView' );
         $table->setMapper($ilMapper);
         $table->getStudentsRanked(); 
+        ilUtil::sendSuccess($this->txt('success_update'), true);
         $ilCtrl->redirect($this, 'showContent');
         }    
 
@@ -455,10 +456,13 @@ protected function showContent()
 	$table->setMapper($ilExerciseMapper)->populateE(true);
 	/* Populate template */
 	$tpl->setDescription($this->object->getDescription());
-        $data = array_slice($table-> getData(), $table->getOffset(), $table->getLimit());
+        
+                    
+
+        //$data = array_slice($table-> getData(), $table->getOffset(), $table->getLimit());
 	$tpl->setContent( $table->getHTML());
         $ilToolbar->addButton($this->txt('order_ranking'), $ilCtrl->getLinkTarget($this,'subTabEORanking'));
-        $ilToolbar->addButton("update Ranking", $ilCtrl->getLinkTarget($this,'updateStudentViewEO')); 
+        $ilToolbar->addButton($this->txt('update_rank'), $ilCtrl->getLinkTarget($this,'updateStudentViewEO')); 
          }
 
     protected function subTabEO1() {
@@ -502,10 +506,10 @@ protected function showContent()
 	$table->setMapper($ilExerciseMapper)->populateE(false);
 	/* Populate template */
 	$tpl->setDescription($this->object->getDescription());
-        $data = array_slice($table-> getData(), $table->getOffset(), $table->getLimit());
+       //$data = array_slice($table-> getData(), $table->getOffset(), $table->getLimit());
 	$tpl->setContent( $table->getHTML());
         $ilToolbar->addButton($this->txt('orderName'), $ilCtrl->getLinkTarget($this,'subTabEO')); 
-        $ilToolbar->addButton("update Ranking", $ilCtrl->getLinkTarget($this,'updateStudentViewEO'));   
+        $ilToolbar->addButton($this->txt('update_rank'), $ilCtrl->getLinkTarget($this,'updateStudentViewEO'));   
           }
           
      protected function updateStudentViewEO() {
@@ -522,6 +526,7 @@ protected function showContent()
         echo("<script>console.log('PHP: UPDATE STUDENT VIEW');</script>");
 	$table->getStudentsRanked();   
         echo("<script>console.log('PHP: UPDATE STUDENT VIEW');</script>");
+        ilUtil::sendSuccess($this->txt('success_update'), true);
         $ilCtrl->redirect($this, 'subTabEO');  
     }
     protected function subTabs($type) {
