@@ -1,5 +1,6 @@
 <!-- language file start -->
 obj_xtov#:#Testübersicht
+testOverview#:#Test Übersicht
 objs_xtov#:#Testübersicht-Objekte
 obj_xtov_duplicate#:#Testübersicht kopieren
 objs_xtov_duplicate#:#Testübersicht-Objekte kopieren
@@ -21,6 +22,7 @@ edit_properties#:#Einstellungen Bearbeiten
 title#:#Titel
 TestOverview#:#TestOverview
 ExerciseOverview#:#ExerciseOverview
+ex_overview#:#Aufgaben Übersicht
 description#:#Beschreibung
 save#:#Speichern
 cancel#:#Abbrechen
@@ -95,5 +97,7 @@ average_mark#:#Durchschnittliche Note
 update_rank#:#Aktualisiere Ranking
 success_update#:#Aktualisierung erfolgreich
 bucketFail#:# Die gewählte Körnung(Granularität) ist zu klein. Die Unterteilung wurde in 100 Segmente festgelegt
-
+nmbr#:#Nummer
+points#:#Punkte
+out_of#:#in Ihrer Gruppe von
 

@@ -7,8 +7,7 @@ class ilExerciseSettingsMapper extends ilDataMapper {
     protected $tableName = 'rep_robj_xtov_e2o';
     protected function getSelectPart() {
         $fields = array(
-			'ref.obj_id',
-			'ref.ref_id',
+			'DISTINCT (ref.obj_id)',
 			'od.title',
 			'od.description'
         );
@@ -18,7 +17,7 @@ class ilExerciseSettingsMapper extends ilDataMapper {
 
     protected function getFromPart() {
         $joins = array(
-                    'INNER JOIN object_reference ref ON (rep_robj_xtov_e2o.obj_id_exercise = ref.obj_id AND deleted IS NULL)',
+                    'INNER JOIN object_reference ref ON (rep_robj_xtov_e2o.obj_id_exercise = ref.obj_id AND ref.deleted IS NULL)',
                     "INNER JOIN object_data od ON (ref.obj_id = od.obj_id) AND od.type = 'exc'"
         );
 

@@ -1,6 +1,12 @@
 <?php
 
+/* Copyright (c) 1998-2012 ILIAS open source, Extended GPL, see docs/LICENSE */
+
 /**
+ * 	@package	TestOverview repository plugin
+ * 	@category	Core
+ * 	@author		
+ *  
  * The class creates a CSV file from the User Data that can be downloaded 
  */
 
@@ -51,29 +57,33 @@ class ilTestOverviewExportGUI extends ilObjTestOverviewGUI {
         /* Populate template */
         $this->tpl->setContent($this->form->getHTML());
     }
+
     /*
      * Command that is triggered on clicking the "export"-Button
      */
+
     protected function triggerExport() {
         global $tpl, $lng, $ilCtrl;
         $this->initExportForm();
         if ($this->form->checkInput()) {
-            
+
             $export_type = $this->form->getInput("export_type");
-            
+
             require_once 'Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview/classes/class.ilTestOverviewExport.php';
             $to_exp = new ilTestOverviewExport($this->parent, $this->id, $export_type);
             $to_exp->buildExportFile();
         }
     }
+
     /*
      * Initialize the export form
      */
+
     public function initExportForm() {
 
         global $ilCtrl, $tpl, $lng;
         include_once("./Services/Form/classes/class.ilPropertyFormGUI.php");
-        
+
         $this->form = new ilPropertyFormGUI();
         $this->form->setTitle("Export " . $this->txt("properties"));
         $this->form->setFormAction($ilCtrl->getFormAction($this));
@@ -89,7 +99,7 @@ class ilTestOverviewExportGUI extends ilObjTestOverviewGUI {
 
 
         $this->form->addItem($checkbox_overview);
-        
+
         $this->form->addCommandButton("triggerExport", "Export");
     }
 

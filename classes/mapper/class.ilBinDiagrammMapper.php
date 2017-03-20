@@ -1,20 +1,17 @@
 <?php
 
-/* Copyright (c) 1998-2010 ILIAS open source, Extended GPL, see docs/LICENSE */
+/* Copyright (c) 1998-2012 ILIAS open source, Extended GPL, see docs/LICENSE */
 
-
-/*
- * Class gets the Results in a String and Maps it to the Diagramms
- * @package	TestOverview repository plugin
- * 
+/**
+ * 	@package	TestOverview repository plugin
+ * 	@category	Core
+ * 	@author		Jan Ruthardt <janruthardt@web.de>
  */
-
 /* Dependencies : */
 require_once 'Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview/classes/GUI/class.ilTestOverviewTableGUI.php';
 require_once 'Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview/classes/mapper/class.ilOverviewMapper.php';
 
-/* Required Exeptions */
-require_once 'Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview/Exceptions/class.ilDiagrammExeption.php';
+
 
 class BinDiagrammMapper extends ilTestOverviewTableGUI {
 
@@ -34,7 +31,7 @@ class BinDiagrammMapper extends ilTestOverviewTableGUI {
 
     /*
      * Gets the Data from every Student and there Testresults in a String saperated by "|"
-     * 
+     *
      */
 
     public function data() {
@@ -53,7 +50,7 @@ class BinDiagrammMapper extends ilTestOverviewTableGUI {
     }
 
     /**
-     * Gets 
+     * Gets
      * @param type $row
      * @return type
      */
@@ -97,6 +94,7 @@ class AverageDiagramm {
     }
 
     function initDia() {
+        global $lng;
         require_once 'Services/Chart/classes/class.ilChartGrid.php';
         require_once 'Services/Chart/classes/class.ilChartLegend.php';
         require_once 'Services/Chart/classes/class.ilChartSpider.php';
@@ -113,10 +111,22 @@ class AverageDiagramm {
         $legend->setOpacity(50);
         $chart->setLegend($legend);
         $chart->setYAxisToInteger(true);
-        $legend = $this->legend();
         /* Width of the colums */
         $data->setBarOptions(0.5, "center");
-
+        $tpl = new ilTemplate("tpl.DigramLegend.html", true, true, "Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview");
+        
+        //////LEGEND////////
+        $lng->loadLanguageModule("bibitem");
+        $lng->loadLanguageModule("assessment");
+        $tpl->setVariable("number", $lng->txt("bibitem_number"));
+        $tpl->setVariable("percent", $lng->txt("points"));
+        for ($i = 1; $i <= 10; $i++) {
+            $tpl->setCurrentBlock("buckets");
+            $tpl->setVariable("Numbers", $i);
+            $tpl->setVariable("Percents", "&le; ".$i *10 ." %");
+            $tpl->parseCurrentBlock();
+        }
+        
         $data->addPoint(1, $this->buckets[0]);
         $data->addPoint(2, $this->buckets[1]);
         $data->addPoint(3, $this->buckets[2]);
@@ -128,26 +138,8 @@ class AverageDiagramm {
         $data->addPoint(9, $this->buckets[8]);
         $data->addPoint(10, $this->buckets[9]);
         $chart->addData($data);
-        return "<div style=\"margin:10px\"><table><tr valign=\"bottom\"><td>" . $chart->getHTML() . "</td><td class=\"small\" style=\"padding-left:15px\">" . $legend . "</td></tr></table></div>";
-    }
-
-    function legend() {
-        $legend = "<div style ='background-color: #EDC240;opacity: 0.8;margin-top: 6px;'>";
-        $legend .= "<table>";
-        $legend .= "<tr valign=\"top\"><td>Nummer</td><td>|Punkte</td></tr>";
-        $legend .= "<tr valign=\"top\"><td>1</td><td>| 0%-10%</td></tr>";
-        $legend .= "<tr valign=\"top\"><td>2</td><td>| 11%-20%</td></tr>";
-        $legend .= "<tr valign=\"top\"><td>3</td><td>| 21%-30%</td></tr>";
-        $legend .= "<tr valign=\"top\"><td>4</td><td>| 31%-40%</td></tr>";
-        $legend .= "<tr valign=\"top\"><td>5</td><td>| 41%-50%</td></tr>";
-        $legend .= "<tr valign=\"top\"><td>6</td><td>| 51%-60%</td></tr>";
-        $legend .= "<tr valign=\"top\"><td>7</td><td>| 61%-70%</td></tr>";
-        $legend .= "<tr valign=\"top\"><td>8</td><td>| 71%-80%</td></tr>";
-        $legend .= "<tr valign=\"top\"><td>9</td><td>| 81%-90%</td></tr>";
-        $legend .= "<tr valign=\"top\"><td>10</td><td>| 91%-100%</td></tr>";
-        $legend .= "</table>";
-        $legend .= "</div>";
-        return $legend;
+        $tpl->setVariable("diagram", $chart->getHTML());
+         return $tpl->get();
     }
 
     function getAverage() {
@@ -178,7 +170,7 @@ class AverageDiagramm {
         } else if ($average > 90.00 && $average <= 100.00) {
             $this->buckets[9] ++;
         } else {
-            //last index checks vor errors 
+            //last index checks vor errors
             $this->buckets[10] ++;
         }
     }
@@ -275,7 +267,7 @@ class PieAverageDiagramm extends AverageDiagramm {
         } else if ($average > 90.00 && $average <= 100.00) {
             $this->buckets[9] ++;
         } else {
-            //last index checks vor errors 
+            //last index checks vor errors
             $this->buckets[10] ++;
         }
     }
@@ -290,7 +282,7 @@ class PieAverageDiagramm extends AverageDiagramm {
 
 /**
  * Creats a Bar diagramm for exercises.
- * The Bucketsize is calculatet by a given value from the user 
+ * The Bucketsize is calculatet by a given value from the user
  */
 class exerciseCharts {
 
@@ -312,6 +304,9 @@ class exerciseCharts {
                         ->getDirectory() . '/classes/mapper/class.ilExerciseMapper.php';
         $excMapper = new ilExerciseMapper();
         $this->data = $excMapper->getTotalScores($overviewId);
+        if (empty($this->data)) {
+            $this->data = array();
+        }
         sort($this->data);
         if (!(($this->getMaxValue() / $sizeOfBucket) <= 100)) {
             $this->sizeOfBucket = $this->getMaxValue() / 100;
@@ -399,8 +394,8 @@ class exerciseCharts {
         }
         $chart->addData($data);
         $tpl->setVariable("diagram", $chart->getHTML());
-        if ($this->bucketsToSmall){
-        $tpl->setVariable("overSize", $lng->txt("rep_robj_xtov_bucketFail"));
+        if ($this->bucketsToSmall) {
+            $tpl->setVariable("overSize", $lng->txt("rep_robj_xtov_bucketFail"));
         }
         return $tpl->get();
         // return implode(";",$this-> buckets);

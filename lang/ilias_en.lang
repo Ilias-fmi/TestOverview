@@ -1,6 +1,7 @@
 <!-- language file start -->
 obj_xtov#:#Test Overview
 objs_xtov#:#Test Overview
+testOverview#:#Test Overview
 obj_xtov_duplicate#:#Copy
 objs_xtov_duplicate#:#Copy Test Overviews
 xtov_add#:#Add Test Overview
@@ -21,6 +22,7 @@ properties#:#Settings
 edit_properties#:#Edit Settings
 TestOverview#:#TestOverview
 ExerciseOverview#:#ExerciseOverview
+ex_overview#:#Exercise Overview
 title#:#Title
 description#:#Description
 save#:#Save
@@ -95,4 +97,6 @@ average_mark#:#Average Mark
 update_rank#:#Update ranking
 success_update#:#Update sucessfull
 bucketFail#:#The chosen granularity is to small. The buckt size is set to 100.
-
+nmbr#:#Number
+points#:#Points 
+out_of#:#in your Group out of

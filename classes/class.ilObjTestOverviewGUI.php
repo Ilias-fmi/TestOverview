@@ -5,6 +5,7 @@
  * 	@package	TestOverview repository plugin
  * 	@category	GUI
  * 	@author		Greg Saive <gsaive@databay.de>
+ *      @author         Jan Ruthardt <janruthardt@web.de>
  */
 require_once 'Services/Repository/classes/class.ilObjectPluginGUI.php';
 require_once 'Services/Form/classes/class.ilPropertyFormGUI.php';
@@ -39,19 +40,14 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
      * 	@return string
      */
     public function getAfterCreationCmd() {
-        global $ilAccess;
-        if ($ilAccess->checkAccess('write', '', $this->object->getRefId())) {
-            return 'UserResults';
-        } else {
-            return 'UserResults';
-        }
+        return 'showContent';
     }
 
     /**
      * 	@return string
      */
     public function getStandardCmd() {
-        return 'UserResults';
+        return 'showContent';
     }
 
     /**
@@ -72,7 +68,6 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
         global $ilTabs, $tpl;
         $tpl->setDescription($this->object->getDescription());
         $next_class = $this->ctrl->getNextClass($this);
-        echo $cmd;
         switch ($next_class) {
             case 'ilmdeditorgui':
                 $this->checkPermission('write');
@@ -275,7 +270,7 @@ protected function showContent()
 		$tpl->setContent( $table->getHTML());
                 $table->getData();
                 $ilToolbar->addButton($this->txt('orderName'), $ilCtrl->getLinkTarget($this,'showContent'));
-                $ilToolbar->addButton($$this->txt('update_rank'),$ilCtrl->getLinkTarget($this,'updateStudentView'));
+                $ilToolbar->addButton($this->txt('update_rank'),$ilCtrl->getLinkTarget($this,'updateStudentView'));
              }
 
     /**
@@ -364,8 +359,8 @@ protected function showContent()
         try {
             $Obj = new BinDiagrammMapper($this, 'showContent');
             $tpl->setContent($Obj->createAverageDia("BARS"));
-            $ilToolbar->addButton($this->txt("pie_chart"), $ilCtrl->getLinkTarget($this, 'testPieChart'));
-            $ilToolbar->addButton($this->txt("bar_chart"), $ilCtrl->getLinkTarget($this, 'subTabTO'));
+            // $ilToolbar->addButton($this->txt("pie_chart"), $ilCtrl->getLinkTarget($this, 'testPieChart'));
+            //$ilToolbar->addButton($this->txt("bar_chart"), $ilCtrl->getLinkTarget($this, 'subTabTO'));
         } catch (Exception $ex) {
             $tpl->setContent("Diagramm can not be Created");
         }
