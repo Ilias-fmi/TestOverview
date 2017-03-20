@@ -2,24 +2,24 @@
 class ilTestOverviewExport extends ilObjTestOverviewGUI
 {
     
-    /** @protected type extended/reduced (TestQuestions) */
+    /** @protected string extended/reduced (TestQuestions) */
     protected $type;
-    /** @var integer ID of current TestOverview  */
+    /** @protected integer ID of current TestOverview  */
     protected $overviewID;
-    
+    /** @var integer, ID of parent object  */
     protected $parentID;
-    
-    protected $filename;
-      
+    /** @var string of resultsfile  */
+    public $filename ;
+    /** @var array of integer, testIDs  */  
     protected $testIDs;
-    
+    /** @var array of integer, exerciseIDs  */
     protected $exerciseIDs;
-    
+    /** @var array of integer, userIds  */
     private $users;
-    
+    /** @var array, association of users and their test results */
     private $assoc;
     
-public function __construct($parent, $id ,$type, $a_main_object= null){
+    public function __construct($parent, $id ,$type, $a_main_object= null){
       
         parent::__construct($parent, $a_main_object);
         $this->type=$type;
@@ -35,8 +35,9 @@ public function __construct($parent, $id ,$type, $a_main_object= null){
         
         $this->filename = $parent->object->getTitle()."_Export_".$date."_".$type.".csv";
         
-}   
-function buildExportFile()
+    }
+    
+    function buildExportFile()
     {       
                 
                 switch ($this->type)
@@ -71,13 +72,14 @@ function buildExportFile()
         
         $rows= array();
         $datarow = array();
-        //var_dump($this->users);
+        
         //Build the headrow
         array_push($datarow, $this->txt("name"));
         array_push($datarow,$this->txt("mat"));
         array_push($datarow,$this->txt("group"));
         array_push($datarow,$this->txt("mail"));
         array_push($datarow,$this->txt("gend"));
+        
         //push all TestNames into the headrow
         $tCounter = 1;
         foreach ($this->testIDs as $key => $value) {
@@ -145,11 +147,12 @@ function buildExportFile()
         
         $csv = "";
         $separator = ";";
+        
 	foreach ($rows as $evalrow)
 	{
 		$csvrow = $this->processCSVRow($evalrow, TRUE, $separator);
-		$csv .= join($csvrow, $separator) . "\n";
-                //var_dump($evalrow);
+                $csv .= join($csvrow, $separator) . "\n";
+                
         }
         ilUtil::deliverData($csv, ilUtil::getASCIIFilename($this->filename));
 
@@ -367,7 +370,12 @@ function buildExportFile()
     }
     
     
-    
+    /**
+     * 
+     * @global type $ilDB
+     * @param integer $userID
+     * @return string
+     */
     protected function participatedGroups($userID) {
         global $ilDB;
         $info = array();
@@ -392,9 +400,12 @@ function buildExportFile()
             array_push($info, $record);
             
         }
+	  
         foreach ($info as $key => $group) {
-            $groups .=  $group['title']." ";
+            $groups .=  $group['title'].", ";
         }
+	$groups = substr($groups,0,strlen($groups)-2);
+
         return $groups;
     }
     /**
@@ -521,16 +532,7 @@ function buildExportFile()
 	return $row['reached_points'];
 		
     }
-    //public function getParentId() {
-      //      global $ilDB;
-        //    $query = "SELECT parent FROM tree WHERE child = %s";
-          //  $result = $ilDB->queryF($query, 
-            //                   array('integer'),
-              //                 array($this->ref_id));
-          //  $record = $ilDB->fetchAssoc($result);
-           // return $record['parent'];
-        //}
-    
+	
     /**
      * 
      * @global type $ilDB
@@ -668,9 +670,6 @@ function buildExportFile()
     }
     
     
-    
-    
-
     /**
      * 
      * @param type $activeID
@@ -679,8 +678,6 @@ function buildExportFile()
      */
     public function getMark ($activeID, $questionID){
             foreach ($this->assoc as $row => $value){
-                //echo "10 Punkte: $value->active_fi, $value->question_fi, $value->points\n";
-
                 if ($value->active_fi == $activeID && $value->question_fi == $questionID ){
 
                     if ($value->points != null){
@@ -766,14 +763,6 @@ function buildExportFile()
         return $uniqueIDs;
     }
     
-    /* Concatenate all Test and Exercise users */
-    public function concatUsers() {
-        //$testUsers = $this->getUniqueTestUserID();
-        //$exerciseUsers = $this->getUniqueExerciseUserID();
-        //$allUsers = (array_merge($testUsers, $exerciseUsers));
-        
-       //return $allUsers;
-    }
     /* Returns all Assignments for a given excerciseID */
     public function getAssignments($exerciseID){
         global $ilDB;
@@ -796,6 +785,7 @@ function buildExportFile()
         
         return $assignmentID;
     }
+    
     /* Returns the exercise mark for a given userID and exerciseID  */
     protected function getExerciseMark($userID, $exerciseID) {
         global $ilDB;
@@ -811,6 +801,7 @@ function buildExportFile()
         
        return $record['mark'];
     }
+    
     /* Returns the assignment mark for a given userID and assignmentID  */
     protected function getAssignmentMark($userID, $assignmentID) {
         global $ilDB;
