@@ -193,7 +193,7 @@ public function dbZurückgeben(){
 			WHERE
 				$where
 		";
-
+                echo("<script>console.log('PHP: QUERY $query ');</script>");
 		if (! empty($group))
 			$query .= " GROUP BY $group";
 		if (! empty($order))
@@ -203,7 +203,7 @@ public function dbZurückgeben(){
 		$result = $this->db->query($query);
 		while ($row = $this->db->fetchObject($result))
 			$data['items'][] = $row;
-
+                        echo("<script>console.log('PHP: getlist items  ');</script>");
 		if( isset($params['limit']) )
 		{
 			/* Fill 'cnt' with total count of items */

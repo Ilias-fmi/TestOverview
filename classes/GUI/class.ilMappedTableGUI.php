@@ -91,9 +91,12 @@ abstract class ilMappedTableGUI extends ilTable2GUI
 		$params = array();
 		if( $this->getExternalSegmentation() )
 		{
+                    
+                        echo("<script>console.log('PHP: OFFSET SETZEN ');</script>");
 			$params['limit'] = $this->getLimit();
 			$params['offset'] = $this->getOffset();
 		}
+                
 		if( $this->getExternalSorting() )
 		{
 			$params['order_field'] = $this->getOrderField();
@@ -104,18 +107,22 @@ abstract class ilMappedTableGUI extends ilTable2GUI
 		$filters  = array("overview_id" => $overview->getId()) + $this->filter;
 
 		/* Execute query. */
-                $data = $this->getMapper()->getUniqueUserId($overview->getID());
+                $data = $this->getMapper()->getList($params, $filters);
 
-                if( !count($data) && $this->getOffset() > 0) {
+        if( !count($data['items']) && $this->getOffset() > 0) {
 			/* Query again, offset was incorrect. */
-                $this->resetOffset();
-	        $data = $this->getMapper()->getUniqueUserId($overview->getID());
+            $this->resetOffset();
+	        $data = $this->getMapper()->getList($params, $filters);
         }
 
 		/* Post-query logic. Implement custom sorting or display
 		   in formatData overload. */
-		$data = $this->formatData($data,$sorting);
-		$this->setData( $this->buildTableRowsArray($data['items']) );
+	
+        $countD=$data['cnt'];
+        echo("<script>console.log('PHP:COUNTD $countD ');</script>");
+              
+        $data = $this->formatData($data,$sorting);
+	$this->setData( $this->buildTableRowsArray($data['items']) );
 		
  		if( $this->getExternalSegmentation() )
 		{

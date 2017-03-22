@@ -294,14 +294,41 @@ class rankGui extends ilMappedTableGUI {
 		
 		
 		$index=0;
-                echo("<script>console.log('PHP: format data  ');</script>");
-		foreach ($data as $usrId)
-		{	
-                    echo("<script>console.log('PHP: format data  $usrId ');</script>");
-		$formatted['items'][$usrId] = $usrId;              	
-		$index++;
-		}
+                $count=$data['cnt'];
+                echo("<script>console.log('PHP: format data  $count');</script>");
                 
+                if(!$data['items'])
+                {
+                $overview = $this->getParentObject()->object;
+		$uniqueUsers = $this->getMapper()->getUniqueUserId($overview->getID());
+                
+                foreach ($uniqueUsers as $user) {
+                  $formatted['items'][$user] = $user;  
+                }
+                              
+                }
+		foreach ($data['items'] as $item)
+		{
+                    
+                    
+			$container = ilObjectFactory::getInstanceByObjId($item->obj_id, false);
+
+			if ($container === false)
+				throw new OutOfRangeException;
+			elseif (! empty($this->filter['flt_group_name'])
+					&& $container->getId() != $this->filter['flt_group_name'])
+				/* Filter current group */
+				continue;
+
+			$participants = $this->getMembersObject($item);
+			/* Fetch member object by ID to avoid one-per-row
+			   SQL queries. */
+			foreach ($participants->getMembers() as $usrId)
+			{
+                            echo("<script>console.log('PHP: format MEMBER dataITEM $usrId  ');</script>");
+				$formatted['items'][$usrId] = $usrId;
+			}
+                }
 		$formatted['items'] = $this->fetchUserInformation($formatted['items']);
                 
                  if($b==false){   
@@ -335,32 +362,7 @@ class rankGui extends ilMappedTableGUI {
 			$user->setLastname($row['lastname']);
 			$user->setFullname();
                         $user->setGender($row['gender']);
-                        
-                        if (! empty($this->filter['flt_group_name']))
-			{       
-                                echo("<script>console.log('PHP: Gruppen Filter 1 ');</script>");
-				$gname=$filter = $this->filter['flt_group_name']; 
-                                $mapper = new ilOverviewMapper();
-                                
-                                $overviewGroups =$this->getParentObject()->object->getParticipantGroups(TRUE)  ;
-                                foreach ($overviewGroups as $group) {
-                                //$groupID= $group->getId();
-                                //$object = ilObjectFactory::getInstanceByObjId($group);
-                                if(false === strstr($group->getTitle(),$gname))
-                                {
-                                    if(false ===ilObjGroup::_isMember($user->getId(),$group)){
-                                      /* User should be skipped. (Does not match filter) */
-					continue;  
-                                    }
-                                }   
-                                }
-                                echo("<script>console.log('PHP: Gruppen Filter 2 ');</script>");
-				
-                                
-			}
-                        
-                        
-                        
+     
 			if (! empty($this->filter['flt_participant_name']))
 			{
 				$name   = strtolower($user->getFullName());
@@ -547,17 +549,18 @@ class rankGui extends ilMappedTableGUI {
 		$filters  = array("overview_id" => $overview->getId()) + $this->filter;
 
 		/* Execute query. */
-                $data = $this->getMapper()->getUniqueUserId($overview->getID());
+                $data = $this->getMapper()->getList($params, $filters);
+
 
                 if( !count($data) && $this->getOffset() > 0) {
 			/* Query again, offset was incorrect. */
                 $this->resetOffset();
-	        $data = $this->getMapper()->getUniqueUserId($overview->getID());
+	       $data = $this->getMapper()->getList($params, $filters);
         }
 
 		/* Post-query logic. Implement custom sorting or display
 		   in formatData overload. */
-		$data = $this->formatData($data,$sorting);
+		$data = $this->formatData($data,FALSE);
             
         
          $this->getMapper()->resetRanks($this->getParentObject()->object->getID());

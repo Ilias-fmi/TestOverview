@@ -94,6 +94,9 @@ exercises_updated_success#:#Updated successfully.
 avg_points#:#Average Points
 total_mark#:#Total Mark
 average_mark#:#Average Mark
+update_rank#:#Update ranking
+success_update#:#Update sucessfull
 bucketFail#:#The chosen granularity is to small. The buckt size is set to 100.
 nmbr#:#Number
 points#:#Points 
+out_of#:#in your Group out of
