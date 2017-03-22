@@ -106,19 +106,7 @@ $fields_ExOverview = array(
 		'default' => 0
 	),
 );
-if(!$ilDB->tableExists('rep_robj_xtov_exview'))
-{
-    $ilDB->createTable('rep_robj_xtov_exview', $fields_ExOverview);
-    $ilDB->addPrimaryKey('rep_robj_xtov_exview', array('obj_id'));
-}
-else
-{
-    if (!$ilDB->tableColumnExists('rep_robj_xtov_exview','obj_id')){
-        $ilDB->dropTable('rep_robj_xtov_exview');
-        $ilDB->createTable('rep_robj_xtov_exview', $fields_ExOverview);
-        $ilDB->addPrimaryKey('rep_robj_xtov_exview', array('obj_id'));
-    }
-}
+
 /* Exercise to Overview relationship table */
 $fields_exercise = array(
 	'obj_id_overview' => array(
