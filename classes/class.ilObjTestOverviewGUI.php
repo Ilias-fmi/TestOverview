@@ -380,8 +380,8 @@ protected function showContent()
 
         try {
             $Obj = new BinDiagrammMapper($this, 'showContent');
-            $ilToolbar->addButton($this->txt("pie_chart"), $ilCtrl->getLinkTarget($this, 'testPieChart'));
-            $ilToolbar->addButton($this->txt("bar_chart"), $ilCtrl->getLinkTarget($this, 'subTabTO'));
+           // $ilToolbar->addButton($this->txt("pie_chart"), $ilCtrl->getLinkTarget($this, 'testPieChart'));
+           // $ilToolbar->addButton($this->txt("bar_chart"), $ilCtrl->getLinkTarget($this, 'subTabTO'));
             $tpl->setContent($Obj->createAverageDia("PIE"));
         } catch (Exception $ex) {
             $tpl->setContent("Diagramm can not be Created");
@@ -520,9 +520,7 @@ protected function showContent()
         $ilExerciseMapper = new ilExerciseMapper;
         $table = new rankGUI($this, 'updateStudentViewEO');
         $table->setMapper($ilExerciseMapper);
-        echo("<script>console.log('PHP: UPDATE STUDENT VIEW');</script>");
         $table->getStudentsRanked();
-        echo("<script>console.log('PHP: UPDATE STUDENT VIEW');</script>");
         ilUtil::sendSuccess($this->txt('success_update'), true);
         $ilCtrl->redirect($this, 'subTabEO');  
 

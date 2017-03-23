@@ -100,4 +100,5 @@ bucketFail#:# Die gewählte Körnung(Granularität) ist zu klein. Die Unterteilu
 nmbr#:#Nummer
 points#:#Punkte
 out_of#:#in Ihrer Gruppe von
-
+notAvaiable#:#Nicht Berechenbar
+failureMessage#:#Ein oder mehrere Ergebnisse enthalten Buchstaben oder Sonderzeichen

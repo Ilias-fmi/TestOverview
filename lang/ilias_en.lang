@@ -100,3 +100,5 @@ bucketFail#:#The chosen granularity is to small. The buckt size is set to 100.
 nmbr#:#Number
 points#:#Points 
 out_of#:#in your Group out of
+notAvaiable#:#Not Calculable
+failureMessage#:#One or more results contain (special) characters  

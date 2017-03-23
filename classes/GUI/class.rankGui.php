@@ -140,9 +140,7 @@ class rankGui extends ilMappedTableGUI {
         /* martins code ende */
         $this->filter['flt_participant_name'] = $pname->getValue();
         $stringN = $pname->getValue();
-        echo("<script>console.log('PHP: RANK NAME FILTER $stringN');</script>");
-
-         $this->filter['flt_group_name']= $gname->getValue();
+        $this->filter['flt_group_name']= $gname->getValue();
     }
 
     /**
@@ -160,16 +158,19 @@ class rankGui extends ilMappedTableGUI {
         $results = array();
         $rowID = $row['member_id'];
         echo("<script>console.log('PHP: fill row member id $rowID ');</script>");
+        $flagIsNumeric=true;
         for ($index = 0; $index < count($dataArray); $index++) {
             $obj_id = $dataArray[$index];
-
             $this->getMapper()->getExerciseName($obj_id);
             $DbObject = $this->getMapper()->getArrayofObjects($overview->getID());
             $mark = $this->getMapper()->getMark($row['member_id'], $obj_id, $DbObject);
             $result = $mark;
             $memID = $obj_id;
-
-            echo("<script>console.log('PHP: fill row mark $mark');</script>");
+            
+            if(!is_numeric($result)==1&&!empty($result)){
+             $flagIsNumeric=false;         
+            }
+            
             $results[] = $result;
             $progress = '2';
             $state = $this->isPassed($obj_id, $row['member_id']);
@@ -192,6 +193,9 @@ class rankGui extends ilMappedTableGUI {
             $average = array_sum($results);
         } else {
             $average = "";
+        }
+        if(!$flagIsNumeric){
+            $average=$this->lng->txt('rep_robj_xtov_notAvaiable');
         }
 
         $this->tpl->setVariable("AVERAGE_CLASS", "");
