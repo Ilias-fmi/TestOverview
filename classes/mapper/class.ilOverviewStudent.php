@@ -11,6 +11,20 @@
  * DB Mapper for the Student View (User with only read Permissons)
  */
 class studentMapper {
+    public function getTestData($studId,$testRefId){
+        global $ilDB;
+        $query = "Select DISTINCT title, points,ref_id, maxpoints,tst_pass_result.tstamp, tst_tests.ending_time, ending_time_enabled as timeded  From
+				object_reference Join tst_tests Join tst_active Join tst_pass_result Join object_data ON
+                ( object_reference.obj_id = tst_tests.obj_fi AND tst_active.test_fi = tst_tests.test_id
+                AND tst_active.active_id = tst_pass_result.active_fi AND object_reference.obj_id = object_data.obj_id) 
+               AND tst_active.user_fi = '$studId' and ref_id = '$testRefId'
+                order by tst_pass_result.tstamp DESC 
+                limit 1
+                ";
+        $result = $ilDB->query($query);
+       return  $ilDB->fetchObject($result);
+        
+    }
 
     /**
      * Gives back the Results for the given Student and TestOverview ID 
@@ -25,11 +39,12 @@ class studentMapper {
         $maxPoints;
 
         $data = array();
-        $query = "Select DISTINCT title, points,ref_id_test, maxpoints, tst_tests.ending_time, ending_time_enabled as timeded From
+        /*$query = "Select DISTINCT title, points,ref_id_test, maxpoints, tst_tests.ending_time, ending_time_enabled as timeded From
                     rep_robj_xtov_t2o Join object_reference Join tst_tests Join tst_active Join tst_pass_result Join object_data ON
                 (rep_robj_xtov_t2o.ref_id_test = object_reference.ref_id AND object_reference.obj_id = tst_tests.obj_fi AND tst_active.test_fi = tst_tests.test_id
                 AND tst_active.active_id = tst_pass_result.active_fi AND object_reference.obj_id = object_data.obj_id) 
-                where obj_id_overview ='" . $overviewId . "'AND tst_active.user_fi = '" . $studId . "'";
+                where obj_id_overview ='" . $overviewId . "'AND tst_active.user_fi = '" . $studId . "'";*/
+        $query = "select ref_id_test from rep_robj_xtov_t2o where obj_id_overview = '$overviewId'";
         $result = $ilDB->query($query);
         $tpl = new ilTemplate("tpl.stud_view.html", true, true, "Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview");
         //Internationalization
@@ -53,24 +68,24 @@ class studentMapper {
         while ($testObj = $ilDB->fetchObject($result)) {
             array_push($data, $testObj);
         }
-
         foreach ($data as $set) {
+            $result = $this-> getTestData($studId,$set->ref_id_test);
+            //var_dump($result);
             $timestamp = time();
             $datum = (float) date("YmdHis", $timestamp);
-            $testTime = (float) $set->ending_time;
+            $testTime = (float) $result->ending_time;
             
-            var_dump( $testTime);
-            var_dump ($datum);
+          
             /* Checks if the test has been finished or if no end time is given */
-           if ((($testTime - $datum) < 0 || $set->timeded == 0) && $this->isTestDeleted($set->ref_id_test) == null) {
+           if ((($testTime - $datum) < 0 || $result->timeded == 0) && $this->isTestDeleted($result->ref_id_test) == null  ) {
                 $tpl->setCurrentBlock("test_results");
-                $tpl->setVariable("Name", $set->title);
-                $average += $set->points;
-                $maxPoints += $set->maxpoints;
-                if ($set->points > ($set->maxpoints / 2)) {
-                    $pointsHtml = "<td class='green-result'>" . $set->points . "</td>";
+                $tpl->setVariable("Name", $result->title);
+                $average += $result->points;
+                $maxPoints += $result->maxpoints;
+                if ($result->points > ($result->maxpoints / 2)) {
+                    $pointsHtml = "<td class='green-result'>" . $result->points . "</td>";
                 } else {
-                    $pointsHtml = "<td class='red-result'>" . $set->points . "</td>";
+                    $pointsHtml = "<td class='red-result'>" . $result->points . "</td>";
                 }
                 $tpl->setVariable("Point", $pointsHtml);
 
