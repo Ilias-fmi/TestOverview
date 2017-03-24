@@ -1220,7 +1220,6 @@ protected function showContent()
         global $tpl, $lng, $ilCtrl;
         $this->initSettingsForm();
         $this->populateSettings();
-        echo "hello top";
         if (isset($_POST['membership_ids'])) {
             /* Executing the registered test retrieval again with the same filters
               allows to determine which tests are really removed. */
@@ -1230,7 +1229,6 @@ protected function showContent()
                 $this->object
                         ->addGroup($groupId);
             }
-            echo "hello";
             ilUtil::sendSuccess($lng->txt('rep_robj_xtov_memberships_updated_success'), true);
             $ilCtrl->redirect($this, 'subTabEO2');
         }

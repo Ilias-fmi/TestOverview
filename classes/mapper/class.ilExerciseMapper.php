@@ -317,7 +317,6 @@ class ilExerciseMapper extends ilDataMapper {
 			   ;
 
             $result= $this->db->query($query);
-            //echo("<script>console.log('PHP: q ');</script>");
              return  $result;
 
         }

@@ -157,7 +157,6 @@ class rankGui extends ilMappedTableGUI {
         $dataArray = $this->getMapper()->getUniqueExerciseId($overview->getID());
         $results = array();
         $rowID = $row['member_id'];
-        echo("<script>console.log('PHP: fill row member id $rowID ');</script>");
         $flagIsNumeric=true;
         for ($index = 0; $index < count($dataArray); $index++) {
             $obj_id = $dataArray[$index];
@@ -299,7 +298,6 @@ class rankGui extends ilMappedTableGUI {
 		
 		$index=0;
                 $count=$data['cnt'];
-                echo("<script>console.log('PHP: format data  $count');</script>");
                 
                 if(!$data['items'])
                 {
@@ -329,8 +327,7 @@ class rankGui extends ilMappedTableGUI {
 			   SQL queries. */
 			foreach ($participants->getMembers() as $usrId)
 			{
-                            echo("<script>console.log('PHP: format MEMBER dataITEM $usrId  ');</script>");
-				$formatted['items'][$usrId] = $usrId;
+                         $formatted['items'][$usrId] = $usrId;
 			}
                 }
 		$formatted['items'] = $this->fetchUserInformation($formatted['items']);
@@ -371,15 +368,12 @@ class rankGui extends ilMappedTableGUI {
 			{
 				$name   = strtolower($user->getFullName());
 				$filter = strtolower($this->filter['flt_participant_name']);
-                                  echo("<script>console.log('PHP: filter name $name ');</script>");
-                                  echo("<script>console.log('PHP: filter namefilter $filter ');</script>");
-				/* Simulate MySQL LIKE operator */
+                                /* Simulate MySQL LIKE operator */
 				if (false === strstr($name, $filter))
 				{
-                                    $ausgabe=strstr($name, $filter);
-                                    echo("<script>console.log('PHP: user is skipped $ausgabe ');</script>");
-					/* User should be skipped. (Does not match filter) */
-					continue;
+                                $ausgabe=strstr($name, $filter);
+                                /* User should be skipped. (Does not match filter) */
+				continue;
 				}
 			}
                         if (! empty($this->filter['flt_participant_gender']))
@@ -392,18 +386,14 @@ class rankGui extends ilMappedTableGUI {
 				/* Simulate MySQL LIKE operator */
 				if (false === strstr($gender,$filterGender))
 				{
-                                    echo("<script>console.log('PHP: user is skipped gender ');</script>");
-				
-					/* User should be skipped. (Does not match filter) */
+                                    /* User should be skipped. (Does not match filter) */
 					continue;
 				}
 			}
-			echo("<script>console.log('PHP: fetchUI $testString ');</script>");
 			$users[ $row['usr_id'] ] = $user;
                         
 		}
 		$test=count($users);
-                 echo("<script>console.log('PHP: fetchUI items count $test ');</script>");
 		return $users;
 	}
 
@@ -521,8 +511,7 @@ class rankGui extends ilMappedTableGUI {
           * Function to rank all students and save the result in the database
           */
         public function getStudentsRanked()
-        {     echo("<script>console.log('PHP: filter EO Set Date Ranking ');</script>");
-            
+        {                 
             if( $this->getExternalSegmentation() && $this->getExternalSorting() )
 		{
 			$this->determineOffsetAndOrder();
@@ -717,7 +706,6 @@ class rankGui extends ilMappedTableGUI {
         $rows = array();
 
         foreach ($data as $member) {
-            echo("<script>console.log('PHP: build tablerow');</script>");
             if (!($member->getId() == null)) {
                 $rows[] = array(
                     'member_id' => $member->getId(),

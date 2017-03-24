@@ -91,8 +91,6 @@ abstract class ilMappedTableGUI extends ilTable2GUI
 		$params = array();
 		if( $this->getExternalSegmentation() )
 		{
-                    
-                        echo("<script>console.log('PHP: OFFSET SETZEN ');</script>");
 			$params['limit'] = $this->getLimit();
 			$params['offset'] = $this->getOffset();
 		}
@@ -119,7 +117,6 @@ abstract class ilMappedTableGUI extends ilTable2GUI
 		   in formatData overload. */
 	
         $countD=$data['cnt'];
-        echo("<script>console.log('PHP:COUNTD $countD ');</script>");
               
         $data = $this->formatData($data,$sorting);
 	$this->setData( $this->buildTableRowsArray($data['items']) );

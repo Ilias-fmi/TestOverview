@@ -197,8 +197,7 @@ class ilTestOverviewTableGUI
 				if( $activeId > 0 )
 				{
 					$resultLink = $this->buildMemberResultLinkTarget($this->accessIndex[$obj_id], $activeId);
-                                        echo("<script>console.log('PHP: progreesss $progress');</script>");
-					$this->populateLinkedCell($resultLink, $result, $this->getCSSByProgress($progress));
+                                        $this->populateLinkedCell($resultLink, $result, $this->getCSSByProgress($progress));
 				}
 				else
 				{
@@ -454,10 +453,9 @@ class ilTestOverviewTableGUI
 
 		/* Partition data. */
 		foreach ($data['items'] as $userObj) {
-			$name = $userObj->getFullName();
-                        $name=strtoupper($name);
-                        echo("<script>console.log('PHP: sort name $name');</script>");
-			$azList[$name{0}][] = $userObj;
+		$name = $userObj->getFullName();
+                $name=strtoupper($name);
+                $azList[$name{0}][] = $userObj;
 		}
 
 		/* Group all results. */
@@ -588,27 +586,27 @@ class ilTestOverviewTableGUI
 		$filters  = array("overview_id" => $overview->getId()) + $this->filter;
 
 		/* Execute query. */
-        $data = $this->getMapper()
+                $data = $this->getMapper()
 				     ->getList($params, $filters);
 
-        if( !count($data['items']) && $this->getOffset() > 0) {
-	    /* Query again, offset was incorrect. */
-            $this->resetOffset();
-	    $data = $this->getMapper()
+                if( !count($data['items']) && $this->getOffset() > 0) {
+                /* Query again, offset was incorrect. */
+                $this->resetOffset();
+                $data = $this->getMapper()
 					     ->getList($params, $filters);
-        }
+                }
 
 		/* Post-query logic. Implement custom sorting or display
 		   in formatData overload. */
 		$data = $this->formatData($data);
           
             
-        $this->getmapper()->resetRanks($this->getParentObject()->object->getID());
-         foreach ($data['items'] as $userObj) 
-         {   
-            $stdID = $userObj->getId();  
-            $overview= $this->getParentObject()->object;
-            $results = array();
+                $this->getmapper()->resetRanks($this->getParentObject()->object->getID());
+                 foreach ($data['items'] as $userObj) 
+                 {   
+                $stdID = $userObj->getId();  
+                $overview= $this->getParentObject()->object;
+                $results = array();
                
 					
 		foreach ($overview->getUniqueTests() as $obj_id => $refs)
