@@ -25,7 +25,8 @@ class studentMapper {
         $maxPoints;
 
         $data = array();
-        $query = "Select DISTINCT title, points,ref_id_test, maxpoints, ending_time, ending_time_enabled as timeded From rep_robj_xtov_t2o Join object_reference Join tst_tests Join tst_active Join tst_pass_result Join object_data ON
+        $query = "Select DISTINCT title, points,ref_id_test, maxpoints, tst_tests.ending_time, ending_time_enabled as timeded From
+                    rep_robj_xtov_t2o Join object_reference Join tst_tests Join tst_active Join tst_pass_result Join object_data ON
                 (rep_robj_xtov_t2o.ref_id_test = object_reference.ref_id AND object_reference.obj_id = tst_tests.obj_fi AND tst_active.test_fi = tst_tests.test_id
                 AND tst_active.active_id = tst_pass_result.active_fi AND object_reference.obj_id = object_data.obj_id) 
                 where obj_id_overview ='" . $overviewId . "'AND tst_active.user_fi = '" . $studId . "'";
@@ -57,10 +58,11 @@ class studentMapper {
             $timestamp = time();
             $datum = (float) date("YmdHis", $timestamp);
             $testTime = (float) $set->ending_time;
-
-
+            
+            var_dump( $testTime);
+            var_dump ($datum);
             /* Checks if the test has been finished or if no end time is given */
-            if ((($testTime - $datum) < 0 || $set->timeded == 1) && $this->isTestDeleted($set->ref_id_test) == null) {
+           if ((($testTime - $datum) < 0 || $set->timeded == 0) && $this->isTestDeleted($set->ref_id_test) == null) {
                 $tpl->setCurrentBlock("test_results");
                 $tpl->setVariable("Name", $set->title);
                 $average += $set->points;
