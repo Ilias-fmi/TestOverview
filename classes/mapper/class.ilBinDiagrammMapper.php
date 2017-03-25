@@ -310,6 +310,7 @@ class exerciseCharts {
         sort($this->data);
         if (array_pop($this->data)== 0 ){
             $this->data = array();
+            $this->bucketsToSmall = true;
         }
         if (!(($this->getMaxValue() / $sizeOfBucket) <= 100)) {
             $this->sizeOfBucket = $this->getMaxValue() / 100;
