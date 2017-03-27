@@ -423,14 +423,14 @@ protected function showContent()
 
         require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
                         ->getDirectory() . '/classes/mapper/class.ilExerciseMapper.php';
-        if ($_POST["sizeBucket"] != null) {
+        if ($_POST["sizeBucket"] != null && $_POST["sizeBucket"] != 0) {
             $Obj = new exerciseCharts(30000, $this->object->getId(), $_POST["sizeBucket"]);
             //$tpl->setContent (implode(";", $Obj->getHTML()));
 
 
             $tpl->setContent($Obj->getHTML());
         } else {
-            $tpl->setContent($this->txt("max_diagram_value"));
+            $tpl->setContent($this->txt("max_diagram_value") . " &ne; 0");
         }
     }
 

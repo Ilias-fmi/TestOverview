@@ -5,6 +5,7 @@
  *	@package	TestOverview repository plugin
  *	@category	Core
  *	@author		Jan Ruthardt <janruthardt@web.de>
+ * Mapps the Slected Exercises with the Students an there Results
  *
  **/
 require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
@@ -255,7 +256,9 @@ class ilExerciseMapper extends ilDataMapper {
         }
         return $UniqueIDs;
     }
-
+    /*
+     * Summs up the Points of every Student
+     */
     public function getTotalScores($overviewID) {
         $data = array();
         $results = $this->buildMatrix($overviewID);
@@ -270,7 +273,7 @@ class ilExerciseMapper extends ilDataMapper {
             return $data;
         }
     }
-
+    
     public function getRefId($ObjId) {
         global $ilDB;
         $query = "SELECT ref_id FROM object_reference WHERE obj_id = %s";
@@ -367,7 +370,6 @@ class ilExerciseMapper extends ilDataMapper {
             {
                 $count++;
             }
-            //$count = count($data);
 
              return $count;
         }
