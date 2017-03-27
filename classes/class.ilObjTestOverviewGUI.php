@@ -338,7 +338,7 @@ protected function showContent()
         global $tpl, $ilTabs, $ilDB, $ilUser;
         $ilTabs->activateTab('UserResults');
         $dataMapper = new studentMapper ();
-        $tpl->setContent($dataMapper->getResults($ilUser->getId(), $this->object->getId()));
+        $tpl->setContent($dataMapper->getResults($ilUser->getId(), $this->object->getId(),$this->object ));
     }
 
     /* TABS FOR TEST OVERVIEW */

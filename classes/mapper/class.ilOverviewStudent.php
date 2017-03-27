@@ -12,6 +12,9 @@
  */
 class studentMapper {
 
+   
+    
+    
     /**
      * Gives back the Results for the given Student and TestOverview ID 
      * @global type $ilDB
@@ -19,7 +22,7 @@ class studentMapper {
      * @param type $overviewId
      * @return string
      */
-    public function getResults($studId, $overviewId) {
+    public function getResults($studId, $overviewId,$overview) {
         global $ilDB, $lng;
         $average;
         $maxPoints;
@@ -53,12 +56,21 @@ class studentMapper {
             array_push($data, $testObj);
         }
 
+        
+        
         foreach ($data as $set) {
             $timestamp = time();
             $datum = (float) date("YmdHis", $timestamp);
             $testTime = (float) $set->ending_time;
-
-
+            $refid=$set->ref_id_test;
+            $objid=$this->getObjId($refid);
+            var_dump($refid);
+            $test = $overview->getTest($objid);
+            $var=$test->getTestResult($studId);
+            $reached = $var["pass"]["total_reached_points"];
+            $test=$var["test"]["total_reached_points"];
+            //var_dump("reached ".$reached);
+            var_dump($var);
             /* Checks if the test has been finished or if no end time is given */
             if ((($testTime - $datum) < 0 || $set->timeded == 1) && $this->isTestDeleted($set->ref_id_test) == null) {
                 $tpl->setCurrentBlock("test_results");
@@ -190,6 +202,18 @@ class studentMapper {
         
     }
 
+    
+    public function getObjId($RefId) {
+        global $ilDB;
+        $query = "SELECT obj_id FROM object_reference WHERE ref_id = %s";
+        $result = $ilDB->queryF($query, array('integer'), array($RefId));
+
+        $record = $ilDB->fetchAssoc($result);
+
+        return $record['obj_id'];
+    }
+    
+    
     private function getNumTests($overviewId) {
         global $ilDB;
         $count = 0;
