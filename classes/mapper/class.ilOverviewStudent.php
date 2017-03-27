@@ -129,7 +129,7 @@ class studentMapper {
         if ($this->numOfTests($overviewId) == 0) {
             $averageNum = 0;
         } else {
-            $averageNum = round($average / $this->numOfTests($overviewId), 2);
+            $averageNum = round($average / $this->getNumTests($overviewId), 2);
         }
         $tpl->setVariable("AveragePoints", $averageNum);
         if ($maxPoints == 0) {
@@ -193,7 +193,7 @@ class studentMapper {
      * @param int $overviewId
      * @return int
      */
-    private function numOfTests($overviewId) {
+   private function numOfTests($overviewId) {
         global $ilDB;
         $query = "Select count(ref_id_test) as num from rep_robj_xtov_t2o where obj_id_overview = '" . $overviewId . "'";
         $result = $ilDB->query($query);
@@ -203,14 +203,14 @@ class studentMapper {
 
 
     /*
-     * Calcs the Number of Tests that is 
+     * Calcs the Number of Tests that are linked with the Overview Object  
      */
 
     private function getNumTests($overviewId) {
         global $ilDB;
         $count = 0;
         $data = array();
-        $query = "Select ref_id_test ,ending_time from rep_robj_xtov_t2o Join object_reference Join tst_tests "
+        $query = "Select ref_id_test , tst_tests.ending_time from rep_robj_xtov_t2o Join object_reference Join tst_tests "
                 . "on (ref_id_test = ref_id And obj_id = obj_fi) where obj_id_overview = '" . $overviewId . "'";
         $result = $ilDB->query($query);
         while ($testObj = $ilDB->fetchObject($result)) {
