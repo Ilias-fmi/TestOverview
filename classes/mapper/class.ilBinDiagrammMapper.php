@@ -6,11 +6,11 @@
  * 	@package	TestOverview repository plugin
  * 	@category	Core
  * 	@author		Jan Ruthardt <janruthardt@web.de>
+ * The class is responsible for the Bar Charts of Exercises and Tests
  */
 /* Dependencies : */
 require_once 'Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview/classes/GUI/class.ilTestOverviewTableGUI.php';
 require_once 'Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview/classes/mapper/class.ilOverviewMapper.php';
-
 
 
 class BinDiagrammMapper extends ilTestOverviewTableGUI {
@@ -323,11 +323,6 @@ class exerciseCharts {
     }
 
     function checkData() {
-        /* if ($this->getMaxValue / $this->sizeOfBucket > 100) {
-          return true;
-          } else {
-          return false;
-          } */
         return ($this->getMaxValue / $this->sizeOfBucket);
     }
 
@@ -364,7 +359,6 @@ class exerciseCharts {
 
         $data->setBarOptions(0.5, "center");
         /* Creation of the Legend */
-
         $tpl = new ilTemplate("tpl.DigramLegend.html", true, true, "Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview");
         $tpl->setVariable("number", $lng->txt("bibitem_number"));
         $tpl->setVariable("percent", $lng->txt("points"));
@@ -390,6 +384,7 @@ class exerciseCharts {
         /* Null Point set to let the diageram start of at (0,0) */
         $data->addPoint(0, 0);
         $i = 1;
+        /*Adding the Diagram Points*/
         foreach ($this->buckets as $bucketValue) {
             if ($bucketValue > 0) {
                 $data->addPoint($i, $bucketValue);

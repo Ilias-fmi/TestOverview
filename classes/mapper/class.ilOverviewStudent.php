@@ -11,6 +11,14 @@
  * DB Mapper for the Student View (User with only read Permissons)
  */
 class studentMapper {
+    /**
+     * 
+     * @global type $ilDB
+     * @param type $studId
+     * @param type $testRefId
+     * @return type
+     * Gets the result of the last run of a Test
+     */
     public function getTestData($studId,$testRefId){
         global $ilDB;
         $query = "Select DISTINCT title, points,ref_id, maxpoints,tst_pass_result.tstamp, tst_tests.ending_time, ending_time_enabled as timeded  From
@@ -155,7 +163,7 @@ class studentMapper {
 
         return $tpl->get();
     }
-
+    
     public function isTestDeleted($refTestId) {
         global $ilDB;
         $query = "select deleted from object_reference where ref_id = '$refTestId'";
@@ -186,27 +194,9 @@ class studentMapper {
         return $numOfTests->num;
     }
 
-    private function calcAverage($average) {
-        $length = count($average);
-        $totalPoints;
-        foreach ($average as $points) {
-            $totalPoints += $points;
-        }
-        /* Catches the Exception if the array is null */
-        try {
-            $result = $totalPoints / $length;
-        } catch (Exception $e) {
-            return "0 %";
-        }
-        $result = round($result, 2);
-        $result .= " %";
-        return $result;
-    }
-
-    private function getTotalMark($overviewId) {
-        
-    }
-
+    /*
+     * Calcs the Number of Tests that is 
+     */
     private function getNumTests($overviewId) {
         global $ilDB;
         $count = 0;

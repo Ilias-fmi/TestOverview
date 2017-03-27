@@ -1,5 +1,8 @@
 <#1>
 <?php
+/**
+ * Script to initialize the db 
+ */
 $fields_overview = array(
 	'obj_id' => array(
 		'type'    => 'integer',
@@ -165,8 +168,6 @@ if(!$ilDB->tableExists('rep_robj_xtov_e2o'))
 /**
  * Update of varchar length
  */
-//
-//$ilDB->query("ALTER TABLE table_properties MODIFY table_id varchar(255)");
 
 ?>
 <#7>
