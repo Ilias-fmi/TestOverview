@@ -85,6 +85,7 @@ class ilTestOverviewTableGUI
 				}
 			}
 
+                        $ilCtrl->setParameterByClass("ilobjtestgui", 'ref_id', $valid_ref_id);
                         // Creates the link for the Statistic Link in TestOverview
                         $link = $ilCtrl->getLinkTargetByClass(
 			array('ilObjTestOverviewGUI', 'ilobjtestgui', 'iltestevaluationgui'), 'outEvaluation'
