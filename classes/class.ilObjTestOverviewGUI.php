@@ -20,7 +20,7 @@ include_once 'Services/jQuery/classes/class.iljQueryUtil.php';
 /**
  * @ilCtrl_isCalledBy ilObjTestOverviewGUI: ilRepositoryGUI, ilAdministrationGUI, ilObjPluginDispatchGUI
  * @ilCtrl_Calls      ilObjTestOverviewGUI: ilPermissionGUI, ilInfoScreenGUI, ilObjectCopyGUI, ilRepositorySearchGUI, ilPublicUserProfileGUI, ilCommonActionDispatcherGUI
- * @ilCtrl_Calls      ilObjTestOverviewGUI: ilTestEvaluationGUI, ilMDEditorGUI, ilTestOverviewExportGUI
+ * @ilCtrl_Calls      ilObjTestOverviewGUI: ilTestEvaluationGUI, ilObjExerciseGUI, ilMDEditorGUI, ilTestOverviewExportGUI
  */
 class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHandling {
 

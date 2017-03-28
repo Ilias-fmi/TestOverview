@@ -86,7 +86,7 @@ class ilTestOverviewTableGUI
 			$ilCtrl->setParameterByClass("ilobjtestgui", 'ref_id', $valid_ref_id);
                         $statisticLink = "<br> <a href='ilias.php?ref_id=".$excMapper->getRefId($obj_id)."&cmd=outEvaluation&cmdClass=iltestevaluationgui&cmdNode=1z:mi:mf&baseClass=ilrepositorygui'> ". $lng->txt('language_statistics');
 			$this->addTestColumn( $overview->getTest($obj_id)->getTitle(). $statisticLink , $ilCtrl->getLinkTargetByClass('ilobjtestgui', 'infoScreen'));
-                        
+                        var_dump($ilCtrl->getLinkTargetByClass('ilobjtestgui', 'outEvaluation'));
 			$ilCtrl->setParameterByClass("ilobjtestgui", 'ref_id', '');
 		}
 		$this->addColumn($this->lng->txt('rep_robj_xtov_test_overview_hdr_avg'));

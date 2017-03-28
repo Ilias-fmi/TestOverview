@@ -7,6 +7,7 @@
  * 	@category	Core
  * 	@author		Jan Ruthardt <janruthardt@web.de>
  *  
+ *      @ilCtrl_Calls ilExerciseListTableGUI: ilObjExerciseGUI
  * */
 require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')->getDirectory() . '/classes/GUI/class.ilMappedTableGUI.php';
 
@@ -108,7 +109,7 @@ class ilExerciseListTableGUI extends ilMappedTableGUI {
         /**
          * @var $tree ilTree
          */
-        global $tree;
+        global $tree,$ilCtrl;
 
         $path_str = '';
         $ref_id = $this->getRefId($item->obj_id);
@@ -118,7 +119,10 @@ class ilExerciseListTableGUI extends ilMappedTableGUI {
             $path_str = $prepend . $node['title'];
             next($path);
         }
-        $path_str = "<div><a href='ilias.php?baseClass=ilExerciseHandlerGUI&cmd=showOverview&ref_id=$ref_id'>" . $path_str . "</a></div>";
+        require_once 'Modules/Exercise/classes/class.ilObjExerciseGUI.php';
+        //$ilCtrl->setParameterByClass("", 'ref_id', $ref_id);
+       $ilCtrl->setParameterByClass('ilobjexercisegui', 'ref_id', $ref_id);
+        $path_str = "<div><a href='".$ilCtrl->getLinkTargetByClass('ilobjexercisegui',"infoScreen")."'>" . $path_str . "</a></div>";
 
         return $path_str;
     }

@@ -64,7 +64,7 @@ class ilExerciseMapper extends ilDataMapper {
 		return implode(' AND ', $conditions);
 	}
     /**
-     * Get the Class all Exercise Partisipants and there results
+     * Get the Class all Exerciseut_lp_marks Partisipants and there results
      */
     public function getArrayofObjects($overviewID) {
         global $ilDB;
