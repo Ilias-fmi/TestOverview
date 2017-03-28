@@ -84,13 +84,17 @@ class ilTestOverviewTableGUI
 						break 2;
 				}
 			}
-			$ilCtrl->setParameterByClass("ilobjtestgui", 'ref_id', $valid_ref_id);
-                       
-                        $statisticLink = "<br> <a href='".$ilCtrl->getLinkTargetByClass('iltestevaluationgui', 'outEvaluation')."'> ". $lng->txt('language_statistics');
-			$this->addTestColumn( $overview->getTest($obj_id)->getTitle(). $statisticLink , $ilCtrl->getLinkTargetByClass('ilobjtestgui', 'infoScreen'));
-                        //var_dump($ilCtrl->getLinkTargetByClass('ilobjtestgui', 'outEvaluation'));
-			$ilCtrl->setParameterByClass("ilobjtestgui", 'ref_id', '');
-                        
+
+                        // Creates the link for the Statistic Link in TestOverview
+                       $link = $ilCtrl->getLinkTargetByClass(
+                       array('ilObjTestOverviewGUI', 'ilobjtestgui', 'iltestevaluationgui'), 'outEvaluation'
+                       );
+		       $link = ilUtil::appendUrlParameterString($link, "ref_id=$valid_ref_id");
+                       $statisticLink = "<br> <a href='".$link."'> ". $lng->txt('language_statistics');
+                       $ilCtrl->setParameterByClass("ilobjtestgui", 'obj_id', $valid_ref_id);
+                       $this->addTestColumn( $overview->getTest($obj_id)->getTitle(). $statisticLink , $ilCtrl->getLinkTargetByClass('ilobjtestgui', 'infoScreen'));
+                       $ilCtrl->setParameterByClass("ilobjtestgui", 'ref_id', '');
+
 		}
 		$this->addColumn($this->lng->txt('rep_robj_xtov_test_overview_hdr_avg'));
 
