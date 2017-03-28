@@ -18,8 +18,10 @@ class ilMembershipListTableGUI
 	 *	 @var	array
 	 */
 	public $filter = array();
+        private $parent;
+        private $objectParent;
 
-	/**
+        /**
 	 *	Constructor logic.
 	 *
 	 *	This table GUI constructor method initializes the
@@ -35,7 +37,8 @@ class ilMembershipListTableGUI
 		/* Pre-configure table */
 		$this->setId(sprintf(
 			"test_overview_membership_list_%d", $a_parent_obj->object->getId()));
-
+                $this->parent=$a_parent_obj;
+                $this->objectParent=$this->parent->object->getParentId($this->parent->object->getRefId());
 		$this->setDefaultOrderDirection('ASC');
 		$this->setDefaultOrderField('title');
 		$this->setExternalSorting(true);
@@ -112,14 +115,24 @@ class ilMembershipListTableGUI
 	 */
     protected function fillRow(stdClass $container)
 	{
+                global $tree;
+                
+                $refId=$container->ref_id;
+               
+                $parentRef=$this->parent->object->getParentId($refId);
+                
 		$members = $this->getMembersObject($container)->getCountMembers();
 		$label   = $this->lng->txt('rep_robj_xtov_membership_count_members');
-
+                if($this->objectParent==$parentRef){
 		$this->tpl->setVariable('VAL_CHECKBOX', ilUtil::formCheckbox( false, 'membership_ids[]', $container->obj_id ));
 		$this->tpl->setVariable('OBJECT_TITLE', $container->title);
 		$this->tpl->setVariable('OBJECT_INFO', sprintf("%d %s", $members, $label));
 		$this->tpl->setVariable('OBJECT_IMG_PATH', $this->isAddedContainer($container) ? ilUtil::getImagePath('icon_ok.svg') : ilUtil::getImagePath('icon_not_ok.svg')); 
-    }
+                }else {
+                $this->tpl->setVariable('colapse','style="display:none;"');    
+                }
+                
+        }
 
 	/**
 	 *    Check wether a group is added to the current overview.

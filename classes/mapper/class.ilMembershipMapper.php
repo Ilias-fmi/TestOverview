@@ -70,7 +70,7 @@ class ilMembershipMapper
 		$conditions = array(
 			"obr.deleted IS NULL",
 			"fa.assign = 'y'",
-			$this->db->in('obd.type', array('crs', 'grp'), false, 'text'),
+			$this->db->in('obd.type', array('grp'), false, 'text'),
 			"ua.usr_id = " . $this->db->quote($ilUser->getId(), 'integer'),);
 
 		if (! empty($filters['flt_grp_name'])) {
