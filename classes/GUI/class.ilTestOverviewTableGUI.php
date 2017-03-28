@@ -7,7 +7,7 @@
  *	@author		Greg Saive <gsaive@databay.de>
  *      @ilCtrl_Calls   ilTestOverviewTableGUI: ilTestEvaluationGUI
  */
-/* Dependencies : */
+
 
 require_once "Services/Tracking/classes/class.ilLPStatus.php";
 require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
@@ -87,9 +87,9 @@ class ilTestOverviewTableGUI
 
                         $ilCtrl->setParameterByClass("ilobjtestgui", 'ref_id', $valid_ref_id);
                         // Creates the link for the Statistic Link in TestOverview
-                        $link = $ilCtrl->getLinkTargetByClass(
-			array('ilObjTestOverviewGUI', 'ilobjtestgui', 'iltestevaluationgui'), 'outEvaluation'
-		        );
+                       $link = $ilCtrl->getLinkTargetByClass(
+                       array('ilObjTestOverviewGUI', 'ilobjtestgui', 'iltestevaluationgui'), 'outEvaluation'
+                       );
 		       $link = ilUtil::appendUrlParameterString($link, "ref_id=$valid_ref_id");
                        $statisticLink = "<br> <a href='".$link."'> ". $lng->txt('language_statistics');
                        $ilCtrl->setParameterByClass("ilobjtestgui", 'obj_id', $valid_ref_id);

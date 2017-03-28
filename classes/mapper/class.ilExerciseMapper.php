@@ -5,8 +5,8 @@
  *	@package	TestOverview repository plugin
  *	@category	Core
  *	@author		Jan Ruthardt <janruthardt@web.de>
- * Mapps the Slected Exercises with the Students an there Results
- *
+ * Maps the selected exercises with the students an their results
+ *      @ilCtrl_Calls ilExerciseMapper: ilObjExerciseGUI
  **/
 require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
                 ->getDirectory() . '/classes/mapper/class.ilDataMapper.php';
@@ -64,7 +64,7 @@ class ilExerciseMapper extends ilDataMapper {
 		return implode(' AND ', $conditions);
 	}
     /**
-     * Get the Class all Exerciseut_lp_marks Partisipants and there results
+     * Get the class all exercise ut_lp_marks participants and their results
      */
     public function getArrayofObjects($overviewID) {
         global $ilDB;
@@ -83,7 +83,7 @@ class ilExerciseMapper extends ilDataMapper {
         return $DbObject;
     }
     /**
-     * Returns the name of a Exercise
+     * Returns the name of an exercise
      */
     public function getExerciseName($exerciseID) {
         global $ilDB;
@@ -98,7 +98,7 @@ class ilExerciseMapper extends ilDataMapper {
 
 
     /**
-     * Gets the Name of an Student for the given Member ID
+     * Gets the name of a student for the given memberID
      */
     public function getStudName($studID) {
         global $ilDB;
@@ -111,11 +111,11 @@ class ilExerciseMapper extends ilDataMapper {
     }
 
     /**
-     * Renders the HTML code into the Given Template
+     * Renders the HTML code into the given template
      */
     public function getHtml($overviewID) {
 
-        global $lng;
+        global $lng, $ilCtrl;
         $matrix = $this->buildMatrix($overviewID);
         $tests = $this->getUniqueExerciseId($overviewID);
         $tpl = new ilTemplate("tpl.exercise_view.html", true, true, "Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview");
@@ -123,8 +123,11 @@ class ilExerciseMapper extends ilDataMapper {
         $tpl->setCurrentBlock("user_colum");
         $tpl->setVariable("user", $lng->txt("eval_search_users"));
         $tpl->parseCurrentBlock();
-        foreach ($tests as $test) {
-            $txt = "<th> <a href='ilias.php?ref_id=". $this->getRefId($test)."&cmd=showSummary&cmdClass=ilinfoscreengui&cmdNode=bb:au:7f&baseClass=ilExerciseHandlerGUI'>" . $this->getExerciseName($test) . "</th>";
+        foreach ($exercises as $exercise) {
+            
+            $ilCtrl->setParameterByClass('ilobjexercisegui', 'ref_id',  $this->getRefId($exercise));
+            //URL to exercise
+            $txt = "<th><a href='".$ilCtrl->getLinkTargetByClass('ilobjexercisegui',"infoScreen")."'>" . $this->getExerciseName($exercise) . "</a></th>";
             $tpl->setCurrentBlock("exercise_colum");
             $tpl->setVariable("colum", $txt);
             $tpl->parseCurrentBlock();
@@ -187,7 +190,7 @@ class ilExerciseMapper extends ilDataMapper {
     }
 
     /**
-     * Get back a Mark of the user in the specific test
+     * @return mark of the user in the specific test
      */
     public function getMark($userID, $testID, $Db) {
         foreach ($Db as $row) {
@@ -309,9 +312,9 @@ class ilExerciseMapper extends ilDataMapper {
             $this->db->query($query);
         }
         /**
-         * Gets a list of students which is sorted by ranking
+         * 
          * @param type $id
-         * @return type
+         * @return  a list of students which is sorted by ranking
          */
         public function getRankedList($id)
         {
