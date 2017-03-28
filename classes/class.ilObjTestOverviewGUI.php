@@ -142,6 +142,8 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
                     case 'UserResults':
                     case 'updateStudentView':
                     case 'updateStudentViewEO':
+                    case 'resetStudentView':
+                    case 'resetStudentViewEO':    
                     case 'showRanking':
                         $this->checkPermission('read');
                         $this->UserResults();
@@ -213,7 +215,7 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
 	 *	@see self::performCommand().
 	 */
 
-protected function showContent()
+    protected function showContent()
 	{
 				/**
 		 * @var $tpl ilTemplate
@@ -241,7 +243,18 @@ protected function showContent()
 		$tpl->setContent( $table->getHTML());
                 $ilToolbar->addButton($this->txt('order_ranking'), $ilCtrl->getLinkTarget($this,'showRanking'));
                 $ilToolbar->addButton($this->txt('update_rank'),$ilCtrl->getLinkTarget($this,'updateStudentView'));
+                $ilToolbar->addButton($this->txt('delete_rank'),$ilCtrl->getLinkTarget($this,'resetStudentView'));
 	}
+        
+        /**
+         * Command for rendering the TestOverview ordered by ranks
+         * @global type $tpl
+         * @global type $lng
+         * @global type $ilTabs
+         * @global type $ilToolbar
+         * @global type $ilCtrl
+         */
+        
         protected function showRanking()
 	{		/**
 		 * @var $tpl ilTemplate
@@ -271,7 +284,8 @@ protected function showContent()
                 $table->getData();
                 $ilToolbar->addButton($this->txt('orderName'), $ilCtrl->getLinkTarget($this,'showContent'));
                 $ilToolbar->addButton($this->txt('update_rank'),$ilCtrl->getLinkTarget($this,'updateStudentView'));
-             }
+                $ilToolbar->addButton($this->txt('delete_rank'),$ilCtrl->getLinkTarget($this,'resetStudentView')); 
+                }
 
     /**
      * This method is called to update the ranking of the User Result Tab.
@@ -287,9 +301,20 @@ protected function showContent()
         $ilMapper = new ilOverviewMapper();
         $table = new ilTestOverviewTableGUI($this, 'updateStudentView');
         $table->setMapper($ilMapper);
-        $table->getStudentsRanked(); 
+        $table->getStudentsRanked();
         ilUtil::sendSuccess($this->txt('success_update'), true);
         $ilCtrl->redirect($this, 'showContent');
+    }
+    
+    protected function resetStudentView(){
+    global $ilCtrl;  
+    require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
+                        ->getDirectory() . '/classes/mapper/class.ilOverviewMapper.php';
+    $ilMapper = new ilOverviewMapper();
+    $ilMapper->resetRanks($this->object->getId());
+    ilUtil::sendSuccess($this->txt('success_update'), true);
+    
+    $ilCtrl->redirect($this, 'showContent');
     }
 
     /**
@@ -388,6 +413,13 @@ protected function showContent()
         }
     }
 
+    /**
+     * 
+     * @global type $tpl
+     * @global type $ilTabs
+     * @global type $ilCtrl
+     * @global type $ilToolbar
+     */
     protected function subTabTO2() {
 
         global $tpl, $ilTabs, $ilCtrl, $ilToolbar;
@@ -454,11 +486,13 @@ protected function showContent()
         
                     
 
-        //$data = array_slice($table-> getData(), $table->getOffset(), $table->getLimit());
+        $data = array_slice($table-> getData(), $table->getOffset(), $table->getLimit());
 	$tpl->setContent( $table->getHTML());
         $ilToolbar->addButton($this->txt('order_ranking'), $ilCtrl->getLinkTarget($this,'subTabEORanking'));
         $ilToolbar->addButton($this->txt('update_rank'), $ilCtrl->getLinkTarget($this,'updateStudentViewEO')); 
-         }
+        $ilToolbar->addButton($this->txt('delete_rank'),$ilCtrl->getLinkTarget($this,'resetStudentViewEO')); 
+                
+        }
 
 
     protected function subTabEO1() {
@@ -506,7 +540,10 @@ protected function showContent()
 	$tpl->setContent( $table->getHTML());
         $ilToolbar->addButton($this->txt('orderName'), $ilCtrl->getLinkTarget($this,'subTabEO')); 
         $ilToolbar->addButton($this->txt('update_rank'), $ilCtrl->getLinkTarget($this,'updateStudentViewEO'));   
-          }
+        $ilToolbar->addButton($this->txt('delete_rank'),$ilCtrl->getLinkTarget($this,'resetStudentViewEO')); 
+           
+        
+    }
           
      protected function updateStudentViewEO() {
          global $ilCtrl;
@@ -524,6 +561,16 @@ protected function showContent()
         ilUtil::sendSuccess($this->txt('success_update'), true);
         $ilCtrl->redirect($this, 'subTabEO');  
 
+    }
+    
+    protected function resetStudentViewEO(){
+    global $ilCtrl;    
+     require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
+                        ->getDirectory() . '/classes/mapper/class.ilExerciseMapper.php';
+    $ilMapper = new ilExerciseMapper;
+    $ilMapper->resetRanks($this->object->getId());
+    ilUtil::sendSuccess($this->txt('success_update'), true);
+    $ilCtrl->redirect($this,'subTabEO');
     }
 
     protected function subTabs($type) {
