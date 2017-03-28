@@ -5,8 +5,9 @@
  *	@package	TestOverview repository plugin
  *	@category	GUI
  *	@author		Greg Saive <gsaive@databay.de>
+ *      @ilCtrl_Calls   ilTestOverviewTableGUI: ilTestEvaluationGUI
  */
-/* Dependencies : */
+
 
 require_once "Services/Tracking/classes/class.ilLPStatus.php";
 require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
@@ -84,10 +85,12 @@ class ilTestOverviewTableGUI
 				}
 			}
 			$ilCtrl->setParameterByClass("ilobjtestgui", 'ref_id', $valid_ref_id);
-                        $statisticLink = "<br> <a href='ilias.php?ref_id=".$excMapper->getRefId($obj_id)."&cmd=outEvaluation&cmdClass=iltestevaluationgui&cmdNode=1z:mi:mf&baseClass=ilrepositorygui'> ". $lng->txt('language_statistics');
+                       
+                        $statisticLink = "<br> <a href='".$ilCtrl->getLinkTargetByClass('iltestevaluationgui', 'outEvaluation')."'> ". $lng->txt('language_statistics');
 			$this->addTestColumn( $overview->getTest($obj_id)->getTitle(). $statisticLink , $ilCtrl->getLinkTargetByClass('ilobjtestgui', 'infoScreen'));
-                        var_dump($ilCtrl->getLinkTargetByClass('ilobjtestgui', 'outEvaluation'));
+                        //var_dump($ilCtrl->getLinkTargetByClass('ilobjtestgui', 'outEvaluation'));
 			$ilCtrl->setParameterByClass("ilobjtestgui", 'ref_id', '');
+                        
 		}
 		$this->addColumn($this->lng->txt('rep_robj_xtov_test_overview_hdr_avg'));
 

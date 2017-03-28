@@ -121,7 +121,7 @@ class ilExerciseListTableGUI extends ilMappedTableGUI {
         }
         require_once 'Modules/Exercise/classes/class.ilObjExerciseGUI.php';
         //$ilCtrl->setParameterByClass("", 'ref_id', $ref_id);
-       $ilCtrl->setParameterByClass('ilobjexercisegui', 'ref_id', $ref_id);
+        $ilCtrl->setParameterByClass('ilobjexercisegui', 'ref_id', $ref_id);
         $path_str = "<div><a href='".$ilCtrl->getLinkTargetByClass('ilobjexercisegui',"infoScreen")."'>" . $path_str . "</a></div>";
 
         return $path_str;
