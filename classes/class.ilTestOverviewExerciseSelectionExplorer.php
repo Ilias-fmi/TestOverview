@@ -30,8 +30,9 @@ class ilTestOverviewExerciseSelectionExplorer extends ilPasteIntoMultipleItemsEx
 
 		$visible = parent::isVisible($a_ref_id, $a_type);
 
+		include_once './Services/Tracking/classes/class.ilLearningProgressAccess.php';
 		if ('exc' == $a_type) {
-			if (!$ilAccess->checkAccess('tst_statistics', '', $a_ref_id) && !$ilAccess->checkAccess('write', '', $a_ref_id)) {
+			if (!ilLearningProgressAccess::checkAccess($a_ref_id) && !$ilAccess->checkAccess('write', '', $a_ref_id)) {
 				return false;
 			}
 		}
