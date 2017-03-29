@@ -98,7 +98,6 @@ class ilTestOverviewTableGUI
 
 		}
 		$this->addColumn($this->lng->txt('rep_robj_xtov_test_overview_hdr_avg'));
-
 		$plugin = ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview');
 		$this->setRowTemplate('tpl.test_overview_row.html', $plugin->getDirectory());
 		$this->setDescription($this->lng->txt("rep_robj_xtov_test_overview_description"));
@@ -110,8 +109,7 @@ class ilTestOverviewTableGUI
 		$this->initFilter();
 		$this->setFilterCommand("applyOverviewFilter");
 		$this->setResetCommand("resetOverviewFilter");
-
-		$this->setFormAction($ilCtrl->getFormAction($this->getParentObject(), 'showContent') );
+                $this->setFormAction($ilCtrl->getFormAction($this->getParentObject(), 'showContent'));
 	}
 
 	/**
@@ -173,7 +171,7 @@ class ilTestOverviewTableGUI
     {
  		$overview = $this->getParentObject()->object;
 
-		$results = array();
+                $results = array();
 
 		foreach ($overview->getUniqueTests() as $obj_id => $refs)
 		{
@@ -185,20 +183,17 @@ class ilTestOverviewTableGUI
 			if( $this->accessIndex[$obj_id] )
 			{
 				$result    = $test->getTestResult($activeId);
-
-				$lpStatus = new ilLPStatus( $test->getId() );
+                                $lpStatus = new ilLPStatus( $test->getId() );
 				$progress = $lpStatus->_lookupStatus($test->getId(), $row['member_id']);
 
 				if ((bool) $progress)
 				{
 					$result		= sprintf("%.2f %%", (float) $result['pass']['percent'] * 100);
-					
 					$results[]  = $result;
 				}
 				else
 				{
 					$result = $this->lng->txt("rep_robj_xtov_overview_test_not_passed");
-					
 					$results[]  = 0;
 				}
 				
@@ -210,14 +205,14 @@ class ilTestOverviewTableGUI
 				else
 				{
 					$this->populateNoLinkCell(
-						$result, $this->getCSSByProgress($progress)
+					$result, $this->getCSSByProgress($progress)
 					);
 				}
 			}
 			else
 			{
 				$this->populateNoLinkCell(
-					$this->lng->txt("rep_robj_xtov_overview_test_no_permission"), $this->getCSSByProgress($progress)
+				$this->lng->txt("rep_robj_xtov_overview_test_no_permission"), $this->getCSSByProgress($progress)
 				);
 			}
 			
@@ -236,13 +231,6 @@ class ilTestOverviewTableGUI
 		
 		$this->tpl->setVariable( "AVERAGE_CLASS", "");
 		$this->tpl->setVariable( "AVERAGE_VALUE", $average . (is_numeric($average) ? "%" : ""));
-		/*Martins rank mapper veraltet das ranking hier abzugreifen hat zwar perfromance vorteile aber
-                 * erfasst nur die angezeigten studenten   
-                 * 
-                 * $ilMapper = $this->getMapper();
-                 * $ilMapper->setData2Rank($average, $row['member_id'],$this->getParentObject()->object->getId());
-                 *  */                                       
-                
 		$this->tpl->setVariable('TEST_PARTICIPANT', $row['member_fullname']);                        
     }
 	
@@ -295,16 +283,14 @@ class ilTestOverviewTableGUI
                          return $this->sortByAveragePoints($formatted);
                        }
 		}
-		
+		/* Filter current group */
 		foreach ($data['items'] as $item)
 		{
 			$container = ilObjectFactory::getInstanceByObjId($item->obj_id, false);
-
 			if ($container === false)
 				throw new OutOfRangeException;
 			elseif (! empty($this->filter['flt_group_name'])
-					&& $container->getId() != $this->filter['flt_group_name'])
-				/* Filter current group */
+				&& $container->getId() != $this->filter['flt_group_name'])
 				continue;
 
 			$participants = $this->getMembersObject($item);
@@ -519,25 +505,24 @@ class ilTestOverviewTableGUI
 			$result = $test->getTestResult($activeId);
                         $lpStatus = new ilLPStatus( $test->getId() );
 			$progress = $lpStatus->_lookupStatus($test->getId(), $stdID);
-			    if ((bool) $progress)
+                        if ((bool) $progress)
 			    {
-					$result		= sprintf("%.2f %%", (float) $result['pass']['percent'] * 100);
-					
-					$results[]  = $result;
+                                $result		= sprintf("%.2f %%", (float) $result['pass']['percent'] * 100);
+                                $results[]  = $result;
 			    }
-			    else
+                        else
 			    {
-			    $results[]  = 0;
+                                $results[]  = 0;
 			    } 
                                 
                      if (count($results))
-		    {
-			$average = (array_sum($results) / count($results));
-		    }
+                        {
+                            $average = (array_sum($results) / count($results));
+                        }
 		    else
-		    {
-			$average = 0;
-		    }
+                        {
+                            $average = 0;
+                        }
             }
             $rankList[$studentIndex ][] = $userObj;
             $sumList[$studentIndex ][] =$average;
@@ -549,106 +534,101 @@ class ilTestOverviewTableGUI
 		for ($i = '1'; $i <= count($rankList); $i++) {
                     $position=array_pop($arraySorted);
                     $userList=$rankList[$position];
-			if (! empty($userList)){
-                         $sorted['items'] =  array_merge($sorted['items'], $userList);
-                }
+                    if (! empty($userList))
+                        {
+                            $sorted['items'] =  array_merge($sorted['items'], $userList);
+                        }
                 
-              }
+                }
               return $sorted;
          }    
          /**
-          * Function to rank all students and save the result in the database
+          * Function to rank all students and save the result in the database.
+          * This Data is used to show students their results in the User Results
+          * Tab.
           */
         public function getStudentsRanked()
-        {
-            
-            
-            
-		if( $this->getExternalSegmentation() && $this->getExternalSorting() )
+        {                      
+            if( $this->getExternalSegmentation() && $this->getExternalSorting() )
 		{
-			$this->determineOffsetAndOrder();
+                    $this->determineOffsetAndOrder();
 		}
-		elseif( !$this->getExternalSegmentation() && $this->getExternalSorting() )
+            elseif( !$this->getExternalSegmentation() && $this->getExternalSorting())
 		{
-			$this->determineOffsetAndOrder(true);
+                    $this->determineOffsetAndOrder(true);
 		}
-		else
+            else
 		{
-			throw new ilException('invalid table configuration: extSort=false / extSegm=true');
+                    throw new ilException('invalid table configuration: extSort=false / extSegm=true');
 		}
 		
-		/* Configure query execution */
-		$params = array();
-		if( $this->getExternalSegmentation() )
+            /* Configure query execution */
+            $params = array();
+            if( $this->getExternalSegmentation() )
 		{
-			$params['limit'] = $this->getLimit();
-			$params['offset'] = $this->getOffset();
+                    $params['limit'] = $this->getLimit();
+                    $params['offset'] = $this->getOffset();
 		}
-		if( $this->getExternalSorting() )
+            if( $this->getExternalSorting() )
 		{
-			$params['order_field'] = $this->getOrderField();
-			$params['order_direction'] = $this->getOrderDirection();
+                    $params['order_field'] = $this->getOrderField();
+                    $params['order_direction'] = $this->getOrderDirection();
 		}
 
-		$overview = $this->getParentObject()->object;
-		$filters  = array("overview_id" => $overview->getId()) + $this->filter;
+            $overview = $this->getParentObject()->object;
+            $filters  = array("overview_id" => $overview->getId()) + $this->filter;
+            /* Execute query. */
+            $data = $this->getMapper()->getList($params, $filters);
 
-		/* Execute query. */
-                $data = $this->getMapper()
-				     ->getList($params, $filters);
-
-                if( !count($data['items']) && $this->getOffset() > 0) {
+            if( !count($data['items']) && $this->getOffset() > 0) 
+                {
                 /* Query again, offset was incorrect. */
                 $this->resetOffset();
-                $data = $this->getMapper()
-					     ->getList($params, $filters);
+                $data = $this->getMapper()->getList($params, $filters);
                 }
 
-		/* Post-query logic. Implement custom sorting or display
-		   in formatData overload. */
-		$data = $this->formatData($data);
+            /* Post-query logic. Implement custom sorting or display
+               in formatData overload. */
+            $data = $this->formatData($data);
           
             
-                $this->getmapper()->resetRanks($this->getParentObject()->object->getID());
-                 foreach ($data['items'] as $userObj) 
-                 {   
+            $this->getmapper()->resetRanks($this->getParentObject()->object->getID());
+            foreach ($data['items'] as $userObj) 
+                {   
                 $stdID = $userObj->getId();  
                 $overview= $this->getParentObject()->object;
                 $results = array();
-               
-					
+               			
 		foreach ($overview->getUniqueTests() as $obj_id => $refs)
 		{
-                      	$test = $overview->getTest($obj_id);
-                        $endingTime=(float)$test->getEndingTime();
-                        $timestamp = time();
-                        $datum = (float) date("YmdHis", $timestamp);
-                        
-                        if($datum-$endingTime>0){
-			$activeId  = $test->getActiveIdOfUser($stdID);	
-                        $result=$progress = null;
-			$result = $test->getTestResult($activeId);
-                        $lpStatus = new ilLPStatus( $test->getId() );
-			$progress = $lpStatus->_lookupStatus($test->getId(), $stdID);
-			    if ((bool) $progress)
-			    {
-					$result		= sprintf("%.2f %%", (float) $result['pass']['percent'] * 100);
-					
-					$results[]  = $result;
-			    }
-			    else
-			    {
-			    $results[]  = 0;
-			    } 
+                    $test = $overview->getTest($obj_id);
+                    $endingTime=(float)$test->getEndingTime();
+                    $timestamp = time();
+                    $datum = (float) date("YmdHis", $timestamp);
+                    if($datum-$endingTime>0){
+                    $activeId  = $test->getActiveIdOfUser($stdID);	
+                    $result=$progress = null;
+                    $result = $test->getTestResult($activeId);
+                    $lpStatus = new ilLPStatus( $test->getId() );
+                    $progress = $lpStatus->_lookupStatus($test->getId(), $stdID);
+                    if ((bool) $progress)
+                        {
+                            $result		= sprintf("%.2f %%", (float) $result['pass']['percent'] * 100);
+                            $results[]  = $result;
+                        }
+                    else
+                        {
+                        $results[]  = 0;
+                        } 
                                 
                      if (count($results))
-		    {
-			$average = (array_sum($results) / count($results));
-		    }
+                        {
+                            $average = (array_sum($results) / count($results));
+                        }
 		    else
-		    {
-			$average = 0;
-		    }
+                        {
+                            $average = 0;
+                        }
                     $ilMapper = $this->getMapper();
                     $ilMapper->setData2Rank($average, $stdID,$this->getParentObject()->object->getId());    
                     }
@@ -657,6 +637,7 @@ class ilTestOverviewTableGUI
             }
             $this->getMapper()->createDate($this->getParentObject()->object->getId());
         }
+        
 	/**
 	 * @param string $a_text
 	 * @param string $link
@@ -825,7 +806,14 @@ class ilTestOverviewTableGUI
 		
 		return $rows;
 	}
-	
+	/**
+         * Creates the link which refers to the evaluation of the test of a user.
+         * 
+         * @global type $ilCtrl
+         * @param type $refId
+         * @param type $activeId
+         * @return type
+         */
 	protected function buildMemberResultLinkTarget($refId, $activeId)
 	{
 		global $ilCtrl;

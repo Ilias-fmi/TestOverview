@@ -247,7 +247,9 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
 	}
         
         /**
-         * Command for rendering the TestOverview ordered by ranks
+         * Command for rendering the TestOverview 
+         * Table ordered by ranks.
+         * 
          * @global type $tpl
          * @global type $lng
          * @global type $ilTabs
@@ -275,8 +277,7 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
 		/* Get data to populate table */
                 $ilMapper =new ilOverviewMapper;                
 		$table = new ilTestOverviewTableGUI( $this, 'showRanking' );
-		$table->setMapper($ilMapper)
-			  ->populateR(true);
+		$table->setMapper($ilMapper)->populate(true);
 		/* Populate template */
 		$tpl->setDescription($this->object->getDescription());
                 $data = array_slice($table-> getData(), $table->getOffset(), $table->getLimit());
@@ -355,6 +356,16 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
         $tpl->setContent($this->renderSettings());
     }
 
+    /**
+     * This method is called to render the User Results Tab.
+     * 
+     * @global type $tpl
+     * @global type $tpl
+     * @global type $ilTabs
+     * @global type $ilDB
+     * @global type $ilUser
+     */
+    
     protected function UserResults() {
         global $tpl;
         require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
@@ -373,6 +384,16 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
         $this->showContent();
     }
 
+    /**
+     * This method is called to render the diagramm Tab.
+     * 
+     * @global type $tpl
+     * @global type $ilTabs
+     * @global type $ilCtrl
+     * @global type $lng
+     * @global type $ilToolbar
+     * @global type $ilDB
+     */
     protected function subTabTO() {
         global $tpl, $ilTabs, $ilCtrl, $lng, $ilToolbar, $ilDB;
 
@@ -465,7 +486,14 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
             $tpl->setContent($this->txt("max_diagram_value") . " &ne; 0");
         }
     }
-
+    /**
+     * This methode is called to render the Exercise Overview Table.
+     * 
+     * @global type $tpl
+     * @global type $ilTabs
+     * @global type $ilCtrl
+     * @global type $ilToolbar
+     */
     protected function subTabEO() {
         global $tpl, $ilTabs, $ilCtrl, $ilToolbar;
         $this->subTabs("Exercise");
@@ -483,9 +511,6 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
 	$table->setMapper($ilExerciseMapper)->populateE(true);
 	/* Populate template */
 	$tpl->setDescription($this->object->getDescription());
-        
-                    
-
         $data = array_slice($table-> getData(), $table->getOffset(), $table->getLimit());
 	$tpl->setContent( $table->getHTML());
         $ilToolbar->addButton($this->txt('order_ranking'), $ilCtrl->getLinkTarget($this,'subTabEORanking'));
