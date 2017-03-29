@@ -1,32 +1,30 @@
 <?php
+
 /* Copyright (c) 1998-2012 ILIAS open source, Extended GPL, see docs/LICENSE */
 
 /**
- *	@package	TestOverview repository plugin
- *	@category	Core
- *	@author		Greg Saive <gsaive@databay.de>
+ * 	@package	TestOverview repository plugin
+ * 	@category	Core
+ * 	@author		Greg Saive <gsaive@databay.de>
  */
+abstract class ilDataMapper {
 
-abstract class ilDataMapper
-{
 	/**
 	 * @var ilDB
 	 */
 	protected $db;
 
-
 	/**
-	 *	@var string
+	 * 	@var string
 	 */
 	protected $tableName;
 
 	/**
-	 *	Constructor logic.
+	 * 	Constructor logic.
 	 *
-	 *	Inject database object.
+	 * 	Inject database object.
 	 */
-	public function __construct()
-	{
+	public function __construct() {
 		/**
 		 * @var $ilDB ilDB
 		 */
@@ -36,22 +34,22 @@ abstract class ilDataMapper
 	}
 
 	/**
-	 *	Retrieve the fields list for the SELECT clause.
+	 * 	Retrieve the fields list for the SELECT clause.
 	 *
-	 *	The getSelectPart() method is called internally
-	 *	to build the SELECT fields list.
+	 * 	The getSelectPart() method is called internally
+	 * 	to build the SELECT fields list.
 	 *
-	 *	@return string
+	 * 	@return string
 	 */
 	abstract protected function getSelectPart();
 
 	/**
-	 *	Retrieve the FROM clause rows.
+	 * 	Retrieve the FROM clause rows.
 	 *
-	 *	The getFromPart() method is called internally
-	 *	to build the FROM rows list, including the JOIN(s).
+	 * 	The getFromPart() method is called internally
+	 * 	to build the FROM rows list, including the JOIN(s).
 	 *
-	 *	@return string
+	 * 	@return string
 	 */
 	abstract protected function getFromPart();
 
@@ -67,21 +65,16 @@ abstract class ilDataMapper
 	 */
 	abstract protected function getWherePart(array $filters);
 
-
-
-public function dbZurückgeben(){
-	return $this->db;
-}
-
+	public function dbZurückgeben() {
+		return $this->db;
+	}
 
 	/**
-	 *	Retrieve the relation name
+	 * 	Retrieve the relation name
 	 *
-	 *	@return string
+	 * 	@return string
 	 */
-
-	public function getTableName()
-	{
+	public function getTableName() {
 		return $this->tableName;
 	}
 
@@ -100,9 +93,8 @@ public function dbZurückgeben(){
 	 * @param array $conditions
 	 * @return mixed
 	 */
-	public function getValue( $table, $field, array $conditions = array() )
-	{
-		$where = !empty($conditions) ? implode(' AND ', $conditions ) : "TRUE";
+	public function getValue($table, $field, array $conditions = array()) {
+		$where = !empty($conditions) ? implode(' AND ', $conditions) : "TRUE";
 		$query = "
 			SELECT
 				$field
@@ -111,8 +103,8 @@ public function dbZurückgeben(){
 			WHERE
 				$where
 		";
-		$res  = $this->db->query($query);
-		$row  = $this->db->fetchObject($res);
+		$res = $this->db->query($query);
+		$row = $this->db->fetchObject($res);
 
 		return $row->{strtolower($field)};
 	}
@@ -135,29 +127,28 @@ public function dbZurückgeben(){
 	 * @throws InvalidArgumentException
 	 * @return array with indexes 'items' and 'cnt'.
 	 */
-	public function getList( array $params = array(), array $filters = array() )
-	{
+	public function getList(array $params = array(), array $filters = array()) {
 		$data = array(
 			'items' => array(),
-			'cnt'   => 0
+			'cnt' => 0
 		);
 
 		$select = $this->getSelectPart();
-		$where  = $this->getWherePart($filters);
-		$from   = $this->getFromPart();
-		$order  = "";
-		$group  = "";
-		$limit  = "";
+		$where = $this->getWherePart($filters);
+		$from = $this->getFromPart();
+		$order = "";
+		$group = "";
+		$limit = "";
 
 		/* Build ORDER BY */
 		if (isset($params['order_field'])) {
-			if (! is_string($params['order_field']))
+			if (!is_string($params['order_field']))
 				throw new InvalidArgumentException("Please provide a valid order field.");
 
-			if (! isset($params['order_direction']))
-				/* Defaulting to ASC(ending) order. */
+			if (!isset($params['order_direction']))
+			/* Defaulting to ASC(ending) order. */
 				$params['order_direction'] = "ASC";
-			elseif (! in_array(strtolower($params['order_direction']),array("asc", "desc")) )
+			elseif (!in_array(strtolower($params['order_direction']), array("asc", "desc")))
 				throw new InvalidArgumentException("Please provide a valid order direction.");
 
 			$order = $params['order_field'] . ' ' . $params['order_direction'];
@@ -165,7 +156,7 @@ public function dbZurückgeben(){
 
 		/* Build GROUP BY */
 		if (isset($params['group'])) {
-			if (! is_string($params['group']))
+			if (!is_string($params['group']))
 				throw new InvalidArgumentException("Please provide a valid group field parameter.");
 
 			$group = $params['group'];
@@ -173,12 +164,12 @@ public function dbZurückgeben(){
 
 		/* Build LIMIT */
 		if (isset($params['limit'])) {
-			if (! is_numeric($params['limit']))
+			if (!is_numeric($params['limit']))
 				throw new InvalidArgumentException("Please provide a valid numerical limit.");
 
-			if (! isset($params['offset']))
+			if (!isset($params['offset']))
 				$params['offset'] = 0;
-			elseif (! is_numeric($params['offset']))
+			elseif (!is_numeric($params['offset']))
 				throw new InvalidArgumentException("Please provide a valid numerical offset.");
 
 			$this->db->setLimit($params['limit'], $params['offset']);
@@ -193,17 +184,16 @@ public function dbZurückgeben(){
 			WHERE
 				$where
 		";
-		if (! empty($group))
+		if (!empty($group))
 			$query .= " GROUP BY $group";
-		if (! empty($order))
+		if (!empty($order))
 			$query .= " ORDER BY $order";
 
 		/* Execute query and fetch items. */
 		$result = $this->db->query($query);
 		while ($row = $this->db->fetchObject($result))
 			$data['items'][] = $row;
-		if( isset($params['limit']) )
-		{
+		if (isset($params['limit'])) {
 			/* Fill 'cnt' with total count of items */
 			$cntSQL = "SELECT COUNT(*) cnt FROM ($query) subquery";
 			$rowCnt = $this->db->fetchAssoc($this->db->query($cntSQL));
@@ -213,16 +203,15 @@ public function dbZurückgeben(){
 	}
 
 	/**
-	 *	Insert data into a relation.
+	 * 	Insert data into a relation.
 	 *
-	 *	This method can be used to execute an INSERT INTO
-	 *	query on the given table name.
+	 * 	This method can be used to execute an INSERT INTO
+	 * 	query on the given table name.
 	 *
-	 *	@params	string	$table	relation name
-	 *	@params	array	$values	fields/values pairs
+	 * 	@params	string	$table	relation name
+	 * 	@params	array	$values	fields/values pairs
 	 */
-	public function insert( $table, array $values )
-	{
+	public function insert($table, array $values) {
 		global $ilDB;
 
 		/* Quote values. */
@@ -236,7 +225,7 @@ public function dbZurückgeben(){
 			else
 				$type = "text";
 
-			$quoted[] = $ilDB->quote( $value, $type );
+			$quoted[] = $ilDB->quote($value, $type);
 		}
 
 		/* Build SQL query. */
@@ -245,9 +234,7 @@ public function dbZurückgeben(){
 				(%s)
 			VALUES
 				(%s)
-			", $table,
-			implode(", ", $fields),
-			implode(", ", $quoted));
+			", $table, implode(", ", $fields), implode(", ", $quoted));
 
 		/* Execute SQL */
 		$ilDB->manipulate($sql);
