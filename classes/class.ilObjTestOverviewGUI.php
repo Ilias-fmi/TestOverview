@@ -498,12 +498,12 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
 		require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
 						->getDirectory() . '/classes/GUI/class.ilMappedTableGUI.php';
 		require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
-						->getDirectory() . '/classes/GUI/class.rankGui.php';
+						->getDirectory() . '/classes/GUI/class.ilExerciseOverviewTableGUI.php';
 		require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
 						->getDirectory() . '/classes/mapper/class.ilExerciseMapper.php';
 
 		$ilExerciseMapper = new ilExerciseMapper;
-		$table = new rankGUI($this, 'subTabEO');
+		$table = new ilExerciseOverviewTableGUI($this, 'subTabEO');
 		$table->setMapper($ilExerciseMapper)->populateE(true);
 		/* Populate template */
 		$tpl->setDescription($this->object->getDescription());
@@ -546,12 +546,12 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
 		require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
 						->getDirectory() . '/classes/GUI/class.ilMappedTableGUI.php';
 		require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
-						->getDirectory() . '/classes/GUI/class.rankGui.php';
+						->getDirectory() . '/classes/GUI/class.ilExerciseOverviewTableGUI.php';
 		require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
 						->getDirectory() . '/classes/mapper/class.ilExerciseMapper.php';
 
 		$ilExerciseMapper = new ilExerciseMapper;
-		$table = new rankGUI($this, 'subTabEO');
+		$table = new ilExerciseOverviewTableGUI($this, 'subTabEO');
 		$table->setMapper($ilExerciseMapper)->populateE(false);
 		/* Populate template */
 		$tpl->setDescription($this->object->getDescription());
@@ -567,11 +567,11 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
 		require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
 						->getDirectory() . '/classes/GUI/class.ilMappedTableGUI.php';
 		require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
-						->getDirectory() . '/classes/GUI/class.rankGui.php';
+						->getDirectory() . '/classes/GUI/class.ilExerciseOverviewTableGUI.php';
 		require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
 						->getDirectory() . '/classes/mapper/class.ilExerciseMapper.php';
 		$ilExerciseMapper = new ilExerciseMapper;
-		$table = new rankGUI($this, 'updateStudentViewEO');
+		$table = new ilExerciseOverviewTableGUI($this, 'updateStudentViewEO');
 		$table->setMapper($ilExerciseMapper);
 		$table->getStudentsRanked();
 		ilUtil::sendSuccess($this->txt('success_update'), true);
@@ -1104,9 +1104,9 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
 		require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
 						->getDirectory() . '/classes/GUI/class.ilMappedTableGUI.php';
 		require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
-						->getDirectory() . '/classes/GUI/class.rankGui.php';
+						->getDirectory() . '/classes/GUI/class.ilExerciseOverviewTableGUI.php';
 
-		$table = new rankGui($this, 'subTabTORanking');
+		$table = new ilExerciseOverviewTableGUI($this, 'subTabTORanking');
 		$table->resetOffset();
 		$table->resetFilter();
 		$this->subTabEORanking();
@@ -1122,9 +1122,9 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
 		require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
 						->getDirectory() . '/classes/GUI/class.ilMappedTableGUI.php';
 		require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
-						->getDirectory() . '/classes/GUI/class.rankGui.php';
+						->getDirectory() . '/classes/GUI/class.ilExerciseOverviewTableGUI.php';
 
-		$table = new rankGUI($this, 'subTabTORanking');
+		$table = new ilExerciseOverviewTableGUI($this, 'subTabTORanking');
 		$table->resetOffset();
 		$table->writeFilterToSession();
 		$this->subTabEORanking();

@@ -7,11 +7,11 @@
  */
 
 /**
- * Description of rankGui
+ * xercise Overview Gui
  *
  * @author Dinkel
  */
-class rankGui extends ilMappedTableGUI {
+class ilExerciseOverviewTableGUI extends ilMappedTableGUI {
 
 	private $accessIndex = array();
 
