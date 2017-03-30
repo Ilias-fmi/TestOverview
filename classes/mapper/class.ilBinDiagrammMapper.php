@@ -303,11 +303,12 @@ class exerciseCharts {
 						->getDirectory() . '/classes/mapper/class.ilExerciseMapper.php';
 		$excMapper = new ilExerciseMapper();
 		$this->data = $excMapper->getTotalScores($overviewId);
+		var_dump($this->data);
 		if (empty($this->data)) {
 			$this->data = array();
 		}
 		sort($this->data);
-		if (array_pop($this->data) == 0) {
+		if ($this->data[0] == 0) {
 			$this->data = array();
 			$this->bucketsToSmall = true;
 		}

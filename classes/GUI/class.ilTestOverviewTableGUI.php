@@ -149,6 +149,15 @@ class ilTestOverviewTableGUI extends ilMappedTableGUI {
 		$this->filter['flt_group_name'] = $gname->getValue();
 	}
 
+public function getRefId($ObjId) {
+    global $ilDB;
+    $query = "SELECT ref_id FROM object_reference WHERE obj_id = %s";
+    $result = $ilDB->queryF($query, array('integer'), array($ObjId));
+
+    $record = $ilDB->fetchAssoc($result);
+
+    return $record['ref_id'];
+  }
 	/**
 	 *    Fill a table row.
 	 *
@@ -171,8 +180,12 @@ class ilTestOverviewTableGUI extends ilMappedTableGUI {
 
 			if ($this->accessIndex[$obj_id]) {
 				$result = $test->getTestResult($activeId);
-				$lpStatus = new ilLPStatus($test->getId());
-				$progress = $lpStatus->_lookupStatus($test->getId(), $row['member_id']);
+				//$lpStatus = new ilLPStatus($test->getId());
+				require_once 'Services/Tracking/classes/status/class.ilLPStatusTestPassed.php';
+				$jo = new ilLPStatusTestPassed($test->getId());
+				//$progress = $lpStatus->_tracProgress($test->getId(), $row['member_id']);
+				$progress = $jo->determineStatus($test->getId(),$row['member_id']);
+				var_dump($progress);
 
 					$result = sprintf("%.2f %%", (float) $result['pass']['percent'] * 100);
 					$results[] = $result;
@@ -343,9 +356,17 @@ class ilTestOverviewTableGUI extends ilMappedTableGUI {
 	 * @return string
 	 */
 	private function getCSSByProgress($progress) {
-		
+		$map = $this->buildCssClassByProgressMap();
 
-		return 'no-result';
+		$progress = (string) $progress;
+
+		foreach ($map as $lpNum => $cssClass) {
+			if ($progress === (string) $lpNum) { // we need identical check !!
+				return $cssClass;
+			}
+		}
+
+		return 'no-perm-result';
 	}
 
 	public function buildCssClassByProgressMap() {
@@ -534,12 +555,8 @@ class ilTestOverviewTableGUI extends ilMappedTableGUI {
 					$result = $test->getTestResult($activeId);
 					$lpStatus = new ilLPStatus($test->getId());
 					$progress = $lpStatus->_lookupStatus($test->getId(), $stdID);
-					//if ((bool) $progress) {
 						$result = sprintf("%.2f %%", (float) $result['pass']['percent'] * 100);
 						$results[] = $result;
-					//} else {
-					//	$results[] = 0;
-					//}
 
 					if (count($results)) {
 						$average = (array_sum($results) / count($results));

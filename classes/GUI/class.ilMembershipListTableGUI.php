@@ -158,7 +158,7 @@ class ilMembershipListTableGUI extends ilMappedTableGUI {
 		
 
 		$res = $this->getMapper()->getValue('rep_robj_xtov_p2o', 'true', $filter);
-var_dump($res);
+		var_dump($res);
 		return !empty($res);
 	}
 
