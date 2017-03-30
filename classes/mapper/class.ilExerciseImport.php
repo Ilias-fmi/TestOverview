@@ -7,7 +7,7 @@
  * 	@category	Core
  * 	@author		Jan Ruthardt <janruthardt@web.de>
  *
- * This Class puts and deletes the given Exercise Ids and Overview Ids in the DB to creat a relation between them
+ * This class creates and deletes the given ExerciseIds and OverviewIds in the DB to create a relation between them
  */
 class ExerciseImport {
 
@@ -36,8 +36,8 @@ class ExerciseImport {
 	public function getObjectRef($refId) {
 		global $ilDB;
 
-		$query = "Select obj_id from object_reference
-                  where ref_id = '" . $refId . "'";
+		$query = "SELECT obj_id FROM object_reference
+                  WHERE ref_id = '" . $refId . "'";
 
 		$result = $ilDB->query($query);
 		$obj_id = $ilDB->fetchObject($result);

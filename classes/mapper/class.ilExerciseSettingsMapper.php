@@ -6,7 +6,10 @@ class ilExerciseSettingsMapper extends ilDataMapper {
 	 * @var string
 	 */
 	protected $tableName = 'rep_robj_xtov_e2o';
-
+	/**
+	 * 
+	 * @return string
+	 */
 	protected function getSelectPart() {
 		$fields = array(
 			'DISTINCT (ref.obj_id)',
@@ -16,7 +19,10 @@ class ilExerciseSettingsMapper extends ilDataMapper {
 
 		return implode(', ', $fields);
 	}
-
+	/**
+	 * 
+	 * @return string
+	 */
 	protected function getFromPart() {
 		$joins = array(
 			'INNER JOIN object_reference ref ON (rep_robj_xtov_e2o.obj_id_exercise = ref.obj_id AND ref.deleted IS NULL)',
@@ -25,7 +31,11 @@ class ilExerciseSettingsMapper extends ilDataMapper {
 
 		return $this->tableName . ' ' . implode(' ', $joins);
 	}
-
+	/**
+	 * 
+	 * @param array $filters
+	 * @return string
+	 */
 	protected function getWherePart(array $filters) {
 		$conditions = array('rep_robj_xtov_e2o.obj_id_overview = ' . $this->db->quote($filters['overview_id'], 'integer'));
 

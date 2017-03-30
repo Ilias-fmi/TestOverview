@@ -67,9 +67,6 @@ class ilExerciseOverviewTableGUI extends ilMappedTableGUI {
 		$dataArray = $excMapper->getUniqueExerciseId($overview->getID());
 		for ($index = 0; $index < count($dataArray); $index++) {
 			$obj_id = $dataArray[$index];
-//		foreach( $excMapper->getUniqueExerciseId($overview->getID()) as $obj_id => $refs )
-//		{
-			// $this->addColumn( $excMapper->getExerciseName($obj_id),$ilCtrl->getLinkTargetByClass('ilobjtestgui', 'infoScreen'));
 			$refId = $this->getRefId($obj_id);
 			$this->addColumn("<a href='ilias.php?baseClass=ilExerciseHandlerGUI&ref_id=$refId&cmd=showOverview'>" . $excMapper->getExerciseName($obj_id) . "</a>");
 		}
@@ -106,12 +103,10 @@ class ilExerciseOverviewTableGUI extends ilMappedTableGUI {
 		/* Configure participant name filter (input[type=text]) */
 		$pname = new ilTextInputGUI($this->lng->txt('rep_robj_xtov_overview_flt_participant_name'), 'flt_participant_name');
 		$pname->setSubmitFormOnEnter(true);
-		/* Martins code für gender filter */
 		$pgender = new ilSelectInputGUI("Gender", 'flt_participant_gender');
 
 		$genderArray = array("" => "-- Select --", "f" => "female", "m" => "male");
 		$pgender->setOptions($genderArray);
-		/* Martins code gender filter ende */
 
 		/* Configure participant group name filter (select) */
 		$mapper = new ilOverviewMapper();
@@ -126,18 +121,14 @@ class ilExerciseOverviewTableGUI extends ilMappedTableGUI {
 		$this->addFilterItem($pname);
 
 		$this->addFilterItem($gname);
-		/* Martins code gender filter */
 
 		$this->addFilterItem($pgender);
 		$pgender->readFromSession();
-		/* Martins code gender filter ende */
 		$pname->readFromSession();
 
 		$gname->readFromSession();
-		/* martis code gender filter */
 
 		$this->filter['flt_participant_gender'] = $pgender->getValue();
-		/* martins code ende */
 		$this->filter['flt_participant_name'] = $pname->getValue();
 		$stringN = $pname->getValue();
 		$this->filter['flt_group_name'] = $gname->getValue();
@@ -174,7 +165,7 @@ class ilExerciseOverviewTableGUI extends ilMappedTableGUI {
 			$progress = '2';
 			$state = $this->isPassed($obj_id, $row['member_id']);
 			/*
-			 * Colors the Results if they are gradet 
+			 * Colors the results if they are graded 
 			 */
 			if ($state == "passed") {
 				$this->populateNoLinkCell($mark, "green-result");
@@ -202,13 +193,6 @@ class ilExerciseOverviewTableGUI extends ilMappedTableGUI {
 		$this->tpl->setVariable('TEST_PARTICIPANT', $row['member_fullname']);
 	}
 
-	private function populateLinkedCell($resultLink, $resultValue, $cssClass) {
-		$this->tpl->setCurrentBlock('result');
-		$this->tpl->setVariable('RESULT_LINK', $resultLink);
-		$this->tpl->setVariable('RESULT_VALUE', $resultValue);
-		$this->tpl->setVariable('RESULT_CSSCLASS', $cssClass);
-		$this->tpl->parseCurrentBlock();
-	}
 
 	private function populateNoLinkCell($resultValue, $cssClass) {
 		$this->tpl->setCurrentBlock('result_nolink');
@@ -217,33 +201,7 @@ class ilExerciseOverviewTableGUI extends ilMappedTableGUI {
 		$this->tpl->parseCurrentBlock();
 	}
 
-	/**
-	 *    Get a CSS class name by the result
-	 *
-	 *    The getCSSByResult() method is used internally
-	 *    to determine the CSS class to be set for a given
-	 *    test result.
-	 *
-	 * @params    int    $progress    Learning progress (0|1|2|3)
-	 * @see       ilLPStatus
-	 *
-	 * @param $progress
-	 * @return string
-	 */
-	private function getCSSByProgress($progress) {
-		$map = $this->buildCssClassByProgressMap();
-
-		$progress = (string) $progress;
-
-		foreach ($map as $lpNum => $cssClass) {
-			if ($progress === (string) $lpNum) { // we need identical check !!
-				return $cssClass;
-			}
-		}
-
-		return 'no-perm-result';
-	}
-
+	
 	public function buildCssClassByProgressMap() {
 		if (defined('ilLPStatus::LP_STATUS_NOT_ATTEMPTED_NUM')) {
 			return array(
@@ -321,14 +279,14 @@ class ilExerciseOverviewTableGUI extends ilMappedTableGUI {
 		}
 	}
 
-        /**
-         * This method fetchs User Information and is used to filter the UserIds
-         * 
-         * @global type $ilDB
-         * @global type $tpl
-         * @param type $usr_ids
-         * @return \ilObjUser
-         */
+	/**
+	* This method fetchs User Information and is used to filter the UserIds
+	* 
+	* @global type $ilDB
+	* @global type $tpl
+	* @param type $usr_ids
+	* @return \ilObjUser
+	*/
 	public function fetchUserInformation($usr_ids) {
 		global $ilDB, $tpl;
 
@@ -487,7 +445,8 @@ class ilExerciseOverviewTableGUI extends ilMappedTableGUI {
 	}
 
 	/**
-	 * Function to rank all students and save the result in the database
+	 * Function to rank all students and save their result in the database
+	 * @throws ilException
 	 */
 	public function getStudentsRanked() {
 		if ($this->getExternalSegmentation() && $this->getExternalSorting()) {
@@ -551,16 +510,8 @@ class ilExerciseOverviewTableGUI extends ilMappedTableGUI {
 	}
 
 	/**
-	 * @param string $a_text
-	 * @param string $link
-	 */
-	public function addTestColumn($a_text, $link) {
-		$this->addColumn($a_text, '');
-		$this->column[count($this->column) - 1]['link'] = $link;
-	}
-
-	/**
-	 * 
+	 * Fills the exercise names and the urls into the headrow
+	 * @global type $lng
 	 */
 	public function fillHeader() {
 		global $lng;
@@ -587,7 +538,7 @@ class ilExerciseOverviewTableGUI extends ilMappedTableGUI {
 
 			//tooltip
 			if ($column["tooltip"] != "") {
-				include_once("./Services/UIComponent/Tooltip/classes/class.ilTooltipGUI.php");
+				include_once("./Services/integerUIComponent/Tooltip/classes/class.ilTooltipGUI.php");
 				ilTooltipGUI::addTooltip("thc_" . $this->getId() . "_" . $ccnt, $column["tooltip"]);
 			}
 			if ((!$this->enabled["sort"] || $column["sort_field"] == "" || $column["is_checkbox_action_column"]) && !$column['link']) {
@@ -654,13 +605,6 @@ class ilExerciseOverviewTableGUI extends ilMappedTableGUI {
 	}
 
 	/**
-	 * @param string $link
-	 */
-	public function setExternalLink($link) {
-		$this->tpl->setVariable('TBL_ORDER_LINK', $link);
-	}
-
-	/**
 	 * overwrite this method for ungregging the object data structures
 	 * since ilias tables support arrays only
 	 * 
@@ -687,24 +631,12 @@ class ilExerciseOverviewTableGUI extends ilMappedTableGUI {
 		return $rows;
 	}
 
-	protected function buildMemberResultLinkTarget($refId, $activeId) {
-		global $ilCtrl;
-
-		$link = $ilCtrl->getLinkTargetByClass(
-				array('ilObjTestOverviewGUI', 'ilobjtestgui', 'iltestevaluationgui'), 'outParticipantsPassDetails'
-		);
-
-		$link = ilUtil::appendUrlParameterString($link, "ref_id=$refId");
-		$link = ilUtil::appendUrlParameterString($link, "active_id=$activeId");
-
-		return $link;
-	}
 
 	public function isPassed($objId, $usrId) {
 		global $ilDB;
 
-		$query = "select exc_members.status from exc_members where obj_id = '$objId' AND usr_id = '$usrId'";
-		$result = $ilDB->query($query);
+		$query = "SELECT exc_members.status FROM exc_members WHERE obj_id = %s AND usr_id = %s";
+		$result = $ilDB->queryF($query, array('integer', 'integer'), array($objId,$usrId));
 		$state = $ilDB->fetchObject($result);
 		return $state->status;
 	}

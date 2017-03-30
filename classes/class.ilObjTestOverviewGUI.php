@@ -374,7 +374,7 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
 		global $tpl, $ilTabs, $ilDB, $ilUser;
 		$ilTabs->activateTab('UserResults');
 		$dataMapper = new studentMapper ();
-		$tpl->setContent($dataMapper->getResults($ilUser->getId(), $this->object->getId(), $this->object));
+		$tpl->setContent($dataMapper->getResults($ilUser->getId(), $this->object->getId()));
 	}
 
 	/* TABS FOR TEST OVERVIEW */

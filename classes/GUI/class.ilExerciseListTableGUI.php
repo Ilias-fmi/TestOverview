@@ -5,9 +5,13 @@
 /**
  * 	@package	TestOverview repository plugin
  * 	@category	Core
+ * 
  * 	@author		Jan Ruthardt <janruthardt@web.de>
+ *  @author		Benedict Steuerlein <st111340@stud.uni-stuttgart.de>
+ *  @author		Martin Dinkel <hmdinkel@web.de>
  *  
- *      @ilCtrl_Calls ilExerciseListTableGUI: ilObjExerciseGUI
+ *  @ilCtrl_Calls ilExerciseListTableGUI: ilObjExerciseGUI
+ * 
  * */
 require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')->getDirectory() . '/classes/GUI/class.ilMappedTableGUI.php';
 
@@ -120,7 +124,6 @@ class ilExerciseListTableGUI extends ilMappedTableGUI {
 			next($path);
 		}
 		require_once 'Modules/Exercise/classes/class.ilObjExerciseGUI.php';
-		//$ilCtrl->setParameterByClass("", 'ref_id', $ref_id);
 		$ilCtrl->setParameterByClass('ilobjexercisegui', 'ref_id', $ref_id);
 		$path_str = "<div><a href='" . $ilCtrl->getLinkTargetByClass('ilobjexercisegui', "infoScreen") . "'>" . $path_str . "</a></div>";
 
@@ -129,7 +132,6 @@ class ilExerciseListTableGUI extends ilMappedTableGUI {
 
 	public function getRefId($obj_id) {
 		global $ilDB;
-		//$refID = array();
 		$query = "SELECT ref_id FROM object_reference WHERE obj_id = %s ORDER BY ref_id ASC ";
 		$result = $ilDB->queryF($query, array('integer'), array($obj_id));
 

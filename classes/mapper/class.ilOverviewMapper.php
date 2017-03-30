@@ -146,7 +146,7 @@ class ilOverviewMapper extends ilDataMapper {
 	 * @return type
 	 */
 	public function getRankedList($id) {
-		$query = "SELECT stud_id FROM `rep_robj_xtov_torank` WHERE to_id=$id ORDER BY rank ASC "
+		$query = "SELECT stud_id FROM rep_robj_xtov_torank WHERE to_id=$id ORDER BY rank ASC "
 		;
 
 		$result = $this->db->query($query);
@@ -163,7 +163,7 @@ class ilOverviewMapper extends ilDataMapper {
 	public function getRankedStudent($id, $stdID) {
 		global $ilDB;
 		$rank = 0;
-		$query = "SELECT stud_id FROM `rep_robj_xtov_torank` WHERE to_id=$id ORDER BY rank DESC "
+		$query = "SELECT stud_id FROM rep_robj_xtov_torank WHERE to_id=$id ORDER BY rank DESC "
 		;
 
 		$result = $this->db->query($query);
@@ -204,7 +204,7 @@ class ilOverviewMapper extends ilDataMapper {
          */
 	public function getDate($o_id) {
 		global $ilDB;
-		$query = "SELECT rankdate FROM `rep_robj_xtov_rankdate` WHERE o_id=$o_id AND otype='to'"
+		$query = "SELECT rankdate FROM rep_robj_xtov_rankdate WHERE o_id=$o_id AND otype='to'"
 		;
 
 		$result = $this->db->query($query);
@@ -228,14 +228,13 @@ class ilOverviewMapper extends ilDataMapper {
 
 		global $ilDB;
 		$count = 0;
-		$query = "SELECT stud_id FROM `rep_robj_xtov_torank` WHERE to_id=$id "
+		$query = "SELECT stud_id FROM rep_robj_xtov_torank WHERE to_id=$id "
 		;
 
 		$result = $this->db->query($query);
 		while ($data = $ilDB->fetchAssoc($result)) {
 			$count++;
 		}
-		//$count = count($data);
 
 		return $count;
 	}

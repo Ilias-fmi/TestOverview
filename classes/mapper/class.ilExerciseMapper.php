@@ -5,9 +5,15 @@
 /**
  * 	@package	TestOverview repository plugin
  * 	@category	Core
+ * 
  * 	@author		Jan Ruthardt <janruthardt@web.de>
- * Maps the selected exercises with the students an their results
- *      @ilCtrl_Calls ilExerciseMapper: ilObjExerciseGUI
+ *  @author		Benedict Steuerlein <st111340@stud.uni-stuttgart.de>
+ *  @author		Martin Dinkel <hmdinkel@web.de>
+ * 
+ *  Maps the selected exercises, the students that participated in them (and the selected groups from the table p2o) 
+ *	into the ExerciseOverview Table
+ * 
+ *  @ilCtrl_Calls ilExerciseMapper: ilObjExerciseGUI
  * */
 require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
 				->getDirectory() . '/classes/mapper/class.ilDataMapper.php';
@@ -62,18 +68,30 @@ class ilExerciseMapper extends ilDataMapper {
 	}
 
 	/**
-	 * Get the class all exercise ut_lp_marks participants and their results
+	 * Get all exercise participants and their results
 	 */
 	public function getArrayofObjects($overviewID) {
 		global $ilDB;
 		$DbObject = array();
 
-		$query = "select ut_lp_marks.usr_id as user_id, firstname ,lastname ,obj_id ,mark from  rep_robj_xtov_e2o join ut_lp_marks join usr_data on
-                    (rep_robj_xtov_e2o.obj_id_exercise = ut_lp_marks.obj_id and ut_lp_marks.usr_id = usr_data.usr_id)
-                    where obj_id_overview = '" . $overviewID .
-				"' ORDER BY obj_id DESC";
+		$query = "SELECT 
+					ut_lp_marks.usr_id AS user_id,
+					firstname,
+					lastname,
+					obj_id,
+					mark
+				FROM
+					rep_robj_xtov_e2o
+				JOIN
+					ut_lp_marks
+				JOIN
+					usr_data ON (rep_robj_xtov_e2o.obj_id_exercise = ut_lp_marks.obj_id
+				AND ut_lp_marks.usr_id = usr_data.usr_id)
+				WHERE
+					obj_id_overview = %s
+				ORDER BY obj_id DESC";
 
-		$result = $ilDB->query($query);
+		$result = $ilDB->queryF($query, array('integer'), array($overviewID));
 		while ($record = $ilDB->fetchObject($result)) {
 			array_push($DbObject, $record);
 		}
@@ -93,12 +111,15 @@ class ilExerciseMapper extends ilDataMapper {
 	}
 
 	/**
-	 * Gets the name of a student for the given memberID
+	 * 
+	 * @global type $ilDB
+	 * @param integer $studID
+	 * @return String Name of a stundent for a given studId
 	 */
 	public function getStudName($studID) {
 		global $ilDB;
-		$query = "Select usr_id ,firstname ,lastname From usr_data
-                where usr_id = '" . $studID . "'";
+		$query = "SELECT usr_id ,firstname ,lastname FROM usr_data
+                WHERE usr_id = '" . $studID . "'";
 		$result = $ilDB->query($query);
 		$record = $ilDB->fetchObject($result);
 
@@ -157,7 +178,7 @@ class ilExerciseMapper extends ilDataMapper {
 	 *
 	 * @param type $overviewID
 	 * @return array Is an Array of array
-	 * the inner arrays have as the first Element the studID, after that are all Marks for the tests
+	 * the inner arrays have as the first element the studID, all elements after the studID are marks for the exercise
 	 */
 	public function buildMatrix($overviewID) {
 
@@ -185,7 +206,11 @@ class ilExerciseMapper extends ilDataMapper {
 	}
 
 	/**
-	 * @return mark of the user in the specific test
+	 * 
+	 * @param int $userID
+	 * @param int $testID
+	 * @param type $Db
+	 * @return int Mark of a user for a specific exercise 
 	 */
 	public function getMark($userID, $testID, $Db) {
 		foreach ($Db as $row) {
@@ -242,21 +267,36 @@ class ilExerciseMapper extends ilDataMapper {
 	public function getUniqueUserId($overviewID) {
 		global $ilDB;
 		$UniqueIDs = array();
-		$query = "Select DISTINCT(exc_mem_ass_status.usr_id) from rep_robj_xtov_e2o  ,exc_returned , exc_mem_ass_status  join usr_data  on (exc_mem_ass_status.usr_id = usr_data.usr_id)
-                where exc_returned.ass_id = exc_mem_ass_status.ass_id
-                And user_id = exc_mem_ass_status.usr_id and obj_id_exercise = obj_id
-                and obj_id_overview = '" . $overviewID . "' order by exc_mem_ass_status.usr_id";
-		$result = $ilDB->query($query);
+		$query = "SELECT 
+					  usr_id
+				FROM
+					(SELECT DISTINCT
+					  (exc_mem_ass_status.usr_id), exc_returned.obj_id
+					FROM
+					  rep_robj_xtov_e2o, exc_returned, exc_mem_ass_status
+					JOIN usr_data ON (exc_mem_ass_status.usr_id = usr_data.usr_id)
+					WHERE
+				  exc_returned.ass_id = exc_mem_ass_status.ass_id
+					AND user_id = exc_mem_ass_status.usr_id
+					AND obj_id_exercise = obj_id
+					AND obj_id_overview = %s
+					ORDER BY exc_mem_ass_status.usr_id) users
+				  JOIN
+					object_reference ON (users.obj_id = object_reference.obj_id)
+				  WHERE
+					deleted IS NULL";
+		$result = $ilDB->queryF($query,array('integer'),array($overviewID));
 		while ($record = $ilDB->fetchObject($result)) {
 			array_push($UniqueIDs, $record->usr_id);
 		}
 		return $UniqueIDs;
 	}
 
-	/*
-	 * Summs up the Points of every Student
+	/**
+	 * 
+	 * @param type $overviewID
+	 * @return array containing the sum of points for every student in all exercises
 	 */
-
 	public function getTotalScores($overviewID) {
 		$data = array();
 		$results = $this->buildMatrix($overviewID);
@@ -271,10 +311,20 @@ class ilExerciseMapper extends ilDataMapper {
 			return $data;
 		}
 	}
-
+	/**
+	 * 
+	 * @global type $ilDB
+	 * @param type $ObjId
+	 * @return int ref_id for a given obj_id 
+	 */
 	public function getRefId($ObjId) {
 		global $ilDB;
-		$query = "SELECT ref_id FROM object_reference WHERE obj_id = %s";
+		$query = "SELECT
+					ref_id 
+				FROM 
+					object_reference 
+				WHERE 
+					obj_id = %s";
 		$result = $ilDB->queryF($query, array('integer'), array($ObjId));
 
 		$record = $ilDB->fetchAssoc($result);
@@ -297,29 +347,35 @@ class ilExerciseMapper extends ilDataMapper {
 	}
 
 	/**
-	 * Delete all rankings for a TestOverview Object
+	 * Delete all rankings for a TestOverview object
 	 * @param type $id
 	 */
 	public function resetRanks($id) {
-		$query = "DELETE FROM `rep_robj_xtov_eorank` WHERE eo_id=$id";
+		$query = "DELETE FROM rep_robj_xtov_eorank WHERE eo_id=$id";
 		$this->db->query($query);
 	}
 
 	/**
 	 * 
 	 * @param type $id
-	 * @return  a list of students which is sorted by ranking
+	 * @return  a list of students which is sorted by rank
 	 */
 	public function getRankedList($id) {
-		$query = "SELECT stud_id FROM `rep_robj_xtov_eorank` WHERE eo_id=$id ORDER BY rank ASC "
+		$query = "SELECT 
+					stud_id 
+				FROM 
+					rep_robj_xtov_eorank 
+				WHERE 
+					eo_id= %s 
+				ORDER BY rank ASC "
 		;
 
-		$result = $this->db->query($query);
+		$result = $this->db->queryF($query,array('integer'), array($id));
 		return $result;
 	}
 
 	/**
-	 * Gets the ranking of a student
+	 * Gets the rank of a student
 	 * @global type $ilDB
 	 * @param type $id
 	 * @param type $stdID
@@ -342,7 +398,12 @@ class ilExerciseMapper extends ilDataMapper {
 		}
 		return $rank;
 	}
-
+	/**
+	 * 
+	 * @global type $ilDB
+	 * @param type $id
+	 * @return int counts the database entries in rep_robj_xtov_eorank
+	 */
 	public function getCount($id) {
 
 		global $ilDB;
@@ -357,7 +418,12 @@ class ilExerciseMapper extends ilDataMapper {
 
 		return $count;
 	}
-
+	/**
+	 * 
+	 * @global type $ilDB
+	 * 
+	 * writes the current date into the database
+	 */
 	public function createDate($o_id) {
 		global $ilDB;
 		$timestamp = time();
@@ -369,15 +435,12 @@ class ilExerciseMapper extends ilDataMapper {
                                     ($datum,'eo',$o_id);";
 		$this->db->query($query);
 	}
-
+	
 	public function getDate($o_id) {
 		global $ilDB;
-		$query = "SELECT rankdate FROM `rep_robj_xtov_rankdate` WHERE o_id=$o_id AND otype='eo'"
-		;
+		$query = "SELECT rankdate FROM rep_robj_xtov_rankdate WHERE o_id= %s AND otype='eo'";
 
-		$result = $this->db->query($query);
-
-		$result = $this->db->query($query);
+		$result = $this->db->queryF($query, array('integer'), array($o_id));
 		$rankDate = array();
 
 		while ($date = $ilDB->fetchAssoc($result)) {

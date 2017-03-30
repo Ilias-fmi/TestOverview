@@ -18,18 +18,13 @@ class BinDiagrammMapper extends ilTestOverviewTableGUI {
 
 	public function createAverageDia($type) {
 		$this->data();
-		switch ($type) {
-			case "BARS":
-				$averageObj = new AverageDiagramm($this->average);
-				return $averageObj->initDia();
-			case "PIE":
-				$averageObj = new PieAverageDiagramm($this->average);
-				return $averageObj->initDia();
-		}
+		$averageObj = new AverageDiagramm($this->average);
+		return $averageObj->initDia();
+
 	}
 
 	/*
-	 * Gets the Data from every Student and there Testresults in a String saperated by "|"
+	 * Gets the data from every student and their Testresults in a String saperated by "|"
 	 *
 	 */
 
@@ -79,7 +74,7 @@ class BinDiagrammMapper extends ilTestOverviewTableGUI {
 }
 
 /**
- * Creats a Bar Diagramm that shows the number of students with there Points in a Range of 10 Percent
+ * Creates a Bar Diagramm that shows the number of students with their points in a range of 10%
  */
 class AverageDiagramm {
 
@@ -177,7 +172,7 @@ class AverageDiagramm {
 }
 
 /**
- * Creats a Pie Diagramm that shows the number of students with there Points in a Range of 10 Percent
+ * Creates a Pie Diagramm that shows the number of students with their points in a range of 10%
  */
 class PieAverageDiagramm extends AverageDiagramm {
 
@@ -280,8 +275,8 @@ class PieAverageDiagramm extends AverageDiagramm {
 }
 
 /**
- * Creats a Bar diagramm for exercises.
- * The Bucketsize is calculatet by a given value from the user
+ * Creates a bar diagramm for exercises.
+ * The Bucketsize is calculated by a given value from the user
  */
 class exerciseCharts {
 
@@ -396,7 +391,6 @@ class exerciseCharts {
 			$tpl->setVariable("overSize", $lng->txt("rep_robj_xtov_bucketFail"));
 		}
 		return $tpl->get();
-		// return implode(";",$this-> buckets);
 	}
 
 }

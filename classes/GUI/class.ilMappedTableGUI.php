@@ -65,17 +65,16 @@ abstract class ilMappedTableGUI extends ilTable2GUI {
 	}
 
 	/**
-         * This methode should be integrated into populate(). 
-         * The method call in ilObjTestOverviewGUI needs to be change to populate()
-         * 
-         * This method is used to populate the TableGUIObject.
-         * 
+	 * This methode should be integrated into populate(). 
+	 * The method call in ilObjTestOverviewGUI needs to be change to populate()
+	 * 
+	 * This method is used to populate the TableGUIObject.
+	 * 
 	 *            
-         * @param type $sorting
-         * @return $this
-         * @throws ilException
-         */
-
+	 * @param type $sorting
+	 * @return $this
+	 * @throws ilException
+	 */
 	public function populateE($sorting) {
 
 		if ($this->getExternalSegmentation() && $this->getExternalSorting()) {

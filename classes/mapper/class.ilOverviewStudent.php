@@ -5,8 +5,11 @@
 /**
  * 	@package	TestOverview repository plugin
  * 	@category	Core
+ * 
  * 	@author		Jan Ruthardt <janruthardt@web.de>
- *  
+ *  @author		Benedict Steuerlein <st111340@stud.uni-stuttgart.de>
+ *  @author		Martin Dinkel <hmdinkel@web.de>
+ *
  *
  * DB Mapper for the Student View (User with only read Permissons)
  */
@@ -16,20 +19,38 @@ class studentMapper {
      * @global type $ilDB
      * @param type $studId
      * @param type $testRefId
-     * @return type
-     * Gets the result of the last run of a Test
+     * @return type student result of the last run of a test
+     * 
      */
     public function getTestData($studId,$testRefId){
         global $ilDB;
-        $query = "Select DISTINCT title, points,ref_id, maxpoints,tst_pass_result.tstamp, tst_tests.ending_time, ending_time_enabled as timeded  From
-				object_reference Join tst_tests Join tst_active Join tst_pass_result Join object_data ON
-                ( object_reference.obj_id = tst_tests.obj_fi AND tst_active.test_fi = tst_tests.test_id
-                AND tst_active.active_id = tst_pass_result.active_fi AND object_reference.obj_id = object_data.obj_id) 
-               AND tst_active.user_fi = '$studId' and ref_id = '$testRefId'
-                order by tst_pass_result.tstamp DESC 
-                limit 1
+        $query = "SELECT DISTINCT
+					title,
+					points,
+					ref_id,
+					maxpoints,
+					tst_pass_result.tstamp,
+					tst_tests.ending_time,
+					ending_time_enabled AS timeded
+				FROM
+					object_reference
+				JOIN
+					tst_tests
+				JOIN
+					tst_active
+				JOIN
+					tst_pass_result
+				JOIN
+					object_data ON (object_reference.obj_id = tst_tests.obj_fi
+				AND tst_active.test_fi = tst_tests.test_id
+				AND tst_active.active_id = tst_pass_result.active_fi
+				AND object_reference.obj_id = object_data.obj_id)
+				AND tst_active.user_fi = %s
+				AND ref_id = %s
+				ORDER BY tst_pass_result.tstamp DESC
+				LIMIT 1
                 ";
-        $result = $ilDB->query($query);
+        $result = $ilDB->queryF($query,array('integer','integer'), array($studId,$testRefId));
        return  $ilDB->fetchObject($result);
         
     }
@@ -44,19 +65,15 @@ class studentMapper {
      * @param type $overviewId
      * @return string
      */
-    public function getResults($studId, $overviewId,$overview) {
+    public function getResults($studId, $overviewId) {
         global $ilDB, $lng;
         $average;
         $maxPoints;
 
         $data = array();
-        /*$query = "Select DISTINCT title, points,ref_id_test, maxpoints, tst_tests.ending_time, ending_time_enabled as timeded From
-                    rep_robj_xtov_t2o Join object_reference Join tst_tests Join tst_active Join tst_pass_result Join object_data ON
-                (rep_robj_xtov_t2o.ref_id_test = object_reference.ref_id AND object_reference.obj_id = tst_tests.obj_fi AND tst_active.test_fi = tst_tests.test_id
-                AND tst_active.active_id = tst_pass_result.active_fi AND object_reference.obj_id = object_data.obj_id) 
-                where obj_id_overview ='" . $overviewId . "'AND tst_active.user_fi = '" . $studId . "'";*/
-        $query = "select ref_id_test from rep_robj_xtov_t2o where obj_id_overview = '$overviewId'";
-        $result = $ilDB->query($query);
+        
+        $query = "SELECT ref_id_test FROM rep_robj_xtov_t2o WHERE obj_id_overview = %s";
+        $result = $ilDB->queryF($query, array('integer'), array($overviewId));
         $tpl = new ilTemplate("tpl.stud_view.html", true, true, "Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview");
         //Internationalization
         $lng->loadLanguageModule("assessment");
@@ -83,7 +100,6 @@ class studentMapper {
 
         foreach ($data as $set) {
             $result = $this-> getTestData($studId,$set->ref_id_test);
-            //var_dump($result);
             $timestamp = time();
             $datum = (float) date("YmdHis", $timestamp);
 
@@ -125,7 +141,7 @@ class studentMapper {
             }
         }
 
-        //// generall Part /////
+        //// general Part /////
         if ($this->getNumTests($overviewId) == 0) {
             $averageNum = 0;
         } else {
@@ -170,49 +186,56 @@ class studentMapper {
 
         return $tpl->get();
     }
-    
-    public function isTestDeleted($refTestId) {
-        global $ilDB;
-        $query = "select deleted from object_reference where ref_id = '$refTestId'";
-        $result = $ilDB->query($query);
-        $deleteObj = $ilDB->fetchObject($result);
-        return $deleteObj->deleted;
-    }
-
-    public function isExerciseDeleted($ObjExerciseId) {
-        global $ilDB;
-        $query = "select deleted from object_reference where obj_id = '$ObjExerciseId'";
-        $result = $ilDB->query($query);
-        $deleteObj = $ilDB->fetchObject($result);
-        return $deleteObj->deleted;
-    }
-
     /**
-     *  Counts the Number of Tests realted to the Overview Object
-     * @global type $ilDB
-     * @param int $overviewId
-     * @return int
-     */
-   private function numOfTests($overviewId) {
+	 * 
+	 * @global type $ilDB
+	 * @param type $refId
+	 * @return deleted, NULL if object is not deleted, date if object is deleted
+	 */
+    public function isTestDeleted($refId) {
         global $ilDB;
-        $query = "Select count(ref_id_test) as num from rep_robj_xtov_t2o where obj_id_overview = '" . $overviewId . "'";
-        $result = $ilDB->query($query);
-        $numOfTests = $ilDB->fetchObject($result);
-        return $numOfTests->num;
+        $query = "SELECT deleted FROM object_reference WHERE ref_id = %s";
+        $result = $ilDB->queryF($query, array('integer'), array($refId));
+        $deleteObj = $ilDB->fetchObject($result);
+        return $deleteObj->deleted;
+    }
+	/**
+	 * 
+	 * @global type $ilDB
+	 * @param type $ObjId
+	 * @return deleted, NULL if object is not deleted, date if object is deleted
+	 */
+    public function isExerciseDeleted($ObjId) {
+        global $ilDB;
+        $query = "SELECT deleted FROM object_reference WHERE obj_id = %s";
+        $result = $ilDB->queryF($query, array('integer'), array($objId));
+        $deleteObj = $ilDB->fetchObject($result);
+        return $deleteObj->deleted;
     }
 
 
-    /*
-     * Calcs the Number of Tests that are linked with the Overview Object  
-     */
-
+    
+	/**
+	 * 
+	 * @global type $ilDB
+	 * @param type $overviewId
+	 * @return int Number of tests associated with the Overview object
+	 */
     private function getNumTests($overviewId) {
         global $ilDB;
         $count = 0;
         $data = array();
-        $query = "Select ref_id_test , tst_tests.ending_time from rep_robj_xtov_t2o Join object_reference Join tst_tests "
-                . "on (ref_id_test = ref_id And obj_id = obj_fi) where obj_id_overview = '" . $overviewId . "'";
-        $result = $ilDB->query($query);
+        $query = "SELECT 
+					ref_id_test, tst_tests.ending_time
+				FROM
+					rep_robj_xtov_t2o
+				JOIN
+					object_reference
+				JOIN
+					tst_tests ON (ref_id_test = ref_id AND obj_id = obj_fi)
+				WHERE
+					obj_id_overview = %s";
+        $result = $ilDB->queryF($query, array('integer'), array($overviewId));
         while ($testObj = $ilDB->fetchObject($result)) {
             array_push($data, $testObj);
         }
@@ -229,17 +252,27 @@ class studentMapper {
 
     /////////////////////////////////////////// Exercise VIEW ////////////////////////////////////////
     /**
-     * Gets all Exercises + Marks for the given Student 
+     * Gets all exercises and marks for the given student 
      * @param type $studId
      */
     private function getExerciseMarks($studId, $overviewId) {
         global $ilDB;
         $grades = array();
-        $query = "select ut_lp_marks.usr_id as user_id,obj_id ,mark 
-                  from  rep_robj_xtov_e2o join ut_lp_marks join usr_data on 
-                  (rep_robj_xtov_e2o.obj_id_exercise = ut_lp_marks.obj_id and ut_lp_marks.usr_id = usr_data.usr_id) 
-                  where obj_id_overview = '" . $overviewId . "' And ut_lp_marks.usr_id='" . $studId . "'";
-        $result = $ilDB->query($query);
+        $query = "SELECT 
+					ut_lp_marks.usr_id AS user_id, obj_id, mark
+				FROM
+					rep_robj_xtov_e2o
+				JOIN
+					ut_lp_marks
+				JOIN
+					usr_data ON (rep_robj_xtov_e2o.obj_id_exercise = ut_lp_marks.obj_id
+				AND 
+					ut_lp_marks.usr_id = usr_data.usr_id)
+				WHERE
+					obj_id_overview = %s
+				AND 
+					ut_lp_marks.usr_id = %s";
+        $result = $ilDB->queryF($query,array('integer','integer'),array($overviewId,$studId));
         while ($exercise = $ilDB->fetchObject($result)) {
             array_push($grades, $exercise);
         }

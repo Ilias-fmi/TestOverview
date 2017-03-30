@@ -119,11 +119,9 @@ class ilTestOverviewTableGUI extends ilMappedTableGUI {
 		/* Configure participant name filter (input[type=text]) */
 		$pname = new ilTextInputGUI($this->lng->txt('rep_robj_xtov_overview_flt_participant_name'), 'flt_participant_name');
 		$pname->setSubmitFormOnEnter(true);
-		/* Martins code für gender filter */
 		$pgender = new ilSelectInputGUI("Gender", 'flt_participant_gender');
 		$genderArray = array("" => "-- Select --", "f" => "female", "m" => "male");
 		$pgender->setOptions($genderArray);
-		/* Martins code gender filter ende */
 
 		/* Configure participant group name filter (select) */
 		$mapper = new ilOverviewMapper;
@@ -136,15 +134,11 @@ class ilTestOverviewTableGUI extends ilMappedTableGUI {
 		/* Configure filter form */
 		$this->addFilterItem($pname);
 		$this->addFilterItem($gname);
-		/* Martins code gender filter */
 		$this->addFilterItem($pgender);
 		$pgender->readFromSession();
-		/* Martins code gender filter ende */
 		$pname->readFromSession();
 		$gname->readFromSession();
-		/* martis code gender filter */
 		$this->filter['flt_participant_gender'] = $pgender->getValue();
-		/* martins code ende */
 		$this->filter['flt_participant_name'] = $pname->getValue();
 		$this->filter['flt_group_name'] = $gname->getValue();
 	}
@@ -293,8 +287,7 @@ class ilTestOverviewTableGUI extends ilMappedTableGUI {
 		$usr_id__IN__usrIds = $ilDB->in('usr_id', $usr_ids, false, 'integer');
 
 		$query = "
-			SELECT usr_id, title, firstname, lastname, gender FROM usr_data WHERE $usr_id__IN__usrIds
-		";
+			SELECT usr_id, title, firstname, lastname, gender FROM usr_data WHERE $usr_id__IN__usrIds";
 
 		$res = $ilDB->query($query);
 
@@ -496,8 +489,8 @@ class ilTestOverviewTableGUI extends ilMappedTableGUI {
 	}
 
 	/**
-	 * Function to rank all students and save the result in the database.
-	 * This Data is used to show students their results in the User Results
+	 * Function to rank all students and save their result in the database.
+	 * This data is used to show students their results in the User Results
 	 * Tab.
 	 */
 	public function getStudentsRanked() {
@@ -583,7 +576,8 @@ class ilTestOverviewTableGUI extends ilMappedTableGUI {
 	}
 
 	/**
-	 * 
+	 * Fills the test names and the urls into the headrow
+	 * @global type $lng
 	 */
 	public function fillHeader() {
 		global $lng;
