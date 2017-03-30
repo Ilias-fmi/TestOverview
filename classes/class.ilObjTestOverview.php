@@ -488,13 +488,17 @@ class ilObjTestOverview extends ilObjectPlugin {
 			return $this->getParentId($record->parent);
 		}
 	}
-
+	
+	/**
+	 * Removes an entry in the rep_robj_xtov_e2o table
+	 * 
+	 * @global type $ilDB
+	 * @param type $exerciseID
+	 */
 	public function rmExercise($exerciseID) {
 		global $ilDB;
 
-
-
-		/* Remove t2o entry (test 2 overview) */
+		/* Remove e2o entry (exercise 2 overview) */
 		$ilDB->manipulateF("
                     DELETE FROM rep_robj_xtov_e2o 
                     WHERE obj_id_overview = %s AND obj_id_exercise = %s", array('integer', 'integer'), array($this->getId(), $exerciseID));

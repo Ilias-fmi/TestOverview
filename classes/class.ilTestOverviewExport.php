@@ -67,7 +67,7 @@ class ilTestOverviewExport extends ilObjTestOverviewGUI {
 	 * 
 	 * @private function, builds reduced Export file (Only TestNames, no Questions)
 	 *  (lastname|firstname|matriculation-number|email|gender|Testname1|Testname2|...)
-
+	 *
 	 */
 	private function buildReducedExportFile() {
 		global $lng, $ilCtrl;
@@ -333,22 +333,22 @@ class ilTestOverviewExport extends ilObjTestOverviewGUI {
 	/**
 	 * 
 	 * @global type $ilDB
-	 * @return array containing all testIDs associtated with the TO-Object
+	 * @return array containing all testIDs associated with the Overview object
 	 */
 	protected function getTestIDs() {
 		global $ilDB;
 		$testIDs = array();
 		$query = "SELECT DISTINCT
-                  tst_tests.test_id
-                  FROM
-                  rep_robj_xtov_t2o
-                  JOIN object_reference
-                  JOIN tst_tests
-                  ON (rep_robj_xtov_t2o.ref_id_test = object_reference.ref_id
-                  AND obj_id = obj_fi)
-                  WHERE object_reference.deleted IS NULL AND obj_id_overview =" . $ilDB->quote($this->overviewID, 'integer');
+					tst_tests.test_id
+				FROM
+					rep_robj_xtov_t2o
+				JOIN object_reference
+				JOIN tst_tests
+				ON (rep_robj_xtov_t2o.ref_id_test = object_reference.ref_id
+				AND obj_id = obj_fi)
+				WHERE object_reference.deleted IS NULL AND obj_id_overview = %s";
 
-		$result = $ilDB->query($query);
+		$result = $ilDB->queryF($query, array('integer'), array($this->overviewID));
 		while ($record = $ilDB->fetchAssoc($result)) {
 			array_push($testIDs, $record);
 		}
@@ -400,12 +400,12 @@ class ilTestOverviewExport extends ilObjTestOverviewGUI {
 	protected function getTest($questionID) {
 		global $ilDB;
 		$query = "  SELECT 
-                    DISTINCT test_fi
-                    FROM
-                    tst_test_question
-                    WHERE question_fi=" . $ilDB->quote($questionID, 'integer');
+					DISTINCT test_fi
+					FROM
+					tst_test_question
+					WHERE question_fi = %s";
 
-		$result = $ilDB->query($query);
+		$result = $ilDB->queryF($query, array('integer'), array($questionID));
 		$record = $ilDB->fetchAssoc($result);
 		return $record['test_fi'];
 	}
@@ -421,15 +421,15 @@ class ilTestOverviewExport extends ilObjTestOverviewGUI {
 		$qIDs = array();
 
 		$query = "SELECT 
-                  question_fi
-                  FROM
-                  rep_robj_xtov_t2o
-                  JOIN object_reference
-                  JOIN tst_tests
-                  JOIN tst_test_question ON (rep_robj_xtov_t2o.ref_id_test = object_reference.ref_id
-                  AND obj_id = obj_fi
-                  AND test_id = test_fi)
-                  WHERE obj_id_overview = %s AND test_id = %s";
+					question_fi
+				FROM
+					rep_robj_xtov_t2o
+				JOIN object_reference
+				JOIN tst_tests
+				JOIN tst_test_question ON (rep_robj_xtov_t2o.ref_id_test = object_reference.ref_id
+				AND obj_id = obj_fi
+				AND test_id = test_fi)
+				WHERE obj_id_overview = %s AND test_id = %s";
 		$result = $ilDB->queryF($query, array('integer', 'integer'), array($this->overviewID, $testID));
 		while ($record = $ilDB->fetchAssoc($result)) {
 			array_push($qIDs, $record);
@@ -446,8 +446,8 @@ class ilTestOverviewExport extends ilObjTestOverviewGUI {
 	 */
 	private function getActiveID($userID, $testID) {
 		global $ilDB;
-
-		$result = $ilDB->queryF("SELECT tst_active.active_id FROM tst_active WHERE user_fi = %s AND test_fi = %s", array('integer', 'integer'), array($userID, $testID));
+		$query = "SELECT tst_active.active_id FROM tst_active WHERE user_fi = %s AND test_fi = %s";
+		$result = $ilDB->queryF($query, array('integer', 'integer'), array($userID, $testID));
 
 		if ($result->numRows()) {
 			$row = $ilDB->fetchAssoc($result);
@@ -465,14 +465,17 @@ class ilTestOverviewExport extends ilObjTestOverviewGUI {
 	 */
 	private function getInfo($userID) {
 		global $ilDB;
-		$info = array();
-		$query = "SELECT lastname, firstname, matriculation, email, gender
-                  FROM
-                  usr_data
-                  WHERE (usr_id = '" . $userID . "')";
-		$result = $ilDB->query($query);
+		$query = "SELECT 
+					lastname, 
+					firstname, 
+					matriculation, 
+					email, 
+					gender
+				FROM
+					usr_data
+				WHERE usr_id = %s";
+		$result = $ilDB->queryF($query, array('integer'), array($userID));
 		$record = $ilDB->fetchAssoc($result);
-		//array_push($info, $record);
 		return $record;
 	}
 
@@ -512,20 +515,20 @@ class ilTestOverviewExport extends ilObjTestOverviewGUI {
 		$points = array();
 
 		$query = "SELECT 
-                  active_fi, questionId.question_fi, points
-                  FROM
-                  tst_test_result
-                  JOIN
-                      (SELECT 
-                      question_fi
-                      FROM
-                      rep_robj_xtov_t2o
-                      JOIN object_reference
-                      JOIN tst_tests
-                      JOIN tst_test_question ON (rep_robj_xtov_t2o.ref_id_test = object_reference.ref_id
-                      AND obj_id = obj_fi
-                      AND test_id = test_fi)) AS questionId ON (tst_test_result.question_fi = questionId.question_fi)
-                      ORDER BY active_fi ASC, questionId.question_fi ASC, tstamp DESC";
+					active_fi, questionId.question_fi, points
+				FROM
+					tst_test_result
+				JOIN
+					(SELECT 
+						question_fi
+					FROM
+						rep_robj_xtov_t2o
+					JOIN object_reference
+					JOIN tst_tests
+					JOIN tst_test_question ON (rep_robj_xtov_t2o.ref_id_test = object_reference.ref_id
+					AND obj_id = obj_fi
+					AND test_id = test_fi)) AS questionId ON (tst_test_result.question_fi = questionId.question_fi)
+					ORDER BY active_fi ASC, questionId.question_fi ASC, tstamp DESC";
 		$result = $ilDB->query($query);
 
 		while ($record = $ilDB->fetchObject($result)) {
@@ -543,20 +546,19 @@ class ilTestOverviewExport extends ilObjTestOverviewGUI {
 	protected function getTestTitle($testID) {
 		global $ilDB;
 
-
 		$query = "SELECT 
-                  od.title
-                  FROM
-                  rep_robj_xtov_t2o
-                  INNER JOIN
-                  object_reference ref ON (ref.ref_id = rep_robj_xtov_t2o.ref_id_test
-                  AND deleted IS NULL)
-                  INNER JOIN
-                  object_data od ON (od.obj_id = ref.obj_id)
-                  AND od.type = 'tst'
-                  INNER JOIN
-                  tst_tests test ON (test.obj_fi = od.obj_id)
-                  WHERE test_id = %s";
+					od.title
+				FROM
+					rep_robj_xtov_t2o
+				INNER JOIN
+					object_reference ref ON (ref.ref_id = rep_robj_xtov_t2o.ref_id_test
+				AND deleted IS NULL)
+				INNER JOIN
+					object_data od ON (od.obj_id = ref.obj_id)
+				AND od.type = 'tst'
+				INNER JOIN
+					tst_tests test ON (test.obj_fi = od.obj_id)
+				WHERE test_id = %s";
 		$result = $ilDB->queryF($query, array('integer'), array($testID));
 		$record = $ilDB->fetchAssoc($result);
 
@@ -567,7 +569,7 @@ class ilTestOverviewExport extends ilObjTestOverviewGUI {
 	 * 
 	 * @global type $ilDB
 	 * @param type $questionID
-	 * @return Name of Question
+	 * @return string title of question
 	 */
 	protected function getQuestionTitle($questionID) {
 		global $ilDB;
@@ -590,38 +592,37 @@ class ilTestOverviewExport extends ilObjTestOverviewGUI {
 		$uniqueIDs = array();
 
 		$query = "SELECT usr_id AS user_fi FROM (
-                SELECT DISTINCT(user_fi) 
-                  FROM tst_active 
-                  JOIN 
-                 (SELECT 
-                    *
-                   FROM
-                rep_robj_xtov_t2o
-                   JOIN
-                object_reference
-                   JOIN
-                tst_tests ON (rep_robj_xtov_t2o.ref_id_test = object_reference.ref_id
-                AND obj_id = obj_fi)) as TestUsers ON 
-                (TestUsers.test_id=tst_active.test_fi)
-                WHERE obj_id_overview = %s
-                UNION
-                SELECT DISTINCT
-                 (exc_mem_ass_status.usr_id) as user_fi
-                 FROM
-                 rep_robj_xtov_e2o,
-                 exc_returned,
-                 exc_mem_ass_status
-                 JOIN
-                 usr_data ON (exc_mem_ass_status.usr_id = usr_data.usr_id)
-                 WHERE
-                 exc_returned.ass_id = exc_mem_ass_status.ass_id
-                 AND user_id = exc_mem_ass_status.usr_id
-                 AND obj_id_exercise = obj_id
-                 AND obj_id_overview = %s) t1
-                 INNER JOIN usr_data ON t1.user_fi= usr_data.usr_id";
+					SELECT DISTINCT(user_fi) 
+					FROM tst_active 
+					JOIN 
+					(SELECT 
+						*
+					FROM
+						rep_robj_xtov_t2o
+					JOIN
+						object_reference
+					JOIN
+						tst_tests ON (rep_robj_xtov_t2o.ref_id_test = object_reference.ref_id
+					AND obj_id = obj_fi)) as TestUsers ON (TestUsers.test_id=tst_active.test_fi)
+					WHERE 
+						obj_id_overview = %s
+					UNION
+					SELECT DISTINCT
+						(exc_mem_ass_status.usr_id) as user_fi
+					FROM
+						rep_robj_xtov_e2o,
+						exc_returned,
+						exc_mem_ass_status
+					JOIN
+						usr_data ON (exc_mem_ass_status.usr_id = usr_data.usr_id)
+					WHERE
+						exc_returned.ass_id = exc_mem_ass_status.ass_id
+					AND user_id = exc_mem_ass_status.usr_id
+					AND obj_id_exercise = obj_id
+					AND obj_id_overview = %s) t1
+					INNER JOIN usr_data ON t1.user_fi= usr_data.usr_id";
+		
 		$result = $ilDB->queryF($query, array('integer', 'integer'), array($this->overviewID, $this->overviewID));
-
-
 
 		while ($record = $ilDB->fetchAssoc($result)) {
 			array_push($uniqueIDs, $record);
@@ -658,9 +659,15 @@ class ilTestOverviewExport extends ilObjTestOverviewGUI {
 		global $ilDB;
 		$uniqueIDs = array();
 
-		$query = "SELECT DISTINCT obj_id_exercise AS obj_id 
-                  FROM rep_robj_xtov_e2o e2o JOIN object_reference ref ON e2o.obj_id_exercise = ref.obj_id 
-                  WHERE e2o.obj_id_overview = %s AND ref.deleted IS NULL";
+		$query = "SELECT DISTINCT
+					obj_id_exercise AS obj_id
+				FROM
+					rep_robj_xtov_e2o e2o
+				JOIN
+					object_reference ref ON e2o.obj_id_exercise = ref.obj_id
+				WHERE
+					e2o.obj_id_overview = %s
+				AND ref.deleted IS NULL";
 		$result = $ilDB->queryF($query, array('integer'), array($this->overviewID));
 
 		while ($record = $ilDB->fetchAssoc($result)) {
@@ -671,7 +678,10 @@ class ilTestOverviewExport extends ilObjTestOverviewGUI {
 	}
 
 	/**
-	 * Returns the name of a Exercise 
+	 * 
+	 * @global type $ilDB
+	 * @param type $exerciseID
+	 * @return type title for a given object id
 	 */
 	public function getExerciseName($exerciseID) {
 		global $ilDB;
@@ -692,18 +702,18 @@ class ilTestOverviewExport extends ilObjTestOverviewGUI {
 		$uniqueIDs = array();
 
 		$query = "SELECT DISTINCT
-                 (exc_mem_ass_status.usr_id)
-                 FROM
-                 rep_robj_xtov_e2o,
-                 exc_returned,
-                 exc_mem_ass_status
-                 JOIN
-                 usr_data ON (exc_mem_ass_status.usr_id = usr_data.usr_id)
-                 WHERE
-                 exc_returned.ass_id = exc_mem_ass_status.ass_id
-                 AND user_id = exc_mem_ass_status.usr_id
-                 AND obj_id_exercise = obj_id
-                 AND obj_id_overview = %s ";
+					(exc_mem_ass_status.usr_id)
+				FROM
+					rep_robj_xtov_e2o,
+					exc_returned,
+					exc_mem_ass_status
+				JOIN
+					usr_data ON (exc_mem_ass_status.usr_id = usr_data.usr_id)
+				WHERE
+					exc_returned.ass_id = exc_mem_ass_status.ass_id
+				AND user_id = exc_mem_ass_status.usr_id
+				AND obj_id_exercise = obj_id
+				AND obj_id_overview = %s ";
 
 		$result = $ilDB->queryF($query, array('integer'), array($this->overviewID));
 
@@ -714,18 +724,22 @@ class ilTestOverviewExport extends ilObjTestOverviewGUI {
 		return $uniqueIDs;
 	}
 
-	/* Returns all Assignments for a given excerciseID */
-
+	/**
+	 * 
+	 * @global type $ilDB
+	 * @param type $exerciseID
+	 * @return array with all assignments for a given excerciseID 
+	 */
 	public function getAssignments($exerciseID) {
 		global $ilDB;
 		$assignmentID = array();
 
 		$query = "SELECT 
-                  id, title
-                  FROM
-                  exc_assignment
-                  WHERE
-                  exc_id = %s ";
+					id, title
+				FROM
+					exc_assignment
+				WHERE
+					exc_id = %s ";
 
 		$result = $ilDB->queryF($query, array('integer'), array($exerciseID));
 
@@ -736,8 +750,13 @@ class ilTestOverviewExport extends ilObjTestOverviewGUI {
 		return $assignmentID;
 	}
 
-	/* Returns the exercise mark for a given userID and exerciseID  */
-
+	/**
+	 * 
+	 * @global type $ilDB
+	 * @param type $userID
+	 * @param type $exerciseID
+	 * @return string exercise mark for a given userID and exerciseID 
+	 */
 	protected function getExerciseMark($userID, $exerciseID) {
 		global $ilDB;
 
@@ -751,8 +770,13 @@ class ilTestOverviewExport extends ilObjTestOverviewGUI {
 		return $record['mark'];
 	}
 
-	/* Returns the assignment mark for a given userID and assignmentID  */
-
+	/**
+	 * 
+	 * @global type $ilDB
+	 * @param type $userID
+	 * @param type $assignmentID
+	 * @return string assignment mark for a given userID and assignmentID  
+	 */
 	protected function getAssignmentMark($userID, $assignmentID) {
 		global $ilDB;
 

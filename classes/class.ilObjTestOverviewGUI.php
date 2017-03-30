@@ -180,31 +180,28 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
 		global $ilTabs, $ilCtrl, $ilAccess;
 		$this->addInfoTab();
 
-
-
-		/* Check for read access (showContent available) */
-
-
 		/* Check for write access (editSettings available) */
 		if ($ilAccess->checkAccess('write', '', $this->object->getRefId())) {
 			$ilTabs->addTab('properties', $this->txt('properties'), $ilCtrl->getLinkTarget($this, 'editSettings'));
 		}
 
+		/* Check for read access */
 		if ($ilAccess->checkAccess('read', '', $this->object->getRefId())) {
 			$ilTabs->addTab('UserResults', $this->txt('userResults'), $ilCtrl->getLinkTarget($this, 'UserResults'));
-
-			/* Check for write access (editSettings available) */
-			if ($ilAccess->checkAccess('write', '', $this->object->getRefId())) {
-				$ilTabs->addTab('TestOverview', $this->txt('TestOverview'), $this->ctrl->getLinkTarget($this, 'TestOverview'));
-				$ilTabs->addTab('ExerciseOverview', $this->txt('ExerciseOverview'), $this->ctrl->getLinkTarget($this, 'subTabEO'));
-				$ilTabs->addTarget('meta_data', $this->ctrl->getLinkTargetByClass('ilmdeditorgui', ''), '', 'ilmdeditorgui');
-			}
-			// export
-			if ($ilAccess->checkAccess('write', '', $this->object->getRefId())) {
-				$ilTabs->addTarget('export', $this->ctrl->getLinkTargetByClass('iltestoverviewexportgui', 'export'), '', 'iltestoverviewexportgui');
-			}
-			$this->addPermissionTab();
 		}
+
+		/* Check for write access (editSettings available) */
+		if ($ilAccess->checkAccess('write', '', $this->object->getRefId())) {
+			$ilTabs->addTab('TestOverview', $this->txt('TestOverview'), $this->ctrl->getLinkTarget($this, 'TestOverview'));
+			$ilTabs->addTab('ExerciseOverview', $this->txt('ExerciseOverview'), $this->ctrl->getLinkTarget($this, 'subTabEO'));
+			$ilTabs->addTarget('meta_data', $this->ctrl->getLinkTargetByClass('ilmdeditorgui', ''), '', 'ilmdeditorgui');
+		}
+		// export
+		if ($ilAccess->checkAccess('write', '', $this->object->getRefId())) {
+			$ilTabs->addTarget('export', $this->ctrl->getLinkTargetByClass('iltestoverviewexportgui', 'export'), '', 'iltestoverviewexportgui');
+		}
+
+		$this->addPermissionTab();
 	}
 
 	/**
@@ -254,15 +251,16 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
 	 * @global type $ilToolbar
 	 * @global type $ilCtrl
 	 */
-	protected function showRanking() { /**
-	 * @var $tpl ilTemplate
-	 * @var $ilTabs ilTabsGUI
-	 */
+	protected function showRanking() {
+		/**
+		 * @var $tpl ilTemplate
+		 * @var $ilTabs ilTabsGUI
+		 */
 		global $tpl, $lng, $ilTabs, $ilToolbar, $ilCtrl;
 		$this->includePluginClasses(array(
 			"ilTestOverviewTableGUI",
 			"ilOverviewMapper"));
-		/* Darstellung der Tabs */
+		/* Display of the tabs */
 		$this->subTabs("Test");
 		$ilTabs->activateSubTab('content');
 		$ilTabs->activateTab('TestOverview');
@@ -303,11 +301,13 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
 		$ilCtrl->redirect($this, 'showContent');
 	}
 
-        /**
-         * resets the TestOverview ranking. To reset ExerciseOverview ranking use resetStudentViewEo() 
-         * 
-         * @global type $ilCtrl
-         */
+	/**
+	 * Resets the TestOverview ranking. 
+	 * 
+	 * To reset the ExerciseOverview ranking use resetStudentViewEo() 
+	 * 
+	 * @global type $ilCtrl
+	 */
 	protected function resetStudentView() {
 		global $ilCtrl;
 		require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
@@ -331,10 +331,7 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
 	protected function renderSettings() {
 
 		return $this->form->getHTML();
-		//. "<hr />"
-		//. $this->getTestList()->getHTML()
-		//. "<hr />"
-		//. $this->getMembershipList()->getHTML();
+
 	}
 
 	/**
@@ -385,7 +382,7 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
 	}
 
 	/**
-	 * This method is called to render the diagramm Tab.
+	 * This method is called to render the diagramm tab.
 	 * 
 	 * @global type $tpl
 	 * @global type $ilTabs
@@ -405,30 +402,6 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
 		try {
 			$Obj = new BinDiagrammMapper($this, 'showContent');
 			$tpl->setContent($Obj->createAverageDia("BARS"));
-			// $ilToolbar->addButton($this->txt("pie_chart"), $ilCtrl->getLinkTarget($this, 'testPieChart'));
-			//$ilToolbar->addButton($this->txt("bar_chart"), $ilCtrl->getLinkTarget($this, 'subTabTO'));
-		} catch (Exception $ex) {
-			$tpl->setContent("Diagramm can not be Created");
-		}
-	}
-
-	protected function testPieChart() {
-		global $tpl, $ilTabs, $ilCtrl;
-
-		$this->subTabs("Test");
-		$ilTabs->activateTab('TestOverview');
-		$ilTabs->activateSubTab('subTabTO');
-
-
-		global $tpl, $lng, $ilTabs, $ilToolbar, $ilDB;
-		$ilTabs->activateSubTab('subTabTO2');
-		require_once 'Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview/classes/mapper/class.ilBinDiagrammMapper.php';
-
-		try {
-			$Obj = new BinDiagrammMapper($this, 'showContent');
-			// $ilToolbar->addButton($this->txt("pie_chart"), $ilCtrl->getLinkTarget($this, 'testPieChart'));
-			// $ilToolbar->addButton($this->txt("bar_chart"), $ilCtrl->getLinkTarget($this, 'subTabTO'));
-			$tpl->setContent($Obj->createAverageDia("PIE"));
 		} catch (Exception $ex) {
 			$tpl->setContent("Diagramm can not be Created");
 		}
@@ -436,7 +409,7 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
 
 	/**
 	 * Renders the TestOverview Administration
-         * 
+	 * 
 	 * @global type $tpl
 	 * @global type $ilTabs
 	 * @global type $ilCtrl
@@ -468,10 +441,9 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
 		require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
 						->getDirectory() . '/classes/mapper/class.ilBinDiagrammMapper.php';
 
-		//$attachment = new ilTextInputGUI("DiagramSize", "diagramSize");
 		$attachment2 = new ilTextInputGUI("SizeBucket", "sizeBucket");
 		$ilToolbar->setFormAction($ilCtrl->getLinkTarget($this, 'ExerciseOverview'), true);
-		//$ilToolbar->addInputItem($attachment);
+
 		$ilToolbar->addInputItem($attachment2);
 		$ilToolbar->addFormButton($this->txt("make_diagram"), "");
 
@@ -479,9 +451,6 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
 						->getDirectory() . '/classes/mapper/class.ilExerciseMapper.php';
 		if ($_POST["sizeBucket"] != null && $_POST["sizeBucket"] != 0) {
 			$Obj = new exerciseCharts(30000, $this->object->getId(), $_POST["sizeBucket"]);
-			//$tpl->setContent (implode(";", $Obj->getHTML()));
-
-
 			$tpl->setContent($Obj->getHTML());
 		} else {
 			$tpl->setContent($this->txt("max_diagram_value") . " &ne; 0");
@@ -520,26 +489,25 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
 		$ilToolbar->addButton($this->txt('delete_rank'), $ilCtrl->getLinkTarget($this, 'resetStudentViewEO'));
 	}
 
-        /**
-         * This methode redirects to ExerciseOverview in oreder to show the Table
-         * 
-         * @global type $tpl
-         * @global type $ilTabs
-         * @global type $ilCtrl
-         * @global type $ilToolbar
-         */
+	/**
+	 * This method redirects to the ExerciseOverview table
+	 * 
+	 * @global type $tpl
+	 * @global type $ilTabs
+	 * @global type $ilCtrl
+	 * @global type $ilToolbar
+	 */
 	protected function subTabEO1() {
 		global $tpl, $ilTabs, $ilCtrl, $ilToolbar;
 
 		$this->subTabs("Exercise");
 		$ilTabs->activateTab('ExerciseOverview');
 		$ilTabs->activateSubTab('subTabEO1');
-
 		$ilCtrl->redirect($this, 'ExerciseOverview');
 	}
 
 	/**
-	 * Renders the Tab for Exercise Settings
+	 * Renders the tab for Exercise Settings
 	 */
 	protected function subTabEO2() {
 		global $tpl, $ilTabs, $ilCtrl, $ilToolbar;
@@ -551,14 +519,14 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
 		$tpl->setContent($this->getExerciseList()->getHtml() . $this->getMembershipListEx()->getHTML());
 	}
 
-        /**
-         * Renders the Exercise Table ordered by the rank of the students
-         * 
-         * @global type $tpl
-         * @global type $ilTabs
-         * @global type $ilCtrl
-         * @global type $ilToolbar
-         */
+	/**
+	 * Renders the Exercise Table ordered by the rank of the students
+	 * 
+	 * @global type $tpl
+	 * @global type $ilTabs
+	 * @global type $ilCtrl
+	 * @global type $ilToolbar
+	 */
 	protected function subTabEORanking() {
 		global $tpl, $ilTabs, $ilCtrl, $ilToolbar;
 		$this->subTabs("Exercise");
@@ -585,11 +553,11 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
 	}
 
 	/**
-         * Update UserResults. This method retrieve data from the Table and saves it in the database.
-         * 
-         * @global type $ilCtrl
-         */
-        protected function updateStudentViewEO() {
+	 * Update UserResults. This method retrieve data from the table and saves it in the database.
+	 * 
+	 * @global type $ilCtrl
+	 */
+	protected function updateStudentViewEO() {
 		global $ilCtrl;
 		require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
 						->getDirectory() . '/classes/GUI/class.ilMappedTableGUI.php';
@@ -605,11 +573,13 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
 		$ilCtrl->redirect($this, 'subTabEO');
 	}
 
-        /**
-         * resets the ranking for Exercises. To reset ranking for Tests use resetStudentView()
-         * 
-         * @global type $ilCtrl
-         */
+	/**
+	 * Resets the ranking for exercises. 
+	 * 
+	 * To reset ranking for Tests use resetStudentView()
+	 * 
+	 * @global type $ilCtrl
+	 */
 	protected function resetStudentViewEO() {
 		global $ilCtrl;
 		require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
@@ -620,13 +590,13 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
 		$ilCtrl->redirect($this, 'subTabEO');
 	}
 
-        /**
-         * adds subtabs.
-         * 
-         * @global type $ilTabs
-         * @global type $ilCtrl
-         * @param type $type
-         */
+	/**
+	 * Adds subtabs.
+	 * 
+	 * @global type $ilTabs
+	 * @global type $ilCtrl
+	 * @param type $type
+	 */
 	protected function subTabs($type) {
 		global $ilTabs, $ilCtrl;
 		switch ($type) {
@@ -675,8 +645,8 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
 	}
 
 	/**
-	 * initializeses the XML for Exercise Selection 
-	 * Wrthes the information in a Session Parameter
+	 * Initializeses the XML for Exercise Selection 
+	 * Writes the information in a Session Parameter
 	 */
 	public function initSelectExercise() {
 
@@ -698,7 +668,7 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
 	}
 
 	/**
-	 * Creats the Exercise Select GUI with the given Notes 
+	 * Creates the exercise select GUI with the nodes representing all course-objects, folders, groups and exercises 
 	 *
 	 */
 	public function selectExercises() {
@@ -785,7 +755,16 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
 		$tpl->setVariable('CMD_SUBMIT', 'performAddTests');
 		$tpl->setVariable('TXT_SUBMIT', $lng->txt('select'));
 	}
-
+	/**
+	 *
+	 * Add the chosen exercises into the table rep_robj_xtov_e2o
+	 *  
+	 * @global type $tpl
+	 * @global type $lng
+	 * @global type $ilCtrl
+	 * @global type $ilAccess
+	 *
+	 */
 	public function performAddExcercise() {
 
 		global $tpl, $lng, $ilCtrl, $ilAccess;
@@ -815,7 +794,16 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
 		ilUtil::sendSuccess($this->txt('exercises_updated_success'), true);
 		$ilCtrl->redirect($this, 'subTabEO2');
 	}
-
+	
+	/**
+	 * 
+	 * Add the chosen tests into the table rep_robj_xtov_t2o
+	 * 
+	 * @global type $lng
+	 * @global type $ilCtrl
+	 * @global type $ilAccess
+	 * 
+	 */
 	public function performAddTests() {
 		/**
 		 * @var $lng      ilLanguage
@@ -845,7 +833,15 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
 
 		$ilCtrl->redirect($this, 'subTabTO2');
 	}
-
+	
+	/**
+	 * 
+	 * Removes the chosen test-entries in the rep_robj_xtov_t2o table 
+	 * 
+	 * @global type $tpl
+	 * @global type $lng
+	 * @global type $ilCtrl
+	 */
 	public function removeTests() {
 		/**
 		 * @var $tpl    ilTemplate
@@ -866,7 +862,15 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
 		//$tpl->setContent($this->renderSettings());
 		$ilCtrl->redirect($this, 'subTabTO2');
 	}
-
+	
+	/**
+	 * 
+	 * Removes the chosen exercise-entries in the rep_robj_xtov_e2o table 
+	 * 
+	 * @global type $tpl
+	 * @global type $lng
+	 * @global type $ilCtrl
+	 */
 	public function removeExercises() {
 		/**
 		 * @var $tpl    ilTemplate
@@ -934,10 +938,15 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
 			$ilCtrl->redirect($this, 'subTabTO2');
 		}
 		ilUtil::sendFailure($lng->txt('rep_robj_xtov_min_one_check_membership'), true);
-		//$tpl->setContent( $this->renderSettings() );
 		$ilCtrl->redirect($this, 'subTabTO2');
 	}
-
+	/**
+	 * Adds the chosen group_id's into the rep_robj_xtov_p2o
+	 * 
+	 * @global type $tpl
+	 * @global type $lng
+	 * @global type $ilCtrl
+	 */
 	public function addMemberships() {
 		/**
 		 * @var $tpl    ilTemplate
@@ -961,9 +970,15 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
 		}
 		ilUtil::sendFailure($lng->txt('rep_robj_xtov_min_one_check_membership'), true);
 		$ilCtrl->redirect($this, 'subTabTO2');
-		//$tpl->setContent( $this->renderSettings() );
 	}
-
+	
+	/**
+	 * Removes the chosen group_id's from rep_robj_xtov_p2o
+	 * 
+	 * @global type $tpl
+	 * @global type $lng
+	 * @global type $ilCtrl
+	 */
 	public function removeMemberships() {
 		/**
 		 * @var $tpl    ilTemplate

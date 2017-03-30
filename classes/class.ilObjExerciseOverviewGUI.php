@@ -10,7 +10,7 @@ class ilObjExerciseOverviewListGUI extends ilTestOverviewTableGUI {
 	}
 
 	/*
-	 * Gets the Data from every Student and there Testresults in a String saperated by "|"
+	 * Gets the data from every student and their test results in a string seperated by "|"
 	 * 
 	 */
 
@@ -21,7 +21,6 @@ class ilObjExerciseOverviewListGUI extends ilTestOverviewTableGUI {
 		$mapper = new ilExerciseMapper;
 		$data = $mapper->getArrayofObjects();
 
-		// Nur als Platzhalter 
 		$tpl = new ilTemplate("tpl.test_exerciseview_row.html", true, true, "Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview");
 
 		foreach ($data as $set) {
@@ -34,9 +33,6 @@ class ilObjExerciseOverviewListGUI extends ilTestOverviewTableGUI {
 			$tpl->setVariable("VALUE", $set->mark);
 			$tpl->parseCurrentBlock();
 		}
-
-
-
 
 		return $tpl->get();
 		return $mapper->getMarkforTest(6, 272);
