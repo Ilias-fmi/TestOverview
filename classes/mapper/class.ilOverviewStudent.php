@@ -89,7 +89,7 @@ class studentMapper {
 
 
 			/* Checks if the test has been finished or if no end time is given */
-			if ((($testTime - $timestamp) < 0 || $result->timeded == 0) && $this->isTestDeleted($result->ref_id_test) == null && $result != null) {
+			if ((($testTime - $timestamp) < 0 || $result->timeded == 0) && $this->isTestDeleted($set->ref_id_test) == null && $result != null) {
 				$tpl->setCurrentBlock("test_results");
 				$tpl->setVariable("Name", $result->title);
 				$average += $result->points;
