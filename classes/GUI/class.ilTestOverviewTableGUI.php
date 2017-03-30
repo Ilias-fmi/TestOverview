@@ -534,12 +534,12 @@ class ilTestOverviewTableGUI extends ilMappedTableGUI {
 					$result = $test->getTestResult($activeId);
 					$lpStatus = new ilLPStatus($test->getId());
 					$progress = $lpStatus->_lookupStatus($test->getId(), $stdID);
-					if ((bool) $progress) {
+					//if ((bool) $progress) {
 						$result = sprintf("%.2f %%", (float) $result['pass']['percent'] * 100);
 						$results[] = $result;
-					} else {
-						$results[] = 0;
-					}
+					//} else {
+					//	$results[] = 0;
+					//}
 
 					if (count($results)) {
 						$average = (array_sum($results) / count($results));
