@@ -321,6 +321,14 @@ class ilExerciseOverviewTableGUI extends ilMappedTableGUI {
 		}
 	}
 
+        /**
+         * This method fetchs User Information and is used to filter the UserIds
+         * 
+         * @global type $ilDB
+         * @global type $tpl
+         * @param type $usr_ids
+         * @return \ilObjUser
+         */
 	public function fetchUserInformation($usr_ids) {
 		global $ilDB, $tpl;
 

@@ -64,9 +64,17 @@ abstract class ilMappedTableGUI extends ilTable2GUI {
 		return $data;
 	}
 
-	/*
-	 * Hack zum sortieren nach  Rank             
-	 */
+	/**
+         * This methode should be integrated into populate(). 
+         * The method call in ilObjTestOverviewGUI needs to be change to populate()
+         * 
+         * This method is used to populate the TableGUIObject.
+         * 
+	 *            
+         * @param type $sorting
+         * @return $this
+         * @throws ilException
+         */
 
 	public function populateE($sorting) {
 
