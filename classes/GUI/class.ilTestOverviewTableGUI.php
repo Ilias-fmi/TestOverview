@@ -174,14 +174,15 @@ class ilTestOverviewTableGUI extends ilMappedTableGUI {
 				$lpStatus = new ilLPStatus($test->getId());
 				$progress = $lpStatus->_lookupStatus($test->getId(), $row['member_id']);
 
-				if ((bool) $progress) {
 					$result = sprintf("%.2f %%", (float) $result['pass']['percent'] * 100);
 					$results[] = $result;
-				} else {
-					$result = $this->lng->txt("rep_robj_xtov_overview_test_not_passed");
-					$results[] = 0;
-				}
 
+
+					if (count($results)) {
+					$average = sprintf("%.2f", (array_sum($results) / count($results)));
+					} else {
+						$average = "";
+					}
 				if ($activeId > 0) {
 					$resultLink = $this->buildMemberResultLinkTarget($this->accessIndex[$obj_id], $activeId);
 					$this->populateLinkedCell($resultLink, $result, $this->getCSSByProgress($progress));
@@ -200,11 +201,7 @@ class ilTestOverviewTableGUI extends ilMappedTableGUI {
 			$this->tpl->parseCurrentBlock();
 		}
 
-		if (count($results)) {
-			$average = sprintf("%.2f", (array_sum($results) / count($results)));
-		} else {
-			$average = "";
-		}
+		
 
 		$this->tpl->setVariable("AVERAGE_CLASS", "");
 		$this->tpl->setVariable("AVERAGE_VALUE", $average . (is_numeric($average) ? "%" : ""));
@@ -346,17 +343,9 @@ class ilTestOverviewTableGUI extends ilMappedTableGUI {
 	 * @return string
 	 */
 	private function getCSSByProgress($progress) {
-		$map = $this->buildCssClassByProgressMap();
+		
 
-		$progress = (string) $progress;
-
-		foreach ($map as $lpNum => $cssClass) {
-			if ($progress === (string) $lpNum) { // we need identical check !!
-				return $cssClass;
-			}
-		}
-
-		return 'no-perm-result';
+		return 'no-result';
 	}
 
 	public function buildCssClassByProgressMap() {
