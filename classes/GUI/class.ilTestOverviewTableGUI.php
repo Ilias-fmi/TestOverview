@@ -165,16 +165,14 @@ class ilTestOverviewTableGUI extends ilMappedTableGUI {
 
 			if ($this->accessIndex[$obj_id]) {
 				$result = $test->getTestResult($activeId);
-				$lpStatus = new ilLPStatus($test->getId());
-				$progress = $lpStatus->_lookupStatus($test->getId(), $row['member_id']);
+								//$lpStatus = new ilLPStatus($test->getId());
+					require_once 'Services/Tracking/classes/status/class.ilLPStatusTestPassed.php';
+					$jo = new ilLPStatusTestPassed($test->getId());
+					$progress = $jo->determineStatus($test->getId(),$row['member_id']);
 
-				if ((bool) $progress) {
 					$result = sprintf("%.2f %%", (float) $result['pass']['percent'] * 100);
 					$results[] = $result;
-				} else {
-					$result = $this->lng->txt("rep_robj_xtov_overview_test_not_passed");
-					$results[] = 0;
-				}
+
 
 				if ($activeId > 0) {
 					$resultLink = $this->buildMemberResultLinkTarget($this->accessIndex[$obj_id], $activeId);

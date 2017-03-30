@@ -101,14 +101,14 @@ class studentMapper {
         foreach ($data as $set) {
             $result = $this-> getTestData($studId,$set->ref_id_test);
             $timestamp = time();
-            $datum = (float) date("YmdHis", $timestamp);
+            //$datum = (float) date("YmdHis", $timestamp);
 
             $testTime = (float) $result->ending_time;
             
           
 
             /* Checks if the test has been finished or if no end time is given */
-           if ((($testTime - $datum) < 0 || $result->timeded == 0) && $this->isTestDeleted($result->ref_id_test) == null && $result != null  ) {
+           if ((($testTime - $timestamp) < 0 || $result->timeded == 0) && $this->isTestDeleted($set->ref_id_test) == null && $result != null  ) {
                 $tpl->setCurrentBlock("test_results");
                 $tpl->setVariable("Name", $result->title);
                 $average += $result->points;
@@ -240,10 +240,10 @@ class studentMapper {
             array_push($data, $testObj);
         }
         $timestamp = time();
-        $datum = (float) date("YmdHis", $timestamp);
+        
         foreach ($data as $set) {
             $testTime = (float) $set->ending_time;
-            if (($testTime - $datum) < 0) {
+            if (($testTime - $timestamp) < 0) {
                 $count ++;
             }
         }

@@ -302,7 +302,7 @@ class exerciseCharts {
 			$this->data = array();
 		}
 		sort($this->data);
-		if (array_pop($this->data) == 0) {
+		if ($this->data[0] == 0) {
 			$this->data = array();
 			$this->bucketsToSmall = true;
 		}
