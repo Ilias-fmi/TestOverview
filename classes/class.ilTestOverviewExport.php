@@ -338,7 +338,7 @@ class ilTestOverviewExport extends ilObjTestOverviewGUI {
 	protected function getTestIDs() {
 		global $ilDB;
 		$testIDs = array();
-		$query = "SELECT 
+		$query = "SELECT DISTINCT
                   tst_tests.test_id
                   FROM
                   rep_robj_xtov_t2o
@@ -658,7 +658,7 @@ class ilTestOverviewExport extends ilObjTestOverviewGUI {
 		global $ilDB;
 		$uniqueIDs = array();
 
-		$query = "SELECT obj_id_exercise AS obj_id 
+		$query = "SELECT DISTINCT obj_id_exercise AS obj_id 
                   FROM rep_robj_xtov_e2o e2o JOIN object_reference ref ON e2o.obj_id_exercise = ref.obj_id 
                   WHERE e2o.obj_id_overview = %s AND ref.deleted IS NULL";
 		$result = $ilDB->queryF($query, array('integer'), array($this->overviewID));
