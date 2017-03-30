@@ -303,6 +303,11 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
 		$ilCtrl->redirect($this, 'showContent');
 	}
 
+        /**
+         * resets the TestOverview ranking. To reset ExerciseOverview ranking use resetStudentViewEo() 
+         * 
+         * @global type $ilCtrl
+         */
 	protected function resetStudentView() {
 		global $ilCtrl;
 		require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
@@ -430,7 +435,8 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
 	}
 
 	/**
-	 * 
+	 * Renders the TestOverview Administration
+         * 
 	 * @global type $tpl
 	 * @global type $ilTabs
 	 * @global type $ilCtrl
@@ -514,6 +520,14 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
 		$ilToolbar->addButton($this->txt('delete_rank'), $ilCtrl->getLinkTarget($this, 'resetStudentViewEO'));
 	}
 
+        /**
+         * This methode redirects to ExerciseOverview in oreder to show the Table
+         * 
+         * @global type $tpl
+         * @global type $ilTabs
+         * @global type $ilCtrl
+         * @global type $ilToolbar
+         */
 	protected function subTabEO1() {
 		global $tpl, $ilTabs, $ilCtrl, $ilToolbar;
 
@@ -537,6 +551,14 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
 		$tpl->setContent($this->getExerciseList()->getHtml() . $this->getMembershipListEx()->getHTML());
 	}
 
+        /**
+         * Renders the Exercise Table ordered by the rank of the students
+         * 
+         * @global type $tpl
+         * @global type $ilTabs
+         * @global type $ilCtrl
+         * @global type $ilToolbar
+         */
 	protected function subTabEORanking() {
 		global $tpl, $ilTabs, $ilCtrl, $ilToolbar;
 		$this->subTabs("Exercise");
@@ -562,7 +584,12 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
 		$ilToolbar->addButton($this->txt('delete_rank'), $ilCtrl->getLinkTarget($this, 'resetStudentViewEO'));
 	}
 
-	protected function updateStudentViewEO() {
+	/**
+         * Update UserResults. This method retrieve data from the Table and saves it in the database.
+         * 
+         * @global type $ilCtrl
+         */
+        protected function updateStudentViewEO() {
 		global $ilCtrl;
 		require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
 						->getDirectory() . '/classes/GUI/class.ilMappedTableGUI.php';
@@ -578,6 +605,11 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
 		$ilCtrl->redirect($this, 'subTabEO');
 	}
 
+        /**
+         * resets the ranking for Exercises. To reset ranking for Tests use resetStudentView()
+         * 
+         * @global type $ilCtrl
+         */
 	protected function resetStudentViewEO() {
 		global $ilCtrl;
 		require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
@@ -588,6 +620,13 @@ class ilObjTestOverviewGUI extends ilObjectPluginGUI implements ilDesktopItemHan
 		$ilCtrl->redirect($this, 'subTabEO');
 	}
 
+        /**
+         * adds subtabs.
+         * 
+         * @global type $ilTabs
+         * @global type $ilCtrl
+         * @param type $type
+         */
 	protected function subTabs($type) {
 		global $ilTabs, $ilCtrl;
 		switch ($type) {

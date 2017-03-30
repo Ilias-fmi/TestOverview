@@ -178,6 +178,12 @@ class ilOverviewMapper extends ilDataMapper {
 		return $rank;
 	}
 
+        /**
+         * writes a Date to rep_robj_xtov_rankdate
+         * 
+         * @global type $ilDB
+         * @param type $o_id
+         */
 	public function createDate($o_id) {
 		global $ilDB;
 		$timestamp = time();
@@ -190,6 +196,12 @@ class ilOverviewMapper extends ilDataMapper {
 		$this->db->query($query);
 	}
 
+        /**
+         * 
+         * @global type $ilDB
+         * @param type $o_id
+         * @return type
+         */
 	public function getDate($o_id) {
 		global $ilDB;
 		$query = "SELECT rankdate FROM `rep_robj_xtov_rankdate` WHERE o_id=$o_id AND otype='to'"
@@ -205,6 +217,13 @@ class ilOverviewMapper extends ilDataMapper {
 		return $rankDate;
 	}
 
+        /**
+         * Get the count of entries in rep_robj_xtov_torank
+         * 
+         * @global type $ilDB
+         * @param type $id
+         * @return int
+         */
 	public function getCount($id) {
 
 		global $ilDB;

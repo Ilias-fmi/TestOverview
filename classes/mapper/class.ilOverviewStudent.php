@@ -126,7 +126,7 @@ class studentMapper {
         }
 
         //// generall Part /////
-        if ($this->numOfTests($overviewId) == 0) {
+        if ($this->getNumTests($overviewId) == 0) {
             $averageNum = 0;
         } else {
             $averageNum = round($average / $this->getNumTests($overviewId), 2);
