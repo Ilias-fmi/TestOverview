@@ -122,6 +122,9 @@ class ilMembershipListTableGUI extends ilMappedTableGUI {
 			$this->tpl->setVariable('OBJECT_TITLE', $container->title);
 			$this->tpl->setVariable('OBJECT_INFO', sprintf("%d %s", $members, $label));
 			$this->tpl->setVariable('OBJECT_IMG_PATH', $this->isAddedContainer($container) ? ilUtil::getImagePath('icon_ok.svg') : ilUtil::getImagePath('icon_not_ok.svg'));
+			var_dump($this->isAddedContainer($container));
+			var_dump ($container->obj_id);
+			//var_dump($this->parent->object->getId());
 		} else {
 			$this->tpl->setVariable('colapse', 'style="display:none;"');
 		}
@@ -147,13 +150,15 @@ class ilMembershipListTableGUI extends ilMappedTableGUI {
 		// @todo: Move to application class!!!
 
 		$overviewId = $this->getParentObject()->object->getId();
+		//var_dump($overviewId);
 		$filter = array(
 			'obj_id_overview = ' . $ilDB->quote($overviewId, 'integer'),
 			'obj_id_grpcrs = ' . $ilDB->quote($container->obj_id, 'integer')
 		);
+		
 
 		$res = $this->getMapper()->getValue('rep_robj_xtov_p2o', 'true', $filter);
-
+var_dump($res);
 		return !empty($res);
 	}
 

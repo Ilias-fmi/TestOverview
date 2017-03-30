@@ -242,10 +242,25 @@ class ilExerciseMapper extends ilDataMapper {
 	public function getUniqueUserId($overviewID) {
 		global $ilDB;
 		$UniqueIDs = array();
-		$query = "Select DISTINCT(exc_mem_ass_status.usr_id) from rep_robj_xtov_e2o  ,exc_returned , exc_mem_ass_status  join usr_data  on (exc_mem_ass_status.usr_id = usr_data.usr_id)
-                where exc_returned.ass_id = exc_mem_ass_status.ass_id
-                And user_id = exc_mem_ass_status.usr_id and obj_id_exercise = obj_id
-                and obj_id_overview = '" . $overviewID . "' order by exc_mem_ass_status.usr_id";
+		$query = "SELECT 
+					usr_id
+				FROM
+				(SELECT DISTINCT
+					(exc_mem_ass_status.usr_id), exc_returned.obj_id
+				FROM
+					rep_robj_xtov_e2o, exc_returned, exc_mem_ass_status
+				JOIN usr_data ON (exc_mem_ass_status.usr_id = usr_data.usr_id)
+				WHERE
+					exc_returned.ass_id = exc_mem_ass_status.ass_id
+				AND user_id = exc_mem_ass_status.usr_id
+				AND obj_id_exercise = obj_id
+				AND obj_id_overview = '" . $overviewID . "'
+				ORDER BY exc_mem_ass_status.usr_id) users
+					JOIN
+						object_reference ON (users.obj_id = object_reference.obj_id)
+					WHERE
+						deleted IS NULL";
+				
 		$result = $ilDB->query($query);
 		while ($record = $ilDB->fetchObject($result)) {
 			array_push($UniqueIDs, $record->usr_id);
