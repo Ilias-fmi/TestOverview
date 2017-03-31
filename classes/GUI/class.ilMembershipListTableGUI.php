@@ -108,7 +108,7 @@ class ilMembershipListTableGUI extends ilMappedTableGUI {
 	 * @internal param \ilObjTest $test
 	 *
 	 */
-	protected function fillRow(stdClass $container) {
+	protected function fillRow($container) {
 		global $tree;
 
 		$refId = $container->ref_id;

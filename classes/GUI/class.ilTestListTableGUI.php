@@ -97,7 +97,7 @@ class ilTestListTableGUI extends ilMappedTableGUI {
 	 *
 	 * 	@param stdClass $item
 	 */
-	protected function fillRow(stdClass $item) {
+	protected function fillRow($item) {
 		/* Configure template rendering. */
 		$this->tpl->setVariable('VAL_CHECKBOX', ilUtil::formCheckbox(false, 'test_ids[]', $item->ref_id));
 		$this->tpl->setVariable('OBJECT_TITLE', $item->title);
