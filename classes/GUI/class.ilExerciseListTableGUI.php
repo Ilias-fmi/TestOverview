@@ -11,6 +11,7 @@
  *  @author		Martin Dinkel <hmdinkel@web.de>
  *  
  *  @ilCtrl_Calls ilExerciseListTableGUI: ilObjExerciseGUI
+ *	Creats the matrix of Exercises 
  * 
  * */
 require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')->getDirectory() . '/classes/GUI/class.ilMappedTableGUI.php';

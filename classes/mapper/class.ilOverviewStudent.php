@@ -11,7 +11,7 @@
  *  @author		Martin Dinkel <hmdinkel@web.de>
  *
  *
- * DB Mapper for the Student View (User with only read Permissons)
+ * DB Mapper for the Student View (User with read-only permissons)
  */
 class studentMapper {
     /**
@@ -234,7 +234,7 @@ class studentMapper {
 				JOIN
 					tst_tests ON (ref_id_test = ref_id AND obj_id = obj_fi)
 				WHERE
-					obj_id_overview = %s";
+					obj_id_overview = %s AND object_reference.deleted IS NULL";
         $result = $ilDB->queryF($query, array('integer'), array($overviewId));
         while ($testObj = $ilDB->fetchObject($result)) {
             array_push($data, $testObj);

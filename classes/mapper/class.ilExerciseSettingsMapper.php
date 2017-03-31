@@ -1,5 +1,13 @@
 <?php
 
+/* Copyright (c) 1998-2012 ILIAS open source, Extended GPL, see docs/LICENSE */
+/**
+*	@author		Jan Ruthardt <janruthardt@web.de>
+*	@author		Benedict Steuerlein <st111340@stud.uni-stuttgart.de>
+*	@author		Martin Dinkel <hmdinkel@web.de>
+* 
+*	Mapper for displaying all added exercises in the subtab Exercise Administration 
+*/
 class ilExerciseSettingsMapper extends ilDataMapper {
 
 	/**

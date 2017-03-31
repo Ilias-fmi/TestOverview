@@ -1,5 +1,11 @@
 <?php
+/* Copyright (c) 1998-2013 ILIAS open source, Extended GPL, see docs/LICENSE */
 
+/**
+ * @author Benedict Steuerlein <st111340@stud.uni-stuttgart.de>
+ * 
+ * Class that generates the export file 
+ */
 class ilTestOverviewExport extends ilObjTestOverviewGUI {
 
 	/** @protected string extended/reduced (TestQuestions) */

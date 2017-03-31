@@ -1,15 +1,12 @@
 <?php
-
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
+/* Copyright (c) 1998-2012 ILIAS open source, Extended GPL, see docs/LICENSE */
 
 /**
- * xercise Overview Gui
- *
- * @author Dinkel
+ *  @package	TestOverview repository plugin
+ *	@category	Core
+ *	@author		Martin Dinkel <hmdinkel@web.de>
+ * 
+ *	Exercise Overview Gui
  */
 class ilExerciseOverviewTableGUI extends ilMappedTableGUI {
 

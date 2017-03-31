@@ -5,7 +5,7 @@
 /**
  * 	@package	TestOverview repository plugin
  * 	@category	Core
- * 	@author		
+ * 	@author		Benedict Steuerlein <st111340@stud.uni-stuttgart.de>
  *  
  * The class creates a CSV file from the User Data that can be downloaded 
  */

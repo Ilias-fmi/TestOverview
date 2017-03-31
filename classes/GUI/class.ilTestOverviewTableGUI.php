@@ -6,7 +6,7 @@
  * 	@package	TestOverview repository plugin
  * 	@category	GUI
  * 	@author		Greg Saive <gsaive@databay.de>
- *      @ilCtrl_Calls   ilTestOverviewTableGUI: ilTestEvaluationGUI
+ *  @ilCtrl_Calls   ilTestOverviewTableGUI: ilTestEvaluationGUI
  */
 require_once "Services/Tracking/classes/class.ilLPStatus.php";
 require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
@@ -165,13 +165,13 @@ class ilTestOverviewTableGUI extends ilMappedTableGUI {
 
 			if ($this->accessIndex[$obj_id]) {
 				$result = $test->getTestResult($activeId);
-								//$lpStatus = new ilLPStatus($test->getId());
-					require_once 'Services/Tracking/classes/status/class.ilLPStatusTestPassed.php';
-					$jo = new ilLPStatusTestPassed($test->getId());
-					$progress = $jo->determineStatus($test->getId(),$row['member_id']);
+				//$lpStatus = new ilLPStatus($test->getId());
+				require_once 'Services/Tracking/classes/status/class.ilLPStatusTestPassed.php';
+				$lp = new ilLPStatusTestPassed($test->getId());
+				$progress = $lp->determineStatus($test->getId(), $row['member_id']);
 
-					$result = sprintf("%.2f %%", (float) $result['pass']['percent'] * 100);
-					$results[] = $result;
+				$result = sprintf("%.2f %%", (float) $result['pass']['percent'] * 100);
+				$results[] = $result;
 
 
 				if ($activeId > 0) {
@@ -271,14 +271,14 @@ class ilTestOverviewTableGUI extends ilMappedTableGUI {
 		}
 	}
 
-        /**
-         * This method fetchs User Information and is used to filter the UserIds
-         * 
-         * @global type $ilDB
-         * @global type $tpl
-         * @param type $usr_ids
-         * @return \ilObjUser
-         */
+	/**
+	 * This method fetchs User Information and is used to filter the UserIds
+	 * 
+	 * @global type $ilDB
+	 * @global type $tpl
+	 * @param type $usr_ids
+	 * @return \ilObjUser
+	 */
 	public function fetchUserInformation($usr_ids) {
 		global $ilDB, $tpl;
 
@@ -544,12 +544,10 @@ class ilTestOverviewTableGUI extends ilMappedTableGUI {
 					$result = $test->getTestResult($activeId);
 					$lpStatus = new ilLPStatus($test->getId());
 					$progress = $lpStatus->_lookupStatus($test->getId(), $stdID);
-					if ((bool) $progress) {
-						$result = sprintf("%.2f %%", (float) $result['pass']['percent'] * 100);
-						$results[] = $result;
-					} else {
-						$results[] = 0;
-					}
+
+					$result = sprintf("%.2f %%", (float) $result['pass']['percent'] * 100);
+					$results[] = $result;
+
 
 					if (count($results)) {
 						$average = (array_sum($results) / count($results));

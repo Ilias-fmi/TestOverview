@@ -1,5 +1,5 @@
 <?php
-
+/* Copyright (c) 1998-2013 ILIAS open source, Extended GPL, see docs/LICENSE */
 require_once 'Services/Repository/classes/class.ilObjectPluginListGUI.php';
 require_once 'Customizing/global/plugins/Services/Repository/RepositoryObject/TestOverview/classes/GUI/class.ilTestOverviewTableGUI.php';
 
@@ -9,11 +9,12 @@ class ilObjExerciseOverviewListGUI extends ilTestOverviewTableGUI {
 		
 	}
 
-	/*
-	 * Gets the data from every student and their test results in a string seperated by "|"
+	/**
+	 *  Gets the data from every student and their test results in a string seperated by "|"
 	 * 
+	 * @global type $ilDB
+	 * @return type
 	 */
-
 	public function data() {
 		global $ilDB;
 		require_once ilPlugin::getPluginObject(IL_COMP_SERVICE, 'Repository', 'robj', 'TestOverview')
